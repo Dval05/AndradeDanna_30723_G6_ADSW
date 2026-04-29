@@ -49,7 +49,7 @@ public class FormularioCrudEstudiante extends JFrame {
         JButton btnUpdate = new JButton("Actualizar");
         btnUpdate.addActionListener(e -> clickActualizar());
         JButton btnDelete = new JButton("Eliminar");
-        btnDelete.addActionListener(e -> clickEliminar());
+        btnDelete.addActionListener(e -> clickEliminar1());
        // JButton btnLimpiar = new JButton("Nuevo / Limpiar");
         //btnLimpiar.addActionListener(e -> limpiarCampos());
         
@@ -97,6 +97,33 @@ public class FormularioCrudEstudiante extends JFrame {
         } catch (Exception e) { mostrarMensaje("Error: Edad debe ser numérica"); }
     }
 
+
+public void clickEliminar1() {
+    // 1. Verificar que haya un ID seleccionado o escrito
+    String id = txtId.getText();
+    if (id.isEmpty()) {
+        mostrarMensaje("Por favor, seleccione un estudiante para eliminar.");
+        return;
+    }
+
+    // 2. Mostrar el Pop-up de confirmación
+    int respuesta = JOptionPane.showConfirmDialog(
+            this, 
+            "¿Está seguro de que desea eliminar al estudiante con ID: " + id + "?", 
+            "Confirmar Eliminación", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.WARNING_MESSAGE
+    );
+
+    // 3. Evaluar la respuesta (JOptionPane.YES_OPTION es 0)
+    if (respuesta == JOptionPane.YES_OPTION) {
+        String res = controlador.eliminarEstudiante(id);
+        mostrarMensaje(res);
+        limpiarCampos();
+        clickMostrarTodo(); // Opcional: refresca la tabla automáticamente
+    }
+}
+
     public void clickActualizar() {
         try {
             String res = controlador.actualizarEstudiante(txtId.getText(), txtNombre.getText(), Integer.parseInt(txtEdad.getText()));
@@ -105,11 +132,31 @@ public class FormularioCrudEstudiante extends JFrame {
         } catch (Exception e) { mostrarMensaje("Error en actualización"); }
     }
 
-    public void clickEliminar() {
-        String res = controlador.eliminarEstudiante(txtId.getText());
+public void clickEliminar() {
+    // 1. Verificar que haya un ID seleccionado o escrito
+    String id = txtId.getText();
+    if (id.isEmpty()) {
+        mostrarMensaje("Por favor, seleccione un estudiante para eliminar.");
+        return;
+    }
+
+    // 2. Mostrar el Pop-up de confirmación
+    int respuesta = JOptionPane.showConfirmDialog(
+            this, 
+            "¿Está seguro de que desea eliminar al estudiante con ID: " + id + "?", 
+            "Confirmar Eliminación", 
+            JOptionPane.YES_NO_OPTION, 
+            JOptionPane.WARNING_MESSAGE
+    );
+
+    // 3. Evaluar la respuesta (JOptionPane.YES_OPTION es 0)
+    if (respuesta == JOptionPane.YES_OPTION) {
+        String res = controlador.eliminarEstudiante(id);
         mostrarMensaje(res);
         limpiarCampos();
+        clickMostrarTodo(); // Opcional: refresca la tabla automáticamente
     }
+}
 
     public void clickMostrarTodo() {
         mostrarTabla(controlador.mostrarTodos());
