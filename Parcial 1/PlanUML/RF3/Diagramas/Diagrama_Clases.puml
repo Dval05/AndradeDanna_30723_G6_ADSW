@@ -1,0 +1,60 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "FormularioImportarReporte" <<boundary>> {
+  - txtArchivoReporte: String
+  - lblEstadoImportacion: String
+  - cbTipoReporte: TipoReporte
+  + clickEnviarReporte()
+  + clickCancelar()
+  + mostrarMensaje(msg: String)
+  + mostrarDatosExtraidos(reporte: ReporteOperativo)
+}
+
+class "ControlReporteOperativo" <<control>> {
+  + enviarReporte(archivo): Resultado
+  + extraerDatos(archivo): ReporteOperativo
+  + validarFormato(archivo): boolean
+  + validarEmisor(idEmpleado): boolean
+  + registrarReporte(reporte): Resultado
+}
+
+class "ReporteOperativo" <<entity>> {
+  - idReporte: String
+  - fechaEmision: Date
+  - tipoReporte: TipoReporte
+  - descripcion: String
+  - idEmpleado: String
+  - zona: String
+  + getDatos(): ReporteOperativo
+}
+
+enum "TipoReporte" {
+  INCIDENTE
+  RONDA
+  NOVEDAD
+  EMERGENCIA
+}
+
+class "RepositorioReporteOperativo" <<repository>> {
+  + existeReporte(idReporte): boolean
+  + guardar(ReporteOperativo): void
+  + buscarPorId(idReporte): ReporteOperativo
+  + listarTodos(): List<ReporteOperativo>
+}
+
+' Trazabilidad RF01: ControlReporteOperativo consulta RepositorioEmpleado
+' para verificar que el emisor del reporte es un empleado registrado.
+class "RepositorioEmpleado" <<repository>> {
+  + existeCedula(cedula): boolean
+  + buscarPorCedula(cedula): Empleado
+}
+
+FormularioImportarReporte --> ControlReporteOperativo : solicita operación
+ControlReporteOperativo --> ReporteOperativo : extrae/crea entidad
+ControlReporteOperativo --> RepositorioReporteOperativo : gestiona persistencia en PostgreSQL
+ControlReporteOperativo --> RepositorioEmpleado : valida emisor (RF01)
+RepositorioReporteOperativo o-- "0..*" ReporteOperativo : almacena
+@enduml

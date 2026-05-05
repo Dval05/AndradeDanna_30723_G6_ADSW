@@ -1,0 +1,17 @@
+@startuml
+title Secuencia de análisis - Extraer Datos del Reporte Operativo (TekMess)
+
+actor "Guardia / Supervisor" as Actor
+boundary "FormularioImportarReporte" as UI
+control "ControlReporteOperativo" as Ctrl
+entity "ReporteOperativo" as Rep
+
+Actor -> UI : Envía archivo de reporte Bitakor
+UI -> Ctrl : extraerDatos(archivoReporte)
+Ctrl -> Ctrl : validarFormato(archivoReporte)
+Ctrl -> Rep : new ReporteOperativo()
+Ctrl -> Rep : parsear(idReporte, fechaEmision, tipoReporte, descripcion, idEmpleado, zona)
+Rep --> Ctrl : Objeto ReporteOperativo construido
+Ctrl --> UI : Datos extraídos correctamente
+UI --> Actor : Muestra vista previa de datos extraídos del reporte
+@enduml

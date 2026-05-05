@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+skinparam shadowing false
+
+actor "Guardia / Supervisor" as Actor
+boundary "Pantalla Importar Reporte Bitakor" as UI
+control "Control Reporte Operativo" as Ctrl
+entity "Reporte Operativo" as Rep
+
+Actor --> UI : selecciona y envía reporte Bitakor
+UI --> Ctrl : envía archivo del reporte
+Ctrl --> Rep : extrae y persiste datos del reporte
+Ctrl --> UI : confirma importación exitosa y muestra datos
+@enduml

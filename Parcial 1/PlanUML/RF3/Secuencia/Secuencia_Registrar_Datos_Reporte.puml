@@ -1,0 +1,18 @@
+@startuml
+title Secuencia de análisis - Registrar Datos del Reporte Operativo (TekMess)
+
+actor "Guardia / Supervisor" as Actor
+boundary "FormularioImportarReporte" as UI
+control "ControlReporteOperativo" as Ctrl
+database "RepositorioReporteOperativo" as Repo
+entity "ReporteOperativo" as Rep
+
+Actor -> UI : Confirma importación del reporte
+UI -> Ctrl : registrarReporte(Rep)
+Ctrl -> Repo : existeReporte(idReporte)
+Repo --> Ctrl : false (no existe)
+Ctrl -> Repo : guardar(Rep)
+Repo --> Ctrl : Registro exitoso en PostgreSQL
+Ctrl --> UI : Resultado exitoso
+UI --> Actor : Muestra confirmación y lista de reportes actualizada
+@enduml

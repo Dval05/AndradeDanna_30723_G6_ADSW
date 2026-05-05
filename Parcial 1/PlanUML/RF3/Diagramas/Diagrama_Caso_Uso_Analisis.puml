@@ -1,0 +1,36 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Guardia" as Guardia
+actor "Supervisor" as Supervisor
+actor "Sistema Bitakor" as Bitakor
+
+rectangle "Sistema TekMess - Módulo Importar Reportes Operativos Bitakor" {
+  usecase "Enviar Reporte Operativo" as UC1
+  usecase "Extraer Datos del Reporte" as UC2
+  usecase "Validar Formato del Reporte" as UC3
+  usecase "Registrar Datos del Reporte" as UC4
+}
+
+Guardia  --> UC1
+Supervisor --> UC1
+Bitakor  --> UC1
+
+UC1 ..> UC3 : <<include>>
+UC1 ..> UC2 : <<include>>
+UC2 ..> UC4 : <<include>>
+
+note right of UC3
+Validaciones críticas:
+- Formato Bitakor válido
+- Campos obligatorios presentes
+- ID de reporte único
+- Emisor registrado en el sistema (RF01)
+end note
+
+' Trazabilidad RF01: el Guardia y el Supervisor son empleados
+' gestionados por el módulo Gestionar Empleados (RF01).
+' La validación del emisor consulta RepositorioEmpleado (RF01).
+@enduml

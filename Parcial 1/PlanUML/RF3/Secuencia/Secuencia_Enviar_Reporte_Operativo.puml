@@ -1,0 +1,25 @@
+@startuml
+title Secuencia de análisis - Enviar Reporte Operativo (TekMess)
+
+actor "Guardia / Supervisor" as Actor
+boundary "FormularioImportarReporte" as UI
+control "ControlReporteOperativo" as Ctrl
+database "RepositorioEmpleado" as RepoEmp
+database "RepositorioReporteOperativo" as Repo
+entity "ReporteOperativo" as Rep
+
+Actor -> UI : Selecciona archivo de reporte Bitakor
+Actor -> UI : Clic en Enviar Reporte
+UI -> Ctrl : enviarReporte(archivoReporte)
+Ctrl -> Ctrl : validarFormato(archivoReporte)
+Ctrl -> Ctrl : extraerDatos(archivoReporte)
+Ctrl -> RepoEmp : existeCedula(idEmpleado)
+RepoEmp --> Ctrl : true (emisor registrado en RF01)
+Ctrl -> Repo : existeReporte(idReporte)
+Repo --> Ctrl : false (no existe)
+Ctrl -> Rep : new ReporteOperativo(idReporte, fechaEmision, tipoReporte, descripcion, idEmpleado, zona)
+Ctrl -> Repo : guardar(Rep)
+Repo --> Ctrl : Confirmación PostgreSQL exitosa
+Ctrl --> UI : Importación exitosa
+UI --> Actor : Muestra mensaje de confirmación y datos importados
+@enduml
