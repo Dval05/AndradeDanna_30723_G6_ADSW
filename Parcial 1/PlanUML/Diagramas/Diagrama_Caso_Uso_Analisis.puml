@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Jefe de Logística" as Jefe
+actor "Sistema" as Sistema
+
+rectangle "Sistema TekMess - Módulo Empleados" {
+  usecase "Crear empleado" as UC1
+  usecase "Editar empleado" as UC2
+  usecase "Eliminar empleado" as UC3
+  usecase "Generar credenciales" as UC4
+  usecase "Validar datos del empleado" as UC5
+}
+
+Jefe --> UC1
+Jefe --> UC2
+Jefe --> UC3
+
+UC1 ..> UC5 : <<include>>
+UC2 ..> UC5 : <<include>>
+UC1 ..> UC4 : <<include>>
+
+note right of UC5
+Validaciones críticas:
+- Cédula (10 dígitos)
+- Rol RBAC válido
+- Correo institucional
+end note
+@enduml

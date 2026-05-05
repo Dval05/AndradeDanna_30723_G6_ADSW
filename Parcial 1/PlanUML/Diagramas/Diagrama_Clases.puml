@@ -1,0 +1,53 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "FormularioGestionEmpleado" <<boundary>> {
+  - txtCedula: String
+  - txtNombres: String
+  - txtCorreo: String
+  - cbRol: RolRBAC
+  + clickRegistrar()
+  + clickActualizar()
+  + clickDarBaja()
+  + mostrarMensaje(msg: String)
+  + listarPersonal(empleados: List)
+}
+
+class "ControlEmpleado" <<control>> {
+  + crearEmpleado(datos): Resultado
+  + editarEmpleado(cedula, datos): Resultado
+  + darBajaEmpleado(cedula): Resultado
+  + validarDatos(cedula, correo): boolean
+  + generarCredenciales(): void
+}
+
+class "Empleado" <<entity>> {
+  - cedula: String
+  - nombres: String
+  - rol: RolRBAC
+  - correo: String
+  + getDatos(): Empleado
+}
+
+enum "RolRBAC" {
+  GUARDIA
+  SUPERVISOR
+  CENTRALISTA
+  JEFE_LOGISTICA
+}
+
+class "RepositorioEmpleado" <<repository>> {
+  + existeCedula(cedula): boolean
+  + guardar(Empleado): void
+  + buscarPorCedula(cedula): Empleado
+  + actualizar(Empleado): void
+  + eliminar(cedula): void
+}
+
+FormularioGestionEmpleado --> ControlEmpleado : solicita operación
+ControlEmpleado --> Empleado : crea/actualiza entidad
+ControlEmpleado --> RepositorioEmpleado : gestiona persistencia en PostgreSQL
+RepositorioEmpleado o-- "0..*" Empleado : almacena
+@enduml
