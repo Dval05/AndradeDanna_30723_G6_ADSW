@@ -1,0 +1,42 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+
+actor "Jefe Operativo/Logística" as Jefe
+
+rectangle "SNAAR - GENERAR REPORTE DE DESEMPEÑO (GRDD)" #White {
+    
+    
+    usecase "Definir Período de Análisis" as UC_Definir
+    usecase "Seleccionar Tipo de Reporte de Desempeño" as UC_Seleccionar
+    usecase "Seleccionar Empleados a Evaluar" as UC_SeleccionarEmpleados
+    usecase "Generar Borrador Reporte Desempeño " as UC_Generar
+    usecase "Guardar Reporte de Desempeño" as UC_Guardar
+    usecase "Exportar Reporte de Desempeño" as UC_Exportar
+
+
+ 
+}
+
+' Uniones de actores a casos de uso
+
+Jefe--UC_Definir
+Jefe--UC_Seleccionar
+Jefe--UC_SeleccionarEmpleados
+Jefe--UC_Generar
+Jefe--UC_Guardar
+Jefe--UC_Exportar
+
+UC_Seleccionar ..> UC_SeleccionarEmpleados : <<include>>
+
+UC_Generar ..> UC_Guardar : <<include>>
+UC_Guardar ..> UC_Exportar : <<include>>
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml

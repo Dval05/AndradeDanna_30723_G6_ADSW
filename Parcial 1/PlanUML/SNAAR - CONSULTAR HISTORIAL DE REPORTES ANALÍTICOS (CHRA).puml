@@ -1,0 +1,31 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+
+actor "Jefe Operativo/Logística" as Jefe
+actor Supervisor
+
+rectangle "SNAAR - CONSULTAR HISTORIAL DE REPORTES ANALÍTICOS (CHRA)" #White {
+    
+    
+    usecase "Consultar Historial de Reportes Desempeño" as UC_Crear
+    usecase "Consultar Historial de Reportes Cumplimiento" as UC_Generar
+
+
+ 
+}
+
+' Uniones de actores a casos de uso
+
+Jefe--UC_Crear
+Jefe--UC_Generar
+Supervisor--UC_Generar
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml

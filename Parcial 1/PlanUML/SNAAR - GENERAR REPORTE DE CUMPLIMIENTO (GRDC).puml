@@ -1,0 +1,42 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+actor Supervisor
+
+
+rectangle "SNAAR - GENERAR REPORTE DE CUMPLIMIENTO (GRDC)" #White {
+    
+    
+    usecase "Definir Período de Evaluación" as UC_Periodo
+    usecase "Seleccionar Guardias a Evaluar" as UC_Seleccionar
+    usecase "Configurar Tipos de Reporte Operativo a Analizar" as UC_Configurar
+    usecase "Generar Reporte de Cumplimiento Editable " as UC_Generar
+    usecase "Agregar Observaciones/Notas" as UC_Agregar
+    usecase "Guardar Reporte de Cumplimiento" as UC_Guardar
+    usecase "Exportar Reporte de Cumplimiento " as UC_Exportar
+
+ 
+}
+
+' Uniones de actores a casos de uso
+
+Supervisor--UC_Periodo
+Supervisor--UC_Seleccionar
+Supervisor--UC_Configurar
+Supervisor--UC_Generar
+Supervisor--UC_Agregar
+Supervisor--UC_Guardar
+Supervisor--UC_Exportar
+
+UC_Generar ..> UC_Agregar : <<extend>>
+UC_Generar ..> UC_Guardar : <<include>>
+UC_Guardar ..> UC_Exportar : <<include>>
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml

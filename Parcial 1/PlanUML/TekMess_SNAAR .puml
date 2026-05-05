@@ -1,0 +1,103 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+skinparam usecase {
+    BackgroundColor<<Admin>> #A94442
+    BackgroundColor<<Operativo>> #8A6D3B
+    BackgroundColor<<Reporte>> #3C763D
+    BorderColor black
+    FontColor white
+}
+
+
+actor Supervisor
+actor Usuario
+actor "Autoridad Externa" as AE
+actor Guardia
+actor Centralista
+actor "Jefe operativo/logística" as Jefe
+
+
+rectangle "Sistema de Notificación Automática y Auditoría de Reportes - SNAAR" #White {
+    
+    
+    usecase "Generar Reportes de Cumplimiento\n<<Reporte>>" as UC_RepCumpl <<Reporte>>
+    usecase "Consultar Historial de Reportes Analíticos\n<<Admin>>" as UC_Historial <<Admin>>
+    usecase "Generar Reportes de Desempeño\n<<Reporte>>" as UC_RepDesem <<Reporte>>
+    
+    
+    usecase "Responder Reportes Operativos\n<<Operativo>>" as UC_Resp <<Operativo>>
+    usecase "Medir Tiempos de Respuesta\n<<Operativo>>" as UC_Tiempos <<Operativo>>
+    usecase "Escalar Reportes Operativos\n<<Operativo>>" as UC_Escalar <<Operativo>>
+    
+    
+    usecase "Administrar Sistema\n<<Admin>>" as UC_Admin <<Admin>>
+    usecase "Generar Mensaje Automático\n<<Admin>>" as UC_Msg <<Admin>>
+    usecase "Auditar Reportes Operativos\n<<Operativo>>" as UC_Audit <<Operativo>>
+    
+    
+    usecase "Gestionar Emergencia\n<<Admin>>" as UC_Emergencia <<Admin>>
+    usecase "Gestionar Empleados\n<<Admin>>" as UC_Empleados <<Admin>>
+    usecase "Importar Reportes Operativos Bitakor\n<<Admin>>" as UC_Import <<Admin>>
+}
+
+' Uniones de actores a casos de uso
+
+
+Usuario--Guardia
+Usuario--Centralista
+Usuario--Jefe
+Usuario--AE
+Usuario--Supervisor
+
+
+Guardia--UC_Msg
+Guardia--UC_Import
+Guardia--UC_Emergencia
+Guardia--UC_Resp
+
+AE--UC_Emergencia
+
+Supervisor--UC_Emergencia
+Supervisor--UC_Import
+Supervisor--UC_Resp
+Supervisor--UC_RepCumpl
+Supervisor--UC_Historial
+
+Centralista--UC_Resp
+Centralista--UC_Escalar
+
+Jefe--UC_Empleados
+Jefe--UC_RepDesem
+Jefe--UC_Historial
+
+Usuario--UC_Admin
+'login 
+
+UC_Empleados ..> UC_Admin : <<include>>
+UC_Resp ..> UC_Admin : <<include>>
+UC_Emergencia ..> UC_Admin : <<include>>
+UC_Admin ..> UC_Import : <<include>>
+
+UC_Audit ..> UC_Tiempos : <<include>>
+UC_Audit ..> UC_Msg : <<include>>
+UC_Import ..> UC_Audit : <<include>>
+UC_Audit ..> UC_RepCumpl : <<include>>
+
+UC_Resp ..> UC_Tiempos : <<include>>
+UC_Tiempos ..> UC_RepDesem : <<include>>
+UC_Tiempos ..> UC_Escalar: <<extends>>
+
+
+UC_RepCumpl ..> UC_Historial : <<include>>
+UC_Historial ..> UC_RepDesem : <<include>>
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml

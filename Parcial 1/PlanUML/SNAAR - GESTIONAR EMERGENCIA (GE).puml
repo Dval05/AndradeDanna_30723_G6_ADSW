@@ -1,0 +1,45 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+actor Guardia
+actor Supervisor
+actor "Autoridad Externa" as AE
+
+rectangle "SNAAR - GESTIONAR EMERGENCIA (GE)" #White {
+    
+    
+    usecase "Enviar aviso de emergencia" as UC_Emergencia
+    usecase "Reconocer tipo de emergencia" as UC_Reconocer
+    usecase "Extraer datos de la emergencia" as UC_Extraer
+    usecase "Determinar Autoridad Externa " as UC_Determinar
+    usecase "Generar notificación y alarma de prioridad" as UC_Notificar 
+    usecase "Contactar autoridad" as UC_Contactar
+    usecase "Registrar gestión de emergencia " as UC_Registrar
+
+ 
+}
+
+' Uniones de actores a casos de uso
+
+Guardia--UC_Emergencia
+Supervisor--UC_Notificar
+Supervisor--UC_Registrar
+AE--UC_Contactar
+
+UC_Emergencia ..> UC_Reconocer : <<include>>
+UC_Reconocer ..> UC_Extraer : <<include>>
+UC_Extraer ..> UC_Determinar : <<include>>
+UC_Extraer ..> UC_Notificar : <<include>>
+UC_Notificar ..>UC_Registrar : <<include>>
+
+UC_Determinar ..> UC_Contactar : <<include>>
+UC_Contactar ..>UC_Registrar : <<include>>
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml

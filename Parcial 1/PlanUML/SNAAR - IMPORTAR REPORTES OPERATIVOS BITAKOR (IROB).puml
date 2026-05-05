@@ -1,0 +1,33 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+actor Guardia
+actor Supervisor
+
+rectangle "SNAAR - IMPORTAR REPORTES OPERATIVOS BITAKOR (IROB)" #White {
+    
+    
+    usecase "Enviar reporte operativo" as UC_Enviar
+    usecase "Extraer Datos del Reporte Operativo" as UC_Extraer 
+    usecase "Registrar Datos de Reporte Operativo" as UC_Registrar
+
+ 
+}
+
+' Uniones de actores a casos de uso
+
+Guardia--UC_Enviar
+Supervisor--UC_Enviar
+
+UC_Enviar ..> UC_Extraer : <<include>>
+UC_Extraer ..> UC_Registrar : <<include>>
+
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml
