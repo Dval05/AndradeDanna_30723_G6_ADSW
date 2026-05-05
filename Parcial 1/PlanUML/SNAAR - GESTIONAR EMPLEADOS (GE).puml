@@ -6,8 +6,6 @@ left to right direction
 skinparam DefaultFontColor black
 skinparam BackgroundColor white
 
-
-
 actor "Jefe Operativo/Logística" as Jefe
 
 rectangle "SNAAR - GESTIONAR EMPLEADOS (GE)" #White {
@@ -20,8 +18,6 @@ rectangle "SNAAR - GESTIONAR EMPLEADOS (GE)" #White {
     usecase "Editar Empleado" as UC_Editar
     usecase "Eliminar Empleado" as UC_Eliminar
 
-
- 
 }
 
 ' Uniones de actores a casos de uso
@@ -35,6 +31,15 @@ Jefe--UC_Eliminar
 UC_Crear ..> UC_Generar : <<include>>
 UC_Crear ..> UC_Asignar : <<include>>
 UC_Asignar ..> UC_Habilitar : <<include>>
+
+note right of UC_Crear
+Datos mínimos según interfaz:
+- Cedula
+- Nombre
+- Edad
+- Correo
+
+end note
 
 'Elaborado David Pilaguano - 2026-05-05 
 @enduml

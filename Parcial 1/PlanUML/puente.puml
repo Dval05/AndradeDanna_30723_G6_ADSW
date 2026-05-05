@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+skinparam shadowing false
+
+actor "Jefe de Logística" as Jefe
+boundary "Pantalla Gestión Empleados" as UI
+control "Control Empleado" as Ctrl
+entity "Empleado" as Emp
+
+Jefe --> UI : selecciona Crear/Editar/Eliminar
+UI --> Ctrl : envía Cédula, Nombre, Rol y Correo
+Ctrl --> Emp : persiste/actualiza datos del empleado
+Ctrl --> UI : confirma éxito y muestra credenciales
+@enduml
