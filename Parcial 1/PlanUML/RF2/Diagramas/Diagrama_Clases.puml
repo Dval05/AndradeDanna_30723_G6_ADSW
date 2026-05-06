@@ -24,6 +24,9 @@ class "ControlAutenticacion" <<control>> {
   + validarCredenciales(usuario, contrasena): boolean
   + validarCodigoVerificacion(cedula, codigo): boolean
   + validarPoliticaContrasena(contrasena): boolean
+  + generarCodigoMFA(cedula): CodigoVerificacion
+  + generarCodigoRecuperacion(cedula): CodigoVerificacion
+  + enviarCodigoPorCorreo(correo, codigo): void
 }
 
 class "Usuario" <<entity>> {
@@ -35,6 +38,8 @@ class "Usuario" <<entity>> {
   - rol: RolRBAC
   - primerAcceso: boolean
   + getDatos(): Usuario
+  + estaActivo(): boolean
+  + esPrimerAcceso(): boolean
 }
 
 class "CodigoVerificacion" <<entity>> {
