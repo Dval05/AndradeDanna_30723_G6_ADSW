@@ -33,4 +33,5 @@ Validaciones criticas:
 - Usuario activo
 - Maximo 3 intentos
 end note
+
 @enduml
