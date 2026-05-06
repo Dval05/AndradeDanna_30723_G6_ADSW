@@ -1,0 +1,21 @@
+@startuml
+title Secuencia de análisis - Editar Empleado (TekMess)
+
+actor "Jefe de Logística" as Jefe
+boundary "FormularioGestionEmpleado" as UI
+control "ControlEmpleado" as Ctrl
+database "RepositorioEmpleado" as Repo
+entity "Empleado" as Emp
+
+Jefe -> UI : Selecciona empleado y modifica datos
+Jefe -> UI : Clic en Actualizar
+UI -> Ctrl : editarEmpleado(cedula, nuevosDatos)
+Ctrl -> Ctrl : validarDatos(nuevosDatos)
+Ctrl -> Repo : buscarPorCedula(cedula)
+Repo --> Ctrl : Objeto Empleado encontrado
+Ctrl -> Emp : actualizarDatos(nombres, correo, rol)
+Ctrl -> Repo : actualizar(Emp)
+Repo --> Ctrl : Actualización correcta
+Ctrl --> UI : Resultado exitoso
+UI --> Jefe : Muestra mensaje y lista actualizada
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+title Secuencia de análisis - Crear Empleado (TekMess)
+
+actor "Jefe de Logística" as Jefe
+boundary "FormularioGestionEmpleado" as UI
+control "ControlEmpleado" as Ctrl
+database "RepositorioEmpleado" as Repo
+entity "Empleado" as Emp
+
+Jefe -> UI : Ingresa Cédula, Nombres, Rol, Correo
+Jefe -> UI : Clic en Registrar
+UI -> Ctrl : crearEmpleado(cedula, nombres, rol, correo)
+Ctrl -> Ctrl : validarDatos(cedula, correo)
+Ctrl -> Repo : existeCedula(cedula)
+Repo --> Ctrl : false (no existe)
+Ctrl -> Emp : new Empleado(cedula, nombres, rol, correo)
+Ctrl -> Repo : guardar(Emp)
+Repo --> Ctrl : Confirmación PostgreSQL exitosa
+Ctrl -> Ctrl : generarCredenciales()
+Ctrl --> UI : Registro exitoso y credenciales enviadas
+UI --> Jefe : Muestra mensaje de confirmación
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+title Secuencia de análisis - Mostrar empleados (TekMess)
+
+actor "Jefe de Logística" as Jefe
+boundary "FormularioGestionEmpleado" as UI
+control "ControlEmpleado" as Ctrl
+database "RepositorioEmpleado" as Repo
+
+Jefe -> UI : Clic en Listar Personal
+UI -> Ctrl : mostrarTodos()
+Ctrl -> Repo : listarTodos()
+Repo --> Ctrl : listaEmpleados (desde PostgreSQL)
+Ctrl --> UI : listaEmpleados
+UI --> Jefe : Muestra datos en tabla (Cédula, Nombre, Rol, Correo)
+@enduml
