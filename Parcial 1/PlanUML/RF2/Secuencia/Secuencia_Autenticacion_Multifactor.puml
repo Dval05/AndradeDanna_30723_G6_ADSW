@@ -1,0 +1,24 @@
+@startuml
+title Secuencia de analisis - Autenticacion Multifactor (TekMess)
+
+actor "Usuario" as Usuario
+boundary "FormularioAccesoSistema" as UI
+control "ControlAutenticacion" as Ctrl
+database "RepositorioCodigoVerificacion" as RepoC
+entity "CodigoVerificacion" as Codigo
+
+UI -> Ctrl : realizarAutenticacionMFA(cedula)
+Ctrl -> Codigo : generarCodigoMFA(cedula)
+Ctrl -> RepoC : guardar(Codigo)
+RepoC --> Ctrl : Codigo guardado con expiracion 3 minutos
+Ctrl -> Ctrl : enviarCodigoPorCorreo(correo, codigo)
+Ctrl --> UI : Solicita ingreso de codigo MFA
+Usuario -> UI : Ingresa codigo de verificacion recibido por correo
+UI -> Ctrl : validarCodigoVerificacion(cedula, codigo)
+Ctrl -> RepoC : buscarPorCedula(cedula)
+RepoC --> Ctrl : Codigo encontrado
+Ctrl -> Codigo : esValido()
+Codigo --> Ctrl : true (correcto y no expirado)
+Ctrl --> UI : MFA validado exitosamente
+UI --> Usuario : Continua acceso al sistema
+@enduml

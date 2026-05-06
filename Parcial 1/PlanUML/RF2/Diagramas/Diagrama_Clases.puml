@@ -1,0 +1,76 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "FormularioAccesoSistema" <<boundary>> {
+  - txtNombreUsuario: String
+  - txtContrasena: String
+  - txtContrasenaNueva: String
+  - txtCodigoVerificacion: String
+  - txtCorreo: String
+  + clickIniciarSesion()
+  + clickRecuperarContrasena()
+  + clickCambiarContrasena()
+  + clickVerificarCodigo()
+  + mostrarMensaje(msg: String)
+}
+
+class "ControlAutenticacion" <<control>> {
+  + iniciarSesion(usuario, contrasena): Resultado
+  + cambiarContrasena(cedula, contrasenaActual, contrasenaNueva): Resultado
+  + recuperarContrasena(correo, nombreUsuario): Resultado
+  + realizarAutenticacionMFA(cedula): Resultado
+  + validarCredenciales(usuario, contrasena): boolean
+  + validarCodigoVerificacion(cedula, codigo): boolean
+  + validarPoliticaContrasena(contrasena): boolean
+}
+
+class "Usuario" <<entity>> {
+  - cedula: String
+  - nombreUsuario: String
+  - correo: String
+  - hashContrasena: String
+  - estado: String
+  - rol: RolRBAC
+  - primerAcceso: boolean
+  + getDatos(): Usuario
+}
+
+class "CodigoVerificacion" <<entity>> {
+  - codigo: String
+  - tipo: String
+  - expiracion: Date
+  - usado: boolean
+  + esValido(): boolean
+}
+
+enum "RolRBAC" {
+  GUARDIA
+  SUPERVISOR
+  CENTRALISTA
+  JEFE_LOGISTICA
+}
+
+class "RepositorioUsuario" <<repository>> {
+  + buscarPorCorreo(correo): Usuario
+  + buscarPorUsuario(nombreUsuario): Usuario
+  + validarCredenciales(usuario, contrasena): boolean
+  + actualizarContrasena(cedula, hashContrasena): void
+  + bloquearCuenta(cedula): void
+}
+
+class "RepositorioCodigoVerificacion" <<repository>> {
+  + guardar(CodigoVerificacion): void
+  + buscarPorCedula(cedula): CodigoVerificacion
+  + invalidar(cedula): void
+}
+
+FormularioAccesoSistema --> ControlAutenticacion : solicita operacion
+ControlAutenticacion --> Usuario : valida/actualiza entidad
+ControlAutenticacion --> CodigoVerificacion : genera/valida codigo
+ControlAutenticacion --> RepositorioUsuario : gestiona persistencia en PostgreSQL
+ControlAutenticacion --> RepositorioCodigoVerificacion : gestiona codigos
+RepositorioUsuario o-- "0..*" Usuario : almacena
+RepositorioCodigoVerificacion o-- "0..*" CodigoVerificacion : almacena
+@enduml

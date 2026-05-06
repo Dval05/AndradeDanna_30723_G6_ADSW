@@ -1,0 +1,22 @@
+@startuml
+title Secuencia de analisis - Cambiar Contrasena (TekMess)
+
+actor "Usuario" as Usuario
+boundary "FormularioAccesoSistema" as UI
+control "ControlAutenticacion" as Ctrl
+database "RepositorioUsuario" as RepoU
+entity "Usuario" as User
+
+Usuario -> UI : Accede a Cambiar Contrasena
+Usuario -> UI : Ingresa contrasena actual, nueva y confirmacion
+Usuario -> UI : Clic en Confirmar cambio de contrasena
+UI -> Ctrl : cambiarContrasena(cedula, contrasenaActual, contrasenaNueva)
+Ctrl -> Ctrl : validarCredenciales(cedula, contrasenaActual)
+Ctrl -> RepoU : validarCredenciales(cedula, contrasenaActual)
+RepoU --> Ctrl : true (contrasena actual correcta)
+Ctrl -> Ctrl : validarPoliticaContrasena(contrasenaNueva)
+Ctrl -> RepoU : actualizarContrasena(cedula, hashContrasenaNueva)
+RepoU --> Ctrl : Confirmacion de actualizacion en PostgreSQL
+Ctrl --> UI : Contrasena actualizada exitosamente
+UI --> Usuario : Muestra mensaje de confirmacion
+@enduml

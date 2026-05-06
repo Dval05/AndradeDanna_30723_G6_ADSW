@@ -1,0 +1,16 @@
+@startuml
+left to right direction
+skinparam shadowing false
+
+actor "Usuario" as Usuario
+boundary "Pantalla Acceso Sistema" as UI
+control "Control Autenticacion" as Ctrl
+entity "Usuario" as User
+entity "CodigoVerificacion" as Codigo
+
+Usuario --> UI : ingresa credenciales o solicita recuperacion
+UI --> Ctrl : envia usuario, contrasena, correo y/o codigo
+Ctrl --> User : valida credenciales y actualiza contrasena
+Ctrl --> Codigo : genera y valida codigo de verificacion
+Ctrl --> UI : confirma acceso o muestra error
+@enduml

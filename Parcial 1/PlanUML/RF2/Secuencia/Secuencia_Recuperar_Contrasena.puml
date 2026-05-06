@@ -1,0 +1,37 @@
+@startuml
+title Secuencia de analisis - Recuperar Contrasena (TekMess)
+
+actor "Usuario" as Usuario
+boundary "FormularioAccesoSistema" as UI
+control "ControlAutenticacion" as Ctrl
+database "RepositorioUsuario" as RepoU
+database "RepositorioCodigoVerificacion" as RepoC
+entity "Usuario" as User
+entity "CodigoVerificacion" as Codigo
+
+Usuario -> UI : Selecciona "Olvido su contrasena?"
+Usuario -> UI : Ingresa correo y nombre de usuario
+Usuario -> UI : Clic en Enviar codigo de recuperacion
+UI -> Ctrl : recuperarContrasena(correo, nombreUsuario)
+Ctrl -> RepoU : buscarPorUsuario(nombreUsuario)
+RepoU --> Ctrl : Usuario encontrado
+Ctrl -> Codigo : generarCodigoRecuperacion(cedula)
+Ctrl -> RepoC : guardar(Codigo)
+RepoC --> Ctrl : Codigo guardado con expiracion 15 minutos
+Ctrl -> Ctrl : enviarCodigoPorCorreo(correo, codigo)
+Ctrl --> UI : Confirma envio de codigo
+UI --> Usuario : Informa pasos de recuperacion por correo
+Usuario -> UI : Ingresa codigo de verificacion
+UI -> Ctrl : validarCodigoVerificacion(cedula, codigo)
+Ctrl -> RepoC : buscarPorCedula(cedula)
+RepoC --> Ctrl : Codigo encontrado
+Ctrl -> Codigo : esValido()
+Codigo --> Ctrl : true (correcto y no expirado)
+Usuario -> UI : Ingresa nueva contrasena y confirmacion
+UI -> Ctrl : cambiarContrasena(cedula, null, contrasenaNueva)
+Ctrl -> Ctrl : validarPoliticaContrasena(contrasenaNueva)
+Ctrl -> RepoU : actualizarContrasena(cedula, hashContrasenaNueva)
+RepoU --> Ctrl : Contrasena restablecida en PostgreSQL
+Ctrl --> UI : Contrasena restablecida exitosamente
+UI --> Usuario : Redirige a Iniciar Sesion
+@enduml
