@@ -1,0 +1,51 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "VistaReporte" <<boundary>> {
+  + clickGenerarReporte()
+  + clickConsultarReporte()
+  + mostrarReporte(reporte: ReporteAnalitico)
+  + mostrarMensaje(msg: String)
+}
+
+class "ControlReporte" <<control>> {
+  + generarReporte(rango): ReporteAnalitico
+  + consultarReporte(rango): List<ReporteAnalitico>
+  + contarEmpleadosGestionados(rango): int
+  + contarEmpleadosEditados(rango): int
+  + obtenerAccesosFallidos(rango): int
+}
+
+class "ReporteAnalitico" <<entity>> {
+  - idReporte: String
+  - fechaInicio: Date
+  - fechaFin: Date
+  - totalEmpleadosGestionados: int
+  - totalEmpleadosEditados: int
+  - totalAccesosFallidos: int
+  + getResumen(): String
+}
+
+class "RepositorioEmpleado" <<repository>> {
+  + contarGestionados(rango): int
+  + contarEditados(rango): int
+}
+
+class "RepositorioAcceso" <<repository>> {
+  + contarFallidos(rango): int
+}
+
+class "RepositorioReporteAnalitico" <<repository>> {
+  + guardar(reporte: ReporteAnalitico): void
+  + listarPorRango(rango): List<ReporteAnalitico>
+}
+
+VistaReporte --> ControlReporte : solicita operacion
+ControlReporte --> RepositorioEmpleado : consulta gestion y edicion (RF01)
+ControlReporte --> RepositorioAcceso : consulta accesos fallidos (RF02)
+ControlReporte --> ReporteAnalitico : construye reporte
+ControlReporte --> RepositorioReporteAnalitico : persiste y consulta
+RepositorioReporteAnalitico o-- "0..*" ReporteAnalitico : almacena
+@enduml

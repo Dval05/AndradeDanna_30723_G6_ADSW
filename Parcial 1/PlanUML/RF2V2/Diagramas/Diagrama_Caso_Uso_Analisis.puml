@@ -1,0 +1,23 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Usuario" as Usuario
+
+rectangle "Sistema TekMess - Modulo Administrar Sistema" {
+  usecase "Iniciar Sesion" as UC1
+  usecase "Cambiar Contrasena" as UC2
+  usecase "Recuperar Contrasena" as UC3
+  usecase "Validar Credenciales" as UC5
+}
+
+Usuario --> UC1
+Usuario --> UC2
+Usuario --> UC3
+
+UC1 ..> UC2 : <<extend>>
+UC1 ..> UC3 : <<extend>>
+UC1 ..> UC5 : <<include>>
+
+@enduml

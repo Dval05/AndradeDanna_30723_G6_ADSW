@@ -1,0 +1,24 @@
+@startuml
+title Secuencia de analisis - Recuperar Contrasena (TekMess)
+
+actor "Usuario" as Usuario
+boundary "FormularioAccesoSistema" as UI
+control "ControlAutenticacion" as Ctrl
+database "RepositorioUsuario" as RepoU
+entity "Usuario" as User
+
+Usuario -> UI : Selecciona "Olvido su contrasena?"
+Usuario -> UI : Ingresa correo y nombre de usuario
+Usuario -> UI : Clic en Confirmar recuperacion
+UI -> Ctrl : recuperarContrasena(correo, nombreUsuario)
+Ctrl -> RepoU : buscarPorUsuario(nombreUsuario)
+RepoU --> Ctrl : Usuario encontrado
+Ctrl --> UI : Confirma recuperacion
+UI --> Usuario : Solicita nueva contrasena
+Usuario -> UI : Ingresa nueva contrasena y confirmacion
+UI -> Ctrl : cambiarContrasena(cedula, null, contrasenaNueva)
+Ctrl -> RepoU : actualizarContrasena(cedula, hashContrasenaNueva)
+RepoU --> Ctrl : Contrasena restablecida en PostgreSQL
+Ctrl --> UI : Contrasena restablecida exitosamente
+UI --> Usuario : Redirige a Iniciar Sesion
+@enduml

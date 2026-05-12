@@ -1,0 +1,57 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+left to right direction
+
+class "FormularioAccesoSistema" <<boundary>> {
+  - txtNombreUsuario: String
+  - txtContrasena: String
+  - txtContrasenaNueva: String
+  - txtCorreo: String
+  + clickIniciarSesion()
+  + clickRecuperarContrasena()
+  + clickCambiarContrasena()
+  + mostrarMensaje(msg: String)
+}
+
+class "ControlAutenticacion" <<control>> {
+  + iniciarSesion(usuario, contrasena): Resultado
+  + cambiarContrasena(cedula, contrasenaActual, contrasenaNueva): Resultado
+  + recuperarContrasena(correo, nombreUsuario): Resultado
+}
+
+class "Usuario" <<entity>> {
+  - cedula: String
+  - nombreUsuario: String
+  - correo: String
+  - hashContrasena: String
+  - estado: String
+  - rol: RolRBAC
+  - primerAcceso: boolean
+  + getDatos(): Usuario
+  + estaActivo(): boolean
+  + esPrimerAcceso(): boolean
+}
+
+
+enum "RolRBAC" {
+  GUARDIA
+  SUPERVISOR
+  CENTRALISTA
+  JEFE_LOGISTICA
+}
+
+class "RepositorioUsuario" <<repository>> {
+  + buscarPorCorreo(correo): Usuario
+  + buscarPorUsuario(nombreUsuario): Usuario
+  + validarCredenciales(usuario, contrasena): boolean
+  + actualizarContrasena(cedula, hashContrasena): void
+  + bloquearCuenta(cedula): void
+}
+
+
+FormularioAccesoSistema --> ControlAutenticacion : solicita operacion
+ControlAutenticacion --> Usuario : valida/actualiza entidad
+ControlAutenticacion --> RepositorioUsuario : gestiona persistencia en PostgreSQL
+RepositorioUsuario o-- "0..*" Usuario : almacena
+@enduml

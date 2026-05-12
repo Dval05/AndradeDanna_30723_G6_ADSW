@@ -1,0 +1,15 @@
+@startuml
+title Secuencia de analisis - Consultar Reporte (TekMess)
+
+actor "Jefe de Operaciones Logistica / Administrador del Sistema" as Actor
+boundary "VistaReporte" as UI
+control "ControlReporte" as Ctrl
+database "RepositorioReporteAnalitico" as RepoRep
+
+Actor -> UI : Solicita consultar reportes
+UI -> Ctrl : consultarReporte(rango)
+Ctrl -> RepoRep : listarPorRango(rango)
+RepoRep --> Ctrl : listaReportes
+Ctrl --> UI : mostrarReporte(listaReportes)
+UI --> Actor : Presenta reportes historicos
+@enduml

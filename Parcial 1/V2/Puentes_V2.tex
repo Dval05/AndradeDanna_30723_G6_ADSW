@@ -1,0 +1,36 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{Explicacion de Puentes V2}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Objetivo}
+Este documento explica el puente global V2 y los puentes individuales de los requisitos RF1, RF2V2 y RF3V2. El enfoque es mostrar el flujo principal y como se conectan los modulos.
+
+\section{Puentes individuales}
+\subsection{RF1: Gestion de Empleados}
+El puente RF1 describe la pantalla de gestion de empleados, el control de empleado y la entidad Empleado. El actor principal gestiona altas, ediciones y bajas. El control valida y persiste la informacion en el repositorio.
+
+\subsection{RF2V2: Autenticacion simple}
+El puente RF2V2 representa el acceso al sistema con usuario y contrasena. El usuario ingresa credenciales en la pantalla de acceso, el control valida credenciales y habilita el acceso segun el rol.
+
+\subsection{RF3V2: Reporte}
+El puente RF3V2 muestra la pantalla de reportes (dashboard), el control de reporte y la entidad de reporte analitico. El actor con rol autorizado solicita generar o consultar reportes y el control construye el resumen.
+
+\section{Puente global V2}
+El puente global integra los tres requisitos. Primero el usuario inicia sesion en el modulo de autenticacion. Con base en el rol, el sistema habilita la pantalla correspondiente (por ejemplo, el dashboard de reportes para el jefe de operaciones o administrador). El control de reportes consulta datos de gestion de empleados (RF1) y utiliza la validacion de credenciales del modulo de autenticacion (RF2V2).
+
+\section{Trazabilidad}
+\begin{itemize}
+  \item RF1 aporta la gestion de empleados usada por los reportes.
+  \item RF2V2 aporta el acceso al sistema con credenciales.
+  \item RF3V2 consume datos de RF1 y RF2V2 para construir reportes.
+\end{itemize}
+
+\end{document}

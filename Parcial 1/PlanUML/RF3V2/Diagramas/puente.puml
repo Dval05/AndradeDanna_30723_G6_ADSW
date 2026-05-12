@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+skinparam shadowing false
+
+actor "Jefe de Operaciones Logistica / Administrador del Sistema" as Actor
+boundary "Dashboard Reporte" as UI
+control "Control Reporte" as Ctrl
+entity "Reporte Analitico" as Rep
+
+Actor --> UI : solicita generar o consultar reporte
+UI --> Ctrl : envia parametros del reporte
+Ctrl --> Rep : calcula metricas y crea reporte
+Ctrl --> UI : muestra resumen del reporte
+@enduml

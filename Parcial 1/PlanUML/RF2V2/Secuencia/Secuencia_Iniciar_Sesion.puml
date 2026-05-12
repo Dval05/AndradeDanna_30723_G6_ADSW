@@ -1,0 +1,17 @@
+@startuml
+title Secuencia de analisis - Iniciar Sesion (TekMess)
+
+actor "Usuario" as Usuario
+boundary "FormularioAccesoSistema" as UI
+control "ControlAutenticacion" as Ctrl
+database "RepositorioUsuario" as RepoU
+
+Usuario -> UI : Abre la aplicacion SNAAR
+Usuario -> UI : Ingresa nombre de usuario y contrasena
+Usuario -> UI : Clic en Iniciar Sesion
+UI -> Ctrl : iniciarSesion(usuario, contrasena)
+Ctrl -> RepoU : validarCredenciales(usuario, contrasena)
+RepoU --> Ctrl : true (credenciales validas)
+Ctrl --> UI : Acceso concedido
+UI --> Usuario : Muestra interfaz segun rol del usuario
+@enduml

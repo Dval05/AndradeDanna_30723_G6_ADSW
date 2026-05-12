@@ -1,0 +1,38 @@
+@startuml
+left to right direction
+skinparam shadowing false
+
+actor "Jefe de Logistica" as Jefe
+actor "Usuario" as Usuario
+actor "Jefe de Operaciones Logistica / Administrador del Sistema" as JefeOps
+
+boundary "Pantalla Gestion Empleados" as UI1
+control "Control Empleado" as C1
+entity "Empleado" as E1
+
+boundary "Pantalla Acceso Sistema" as UI2
+control "Control Autenticacion" as C2
+entity "Usuario" as E2
+
+boundary "Dashboard Reporte" as UI3
+control "Control Reporte" as C3
+entity "Reporte Analitico" as R
+
+Jefe --> UI1 : gestiona empleados
+UI1 --> C1 : solicita operacion
+C1 --> E1 : crea/actualiza datos
+
+JefeOps --|> Usuario
+
+Usuario --> UI2 : inicia sesion
+UI2 --> C2 : envia credenciales
+C2 --> E2 : valida credenciales
+C2 --> UI3 : habilita pantalla segun rol
+
+JefeOps --> UI3 : genera o consulta reportes
+UI3 --> C3 : envia parametros de reporte
+C3 --> R : construye reporte
+
+C3 ..> C1 : consulta gestion y edicion (RF1)
+C3 ..> C2 : consulta accesos fallidos (RF2V2)
+@enduml

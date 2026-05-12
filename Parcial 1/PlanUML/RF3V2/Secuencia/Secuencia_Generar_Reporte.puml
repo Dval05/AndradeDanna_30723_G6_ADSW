@@ -1,0 +1,25 @@
+@startuml
+title Secuencia de analisis - Generar Reporte (TekMess)
+
+actor "Jefe de Operaciones Logistica / Administrador del Sistema" as Actor
+boundary "VistaReporte" as UI
+control "ControlReporte" as Ctrl
+database "RepositorioEmpleado" as RepoEmp
+database "RepositorioAcceso" as RepoAcc
+database "RepositorioReporteAnalitico" as RepoRep
+entity "ReporteAnalitico" as Rep
+
+Actor -> UI : Solicita generar reporte
+UI -> Ctrl : generarReporte(rango)
+Ctrl -> RepoEmp : contarGestionados(rango)
+RepoEmp --> Ctrl : totalGestionados
+Ctrl -> RepoEmp : contarEditados(rango)
+RepoEmp --> Ctrl : totalEditados
+Ctrl -> RepoAcc : contarFallidos(rango)
+RepoAcc --> Ctrl : totalFallidos
+Ctrl -> Rep : new ReporteAnalitico(rango, totales)
+Ctrl -> RepoRep : guardar(Rep)
+RepoRep --> Ctrl : guardado OK
+Ctrl --> UI : mostrarReporte(Rep)
+UI --> Actor : Presenta reporte generado
+@enduml

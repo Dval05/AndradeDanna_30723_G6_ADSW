@@ -1,0 +1,101 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\title{SRS V2 - RF1, RF2V2 y RF3V2}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Introduccion}
+Este SRS describe los requisitos funcionales RF1, RF2V2 y RF3V2 para el sistema TekMess. El objetivo es asegurar la gestion de empleados, el acceso al sistema y el reporteo analitico.
+
+\section{RF1: Gestion de Empleados}
+\subsection{Proposito}
+Permitir la gestion de empleados con operaciones de crear, editar y eliminar, manteniendo datos consistentes.
+
+\subsection{Entradas}
+\begin{itemize}
+  \item Cedula
+  \item Nombres
+  \item Rol
+  \item Correo institucional
+\end{itemize}
+
+\subsection{Salidas}
+\begin{itemize}
+  \item Confirmacion de registro, edicion o baja
+  \item Credenciales generadas cuando aplica
+\end{itemize}
+
+\subsection{Reglas de negocio}
+\begin{itemize}
+  \item Cedula valida (10 digitos)
+  \item Rol RBAC permitido
+  \item Correo institucional valido
+\end{itemize}
+
+\section{RF2V2: Autenticacion simple}
+\subsection{Proposito}
+Permitir el acceso al sistema con usuario y contrasena. Incluye cambio y recuperacion de contrasena sin verificacion externa.
+
+\subsection{Casos cubiertos}
+\begin{itemize}
+  \item Iniciar sesion
+  \item Cambiar contrasena
+  \item Recuperar contrasena
+  \item Validar credenciales
+\end{itemize}
+
+\subsection{Entradas}
+\begin{itemize}
+  \item Usuario
+  \item Contrasena
+  \item Correo (solo para recuperacion)
+\end{itemize}
+
+\subsection{Salidas}
+\begin{itemize}
+  \item Acceso concedido o denegado
+  \item Confirmacion de cambio o recuperacion
+\end{itemize}
+
+\section{RF3V2: Reporte}
+\subsection{Proposito}
+Generar y consultar reportes con informacion operativa y analitica basada en RF1 y RF2V2. El acceso a reportes depende del rol.
+
+\subsection{Contenido del reporte}
+\begin{itemize}
+  \item Cantidad de empleados gestionados
+  \item Cantidad de empleados editados
+  \item Cantidad de accesos fallidos
+\end{itemize}
+
+\subsection{Origen de datos}
+\begin{itemize}
+  \item Gestion de empleados (RF1)
+  \item Autenticacion y accesos (RF2V2)
+\end{itemize}
+
+\subsection{Entradas}
+\begin{itemize}
+  \item Rango de fechas o periodo de consulta
+\end{itemize}
+
+\subsection{Salidas}
+\begin{itemize}
+  \item Reporte analitico generado
+  \item Historial de reportes consultados
+\end{itemize}
+
+\section{Trazabilidad}
+\begin{itemize}
+  \item RF3V2 depende de RF1 para datos de empleados.
+  \item RF3V2 depende de RF2V2 para datos de acceso.
+  \item RF2V2 controla el acceso segun rol.
+\end{itemize}
+
+\end{document}

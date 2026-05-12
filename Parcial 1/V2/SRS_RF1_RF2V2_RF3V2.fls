@@ -1,0 +1,54 @@
+PWD d:\ESPE - ISOW\SEXTO_SEMESTRE\ADSW\AndradeDanna_30723_G_ADSW\Parcial 1\V2
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
+INPUT d:\ESPE - ISOW\SEXTO_SEMESTRE\ADSW\AndradeDanna_30723_G_ADSW\Parcial 1\V2\SRS_RF1_RF2V2_RF3V2.tex
+OUTPUT SRS_RF1_RF2V2_RF3V2.log
+INPUT C:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT C:\Program Files\MiKTeX\tex\latex\base\article.cls
+INPUT C:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT C:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT C:\Program Files\MiKTeX\tex\latex\base\size12.clo
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
+INPUT C:\Program Files\MiKTeX\tex\latex\geometry\geometry.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\geometry\geometry.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\graphics\keyval.sty
+INPUT C:\Program Files\MiKTeX\tex\generic\iftex\ifvtex.sty
+INPUT C:\Program Files\MiKTeX\tex\generic\iftex\ifvtex.sty
+INPUT C:\Program Files\MiKTeX\tex\generic\iftex\iftex.sty
+INPUT C:\Program Files\MiKTeX\tex\generic\iftex\iftex.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Program Files\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Program Files\MiKTeX\tex\latex\geometry\geometry.cfg
+INPUT C:\Program Files\MiKTeX\tex\latex\base\fontenc.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\base\fontenc.sty
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm1200.tfm
+INPUT C:\Program Files\MiKTeX\tex\latex\base\inputenc.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\base\inputenc.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT C:\Program Files\MiKTeX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT .\SRS_RF1_RF2V2_RF3V2.aux
+INPUT .\SRS_RF1_RF2V2_RF3V2.aux
+INPUT SRS_RF1_RF2V2_RF3V2.aux
+OUTPUT SRS_RF1_RF2V2_RF3V2.aux
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm2074.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm1440.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmmi12.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm1728.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecbx1728.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecbx1440.tfm
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\tcrm1200.tfm
+OUTPUT SRS_RF1_RF2V2_RF3V2.pdf
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT SRS_RF1_RF2V2_RF3V2.aux
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\tcrm1200.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\tcrm1200.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1200.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm1200.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1728.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1728.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.pk
+INPUT C:\Users\Danna\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecrm2074.pk
