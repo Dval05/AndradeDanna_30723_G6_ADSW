@@ -1,0 +1,72 @@
+@startuml
+title RF-02V2: Administrar Sistema (Autenticacion Simple) - Nivel 0
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #1A3A5C
+  ArrowColor #1A3A5C
+}
+skinparam actor {
+  BackgroundColor #FFF8E1
+  BorderColor #795548
+}
+
+actor "Usuario" as Usuario
+
+note top of Usuario
+  Representa todos los roles del sistema:
+  Guardia | Supervisor
+  Centralista | Jefe Logistica/Operacion
+end note
+
+rectangle "Sistema TekMess - Modulo Autenticacion" {
+
+  usecase "RF-SNAAR-02.01\nIniciar Sesion"          as UC1
+  usecase "RF-SNAAR-02.02\nCambiar Contrasena"      as UC2
+  usecase "RF-SNAAR-02.03\nRecuperar Contrasena"    as UC3
+  usecase "RF-SNAAR-02.04\nValidar Credenciales"    as UC4
+
+}
+
+Usuario --> UC1
+Usuario --> UC2
+Usuario --> UC3
+
+UC1 ..> UC4 : <<include>>
+UC2 ..> UC4 : <<include>>
+UC1 ..> UC2 : <<extend>>\n(primer acceso)
+UC1 ..> UC3 : <<extend>>\n(olvido contrasena)
+
+note right of UC1
+  Reglas de negocio:
+  - Bloqueo tras 3 intentos fallidos
+  - Sesion expira tras 120 min inactividad
+  - Redirige segun rol RBAC al acceder
+end note
+
+note right of UC2
+  Reglas de negocio:
+  - Primer acceso: obligatorio antes
+    de acceder al sistema
+  - Min 8 caracteres, 1 mayuscula,
+    1 minuscula, 2 numeros, 1 especial
+  - No puede ser igual a la actual
+end note
+
+note right of UC3
+  Sin OTP ni tokens externos.
+  Verificacion interna por correo
+  y nombre de usuario registrados.
+end note
+
+note right of UC4
+  Proceso interno del sistema.
+  Reutilizado por UC1 y UC2.
+  Compara hash almacenado (bcrypt).
+  Sin interfaz de usuario propia.
+end note
+
+@enduml

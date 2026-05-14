@@ -1,0 +1,58 @@
+@startuml
+title RF-01: Gestionar Empleados - Nivel 0
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #1A3A5C
+  ArrowColor #1A3A5C
+}
+skinparam actor {
+  BackgroundColor #FFF8E1
+  BorderColor #795548
+}
+
+actor "Jefe Logistica /\nOperacion" as Jefe
+
+rectangle "Sistema TekMess - Modulo Gestion de Empleados" {
+
+  usecase "RF-SNAAR-01.01\nCrear Empleado"         as UC1
+  usecase "RF-SNAAR-01.02\nEditar Empleado"         as UC2
+  usecase "RF-SNAAR-01.03\nEliminar Empleado"       as UC3
+  usecase "RF-SNAAR-01.04\nConsultar Empleados"     as UC4
+  usecase "RF-SNAAR-01.05\nValidar Datos\ndel Empleado" as UC5
+  usecase "RF-SNAAR-01.06\nGenerar\nCredenciales"   as UC6
+
+}
+
+Jefe --> UC1
+Jefe --> UC2
+Jefe --> UC3
+Jefe --> UC4
+
+UC1 ..> UC5 : <<include>>
+UC2 ..> UC5 : <<include>>
+UC1 ..> UC6 : <<include>>
+
+note right of UC5
+  Validaciones:
+  - Cedula: 10 digitos numericos
+  - Rol: uno de los 4 roles RBAC validos
+  - Correo: formato institucional valido
+end note
+
+note right of UC6
+  Genera usuario y contrasena inicial.
+  Marca primer acceso como obligatorio
+  (activa RF-SNAAR-02.02 al ingresar).
+end note
+
+note right of UC3
+  Sin diagrama de secuencia.
+  Derivado del diagrama de clases:
+  metodo darBajaEmpleado(cedula).
+end note
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title Sistema TekMess - SNAAR: Vista General de Requisitos (Nivel 0)
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #1A3A5C
+  ArrowColor #1A3A5C
+}
+skinparam actor {
+  BackgroundColor #FFF8E1
+  BorderColor #795548
+}
+
+actor "Jefe Logistica /\nOperacion" as Jefe
+actor "Supervisor"                  as Sup
+actor "Guardia"                     as Guardia
+actor "Centralista"                 as Central
+actor "Usuario"                     as Usuario
+
+Jefe    --|> Usuario
+Sup     --|> Usuario
+Guardia --|> Usuario
+Central --|> Usuario
+
+rectangle "Sistema TekMess - SNAAR" {
+
+  usecase "RF-01\nGestionar\nEmpleados"           as RF1
+  usecase "RF-02V2\nAdministrar Sistema\n(Autenticacion Simple)" as RF2
+  usecase "RF-03V2\nGenerar Reporte\nAnalitico"   as RF3
+
+}
+
+Jefe    --> RF1
+Jefe    --> RF3
+Sup     --> RF3
+Usuario --> RF2
+
+RF3 ..> RF1 : <<usa datos de>>
+RF3 ..> RF2 : <<usa datos de>>
+
+note bottom of RF1
+  Actor principal: Jefe Logistica/Operacion
+  Subprocesos: Crear, Editar, Eliminar,
+  Consultar Empleados, Validar Datos,
+  Generar Credenciales
+end note
+
+note bottom of RF2
+  Actor: Usuario (todos los roles)
+  Subprocesos: Iniciar Sesion,
+  Cambiar Contrasena, Recuperar
+  Contrasena, Validar Credenciales
+end note
+
+note bottom of RF3
+  Actores: Jefe Logistica/Operacion
+  (todos los reportes), Supervisor
+  (solo reportes de sus guardias)
+  Subprocesos: Generar Reporte,
+  Consultar Historial
+end note
+
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title RF-03V2: Generar Reporte Analitico - Nivel 0
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #EEF4FB
+  BorderColor #1A3A5C
+  ArrowColor #1A3A5C
+}
+skinparam actor {
+  BackgroundColor #FFF8E1
+  BorderColor #795548
+}
+
+actor "Jefe Logistica /\nOperacion" as Jefe
+actor "Supervisor"                  as Sup
+
+rectangle "Sistema TekMess - Modulo Reportes Analiticos" {
+
+  usecase "RF-SNAAR-03V2.01\nGenerar Reporte"             as UC1
+  usecase "RF-SNAAR-03V2.02\nConsultar Historial\nde Reportes" as UC2
+
+}
+
+Jefe --> UC1
+Jefe --> UC2
+Sup  --> UC1
+Sup  --> UC2
+
+note right of UC1
+  Contenido del reporte (origen de datos):
+  - Total empleados gestionados <- RF-SNAAR-01
+  - Total empleados editados    <- RF-SNAAR-01
+  - Total accesos fallidos      <- RF-SNAAR-02V2
+
+  Reglas de negocio:
+  - Filtro por rango de fechas
+  - Exportacion en PDF
+  - Datos base: solo lectura
+  - Se permiten anotaciones adicionales
+end note
+
+note right of UC2
+  Reglas de negocio:
+  - Filtro por rango de fechas (opcional)
+  - Jefe Logistica/Operacion: acceso
+    a todos los reportes del sistema
+  - Supervisor: acceso solo a reportes
+    de sus guardias asignados
+  - Exportacion en PDF
+  - Anotaciones editables
+end note
+
+note bottom of Jefe
+  Acceso total:
+  ve todos los reportes del sistema
+end note
+
+note bottom of Sup
+  Acceso restringido:
+  ve solo reportes de sus guardias
+end note
+
+@enduml
