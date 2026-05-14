@@ -1,0 +1,92 @@
+@startuml
+skinparam packageStyle rectangle
+left to right direction
+
+' ==========================================
+' ACTORES Y JERARQUÍA (RBAC)
+' ==========================================
+actor "Usuario General" as usuario
+actor "Guardia" as guardia
+actor "Centralista" as centralista
+actor "Supervisor" as supervisor
+actor "Jefe de Logística / Operación" as jefe
+actor "Sistema (Automático)" as sistema
+
+' Herencia de roles
+guardia --|> usuario
+centralista --|> usuario
+supervisor --|> usuario
+jefe --|> usuario
+
+' ==========================================
+' PAQUETE GLOBAL DEL SISTEMA
+' ==========================================
+rectangle "Sistema SNAAR / TekMess" {
+
+    ' --- MÓDULO RF-01: GESTIÓN DE EMPLEADOS ---
+    package "RF-01: Gestionar Empleado" {
+        usecase "RF-SNAAR-01.01:\nCrear empleado" as UC_crear
+        usecase "RF-SNAAR-01.02:\nAsignar Relaciones Laborales" as UC_relaciones
+        usecase "RF-SNAAR-01.03:\nGenerar Credenciales de Acceso" as UC_credenciales
+        usecase "RF-SNAAR-01.04:\nActualizar Empleado (Inactivar)" as UC_inactivar
+        usecase "RF-SNAAR-01.05:\nEditar empleado" as UC_editar
+        usecase "RF-SNAAR-01.06:\nEliminar empleado" as UC_eliminar
+        
+        ' Relaciones internas RF-01
+        UC_crear .> UC_relaciones : <<include>>
+        UC_relaciones .> UC_credenciales : <<include>>
+    }
+
+    ' --- MÓDULO RF-02: ADMINISTRAR SISTEMA ---
+    package "RF-02: Administrar Sistema" {
+        usecase "RF-SNAAR-02.01:\nIniciar Sesión (MFA)" as UC_login
+        usecase "RF-SNAAR-02.02:\nCambiar Contraseña" as UC_cambiar
+        usecase "RF-SNAAR-02.03:\nRecuperar Contraseña" as UC_recuperar
+    }
+
+    ' --- MÓDULO RF-03: IMPORTAR REPORTES BITAKOR ---
+    package "RF-03: Importar Reportes Bitakor" {
+        usecase "RF-SNAAR-03.01:\nCargar Archivo de Reportes" as UC_cargar
+        usecase "RF-SNAAR-03.02:\nValidar y Normalizar Datos" as UC_validar
+        usecase "RF-SNAAR-03.03:\nVerificar Emisor de Reporte" as UC_verificar
+        
+        ' Relaciones internas RF-03
+        UC_cargar .> UC_validar : <<include>>
+        UC_validar .> UC_verificar : <<include>>
+    }
+}
+
+' ==========================================
+' ASOCIACIONES ACTORES -> CASOS DE USO
+' ==========================================
+
+' Relaciones del Jefe de Logística (RF-01)
+jefe --> UC_crear
+jefe --> UC_inactivar
+jefe --> UC_editar
+jefe --> UC_eliminar
+
+' Relaciones del Usuario General (RF-02 - Heredado por todos)
+usuario --> UC_login
+usuario --> UC_cambiar
+usuario --> UC_recuperar
+
+' Relaciones del Supervisor (RF-03)
+supervisor --> UC_cargar
+
+' Relaciones del Sistema Autónomo
+sistema <-- UC_credenciales
+sistema <-- UC_validar
+sistema <-- UC_verificar
+
+' ==========================================
+' VÍNCULO DE NEGOCIO INTER-MÓDULO
+' ==========================================
+' Muestra de forma explícita que la verificación del emisor depende del repositorio de empleados
+UC_verificar ..> UC_crear : <<depende de / consulta>>
+note on link
+  Valida cruzadamente que la cédula
+  del reporte exista y esté activa
+end note
+
+@endum

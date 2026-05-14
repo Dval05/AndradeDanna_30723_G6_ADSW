@@ -12,11 +12,10 @@ rectangle "SNAAR - GESTIONAR EMPLEADOS (GE)" #White {
     
     
     usecase "Crear Empleado" as UC_Crear
-    usecase "Generar Credenciales de Acceso" as UC_Generar
     usecase "Asignar relaciones laborales" as UC_Asignar
-    usecase "Habilitar chat de mensajería" as UC_Habilitar
     usecase "Editar Empleado" as UC_Editar
     usecase "Eliminar Empleado" as UC_Eliminar
+    usecase "Consultar Empleados" as UC_Consultar
 
 }
 
@@ -26,11 +25,9 @@ Jefe--UC_Crear
 Jefe--UC_Asignar
 Jefe--UC_Editar
 Jefe--UC_Eliminar
+Jefe--UC_Consultar
 
-
-UC_Crear ..> UC_Generar : <<include>>
 UC_Crear ..> UC_Asignar : <<include>>
-UC_Asignar ..> UC_Habilitar : <<include>>
 
 note right of UC_Crear
 Datos mínimos según interfaz:

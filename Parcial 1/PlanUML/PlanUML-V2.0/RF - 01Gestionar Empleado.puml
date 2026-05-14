@@ -1,0 +1,27 @@
+@startuml
+skinparam packageStyle rectangle
+left to right direction
+
+actor "Jefe de Logística / Operación" as jefe
+actor "Sistema (Automático)" as sistema
+
+rectangle "RF-01: Gestión de Empleados (SNAAR / TekMess)" {
+    usecase "RF-SNAAR-01.01: Crear empleado" as UC_crear
+    usecase "RF-SNAAR-01.02: Asignar Relaciones Laborales" as UC_relaciones
+    usecase "RF-SNAAR-01.03: Generar Credenciales de Acceso" as UC_credenciales
+    usecase "RF-SNAAR-01.04: Actualizar Empleado (Inactivar/Baja)" as UC_actualizar
+    usecase "RF-SNAAR-01.05: Editar empleado" as UC_editar
+    usecase "RF-SNAAR-01.06: Eliminar empleado" as UC_eliminar
+    
+    ' Relaciones de flujo lógico (Inclusiones secuenciales)
+    UC_crear .> UC_relaciones : <<include>>
+    UC_relaciones .> UC_credenciales : <<include>>
+}
+
+jefe --> UC_crear
+jefe --> UC_actualizar
+jefe --> UC_editar
+jefe --> UC_eliminar
+
+UC_credenciales --> sistema
+@endum

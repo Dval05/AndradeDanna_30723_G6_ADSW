@@ -1,0 +1,28 @@
+@startuml
+skinparam packageStyle rectangle
+left to right direction
+
+actor "Supervisor" as super
+actor "Sistema (Automático)" as sistema
+
+rectangle "RF-03: Importar Reportes de Bitakor" {
+    usecase "RF-SNAAR-03.01: Cargar Archivo de Reportes Bitakor" as UC_cargar
+    usecase "RF-SNAAR-03.02: Validar y Normalizar Datos Bitakor" as UC_validar
+    usecase "RF-SNAAR-03.03: Verificar Emisor de Reporte" as UC_verificar
+    
+    ' Relaciones de dependencia e inclusión de negocio
+    UC_cargar .> UC_validar : <<include>>
+    UC_validar .> UC_verificar : <<include>>
+}
+
+' El caso de uso de verificación consulta el repositorio creado en el RF-01
+note right of UC_verificar
+  Consulta el repositorio central
+  de empleados (RF-01) para asegurar
+  que la cédula esté Activa.
+end note
+
+super --> UC_cargar
+sistema <-- UC_validar
+sistema <-- UC_verificar
+@endum

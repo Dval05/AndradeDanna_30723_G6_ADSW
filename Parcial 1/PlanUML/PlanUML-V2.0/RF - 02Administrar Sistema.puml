@@ -1,0 +1,26 @@
+@startuml
+skinparam packageStyle rectangle
+left to right direction
+
+' Definición de Actores y Herencia (RBAC)
+actor "Usuario" as usuario
+actor "Guardia" as guardia
+actor "Centralista" as centralista
+actor "Supervisor" as supervisor
+actor "Jefe de Logística / Operación" as jefe
+
+guardia --|> usuario
+centralista --|> usuario
+supervisor --|> usuario
+jefe --|> usuario
+
+rectangle "RF-02: Administrar Sistema (Autenticación y Seguridad)" {
+    usecase "RF-SNAAR-02.01: Iniciar Sesión\n(Valida Estado, Intentos y MFA)" as UC_login
+    usecase "RF-SNAAR-02.02: Cambiar Contraseña" as UC_cambiar
+    usecase "RF-SNAAR-02.03: Recuperar Contraseña" as UC_recuperar
+}
+
+usuario --> UC_login
+usuario --> UC_cambiar
+usuario --> UC_recuperar
+@endum

@@ -1,0 +1,59 @@
+@startuml
+
+skinparam actorStyle awesome
+left to right direction
+
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
+
+skinparam usecase {
+    BackgroundColor<<Admin>> #A94442
+    BackgroundColor<<Operativo>> #8A6D3B
+    BackgroundColor<<Reporte>> #3C763D
+    BorderColor black
+    FontColor white
+}
+
+
+actor Supervisor
+actor Usuario
+actor "Autoridad Externa" as AE
+actor Guardia
+actor Centralista
+actor "Jefe operativo/logística" as Jefe
+
+
+rectangle "Sistema de Notificación Automática y Auditoría de Reportes - SNAAR" #White {
+    
+    
+    
+    
+    usecase "Responder Reportes Operativos\n<<Operativo>>" as UC_Resp <<Operativo>>
+    
+    usecase "Administrar Sistema\n<<Admin>>" as UC_Admin <<Admin>>
+    
+    usecase "Gestionar Empleados\n<<Admin>>" as UC_Empleados <<Admin>>
+    }
+
+' Uniones de actores a casos de uso
+
+
+Usuario--Guardia
+Usuario--Centralista
+Usuario--Jefe
+Usuario--AE
+Usuario--Supervisor
+
+
+Usuario--UC_Admin
+Supervisor--UC_Empleados
+UC_Admin ..> UC_Empleados : <<include>>
+UC_Empleados ..> UC_Resp : <<extend>>
+
+
+
+
+'Elaborado David Pilaguano - 2026-05-05 
+@enduml
