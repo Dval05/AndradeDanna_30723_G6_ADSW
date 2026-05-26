@@ -1,0 +1,231 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam monochrome false
+
+title CRUD Estudiantes - Patrones Observer, Strategy y Command
+
+package "model" {
+
+class Estudiante {
+    -id : String
+    -nombre : String
+    -edad : int
+    -carrera : String
+
+    +getId()
+    +getNombre()
+    +getEdad()
+    +getCarrera()
+}
+
+}
+
+package "observer" {
+
+interface StudentObserver {
+    +onStudentAdded(estudiante)
+    +onStudentUpdated(estudiante)
+    +onStudentDeleted(id)
+}
+
+interface ViewStudentObserver {
+    +refreshTable()
+}
+
+interface StudentObservable {
+    +attach(observer)
+    +detach(observer)
+    +notifyStudentAdded()
+    +notifyStudentUpdated()
+    +notifyStudentDeleted()
+}
+
+class ConsoleStudentObserver
+
+}
+
+package "strategy" {
+
+interface SearchStrategy {
+    +search(criterio, estudiantes)
+}
+
+class SearchByIdStrategy
+class SearchByNameStrategy
+class SearchByCareerStrategy
+
+class SearchContext {
+    -strategy : SearchStrategy
+
+    +setStrategy(strategy)
+    +executeSearch()
+}
+
+}
+
+package "command" {
+
+interface Command {
+    +execute()
+    +undo()
+    +getDescription()
+}
+
+class AddStudentCommand
+class UpdateStudentCommand
+class DeleteStudentCommand
+
+class CommandInvoker {
+    -history : Stack
+    -redoStack : Stack
+
+    +executeCommand(command)
+    +undo()
+    +redo()
+}
+
+}
+
+package "repository" {
+
+class StudentRepository {
+    -students : List
+    -observers : List
+
+    +save()
+    +update()
+    +delete()
+    +findById()
+    +findAll()
+
+    +attach()
+    +detach()
+
+    +notifyStudentAdded()
+    +notifyStudentUpdated()
+    +notifyStudentDeleted()
+}
+
+}
+
+package "service" {
+
+class StudentService {
+    -repository : StudentRepository
+    -commandInvoker : CommandInvoker
+    -searchContext : SearchContext
+
+    +addStudent()
+    +updateStudent()
+    +deleteStudent()
+
+    +searchById()
+    +searchByName()
+    +searchByCareer()
+
+    +undo()
+    +redo()
+}
+
+}
+
+package "controller" {
+
+class ControlEstudiante {
+    -service : StudentService
+
+    +agregarEstudiante()
+    +actualizarEstudiante()
+    +eliminarEstudiante()
+
+    +buscarPorId()
+    +buscarPorNombre()
+    +buscarPorCarrera()
+
+    +mostrarTodos()
+
+    +deshacer()
+    +rehacer()
+}
+
+}
+
+package "view" {
+
+class FormularioCrudEstudiante {
+    -controlador : ControlEstudiante
+    -tablaEstudiantes : JTable
+
+    +clickAgregar()
+    +clickActualizar()
+    +clickEliminar()
+
+    +clickBuscar()
+
+    +clickDeshacer()
+    +clickRehacer()
+
+    +refreshTable()
+}
+
+}
+
+' =========================
+' RELACIONES OBSERVER
+' =========================
+
+StudentRepository ..|> StudentObservable
+
+ConsoleStudentObserver ..|> StudentObserver
+
+FormularioCrudEstudiante ..|> ViewStudentObserver
+
+ViewStudentObserver --|> StudentObserver
+
+StudentRepository --> StudentObserver
+
+' =========================
+' RELACIONES STRATEGY
+' =========================
+
+SearchByIdStrategy ..|> SearchStrategy
+SearchByNameStrategy ..|> SearchStrategy
+SearchByCareerStrategy ..|> SearchStrategy
+
+SearchContext --> SearchStrategy
+
+' =========================
+' RELACIONES COMMAND
+' =========================
+
+AddStudentCommand ..|> Command
+UpdateStudentCommand ..|> Command
+DeleteStudentCommand ..|> Command
+
+CommandInvoker --> Command
+
+' =========================
+' RELACIONES GENERALES
+' =========================
+
+StudentService --> StudentRepository
+
+StudentService --> CommandInvoker
+
+StudentService --> SearchContext
+
+ControlEstudiante --> StudentService
+
+FormularioCrudEstudiante --> ControlEstudiante
+
+StudentRepository --> Estudiante
+
+AddStudentCommand --> StudentRepository
+UpdateStudentCommand --> StudentRepository
+DeleteStudentCommand --> StudentRepository
+
+SearchStrategy --> Estudiante
+
+@enduml
