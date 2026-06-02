@@ -1,0 +1,51 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+title Arquitectura integrada del CRUD del estudiante (U2T1 + U2T2)
+
+rectangle "Capa de Presentacion" as CapaPresentacion {
+  [FormularioCrudEstudiante] as View
+}
+
+rectangle "Capa de Logica de Negocio" as CapaNegocio {
+  [ServicioEstudiante] as Servicio
+  [ControlEstudiante] as Controller
+  [DecoradorServicioEstudiante] as Decorador
+  [AuditoriaServicioEstudianteDecorator] as Auditoria
+  [EstudianteAdapter] as Adapter
+}
+
+rectangle "Capa de Datos" as CapaDatos {
+  [RepositorioEstudiante] as Repo
+}
+
+rectangle "Capa de Modelo" as CapaModelo {
+  [Estudiante] as Model
+  [EstudianteExterno] as Externo
+}
+
+View --> Servicio : Solicita CRUD
+Controller --> Servicio : Servicio base
+Auditoria --> Decorador : Extiende comportamiento
+Decorador --> Servicio : Envuelve servicio
+
+Adapter --> Externo : Lee datos externos
+Adapter --> Model : Adapta a entidad
+
+Servicio --> Repo : Acceso a datos
+Repo --> Model : Persiste entidad
+Servicio --> Model : Valida y construye entidad
+
+note right of Adapter
+Adapter: transforma codigo, nombreCompleto, anios
+en ID, Nombres, Edad
+end note
+
+note right of Auditoria
+Decorator: agrega auditoria antes/despues de CRUD
+sin modificar ControlEstudiante
+end note
+
+@enduml

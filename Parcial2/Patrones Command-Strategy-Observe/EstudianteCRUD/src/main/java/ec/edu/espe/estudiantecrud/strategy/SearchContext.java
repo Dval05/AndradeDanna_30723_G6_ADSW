@@ -1,7 +1,8 @@
 package ec.edu.espe.estudiantecrud.strategy;
 
-import ec.edu.espe.estudiantecrud.model.Estudiante;
 import java.util.List;
+
+import ec.edu.espe.estudiantecrud.model.Estudiante;
 
 /**
  * Contexto para aplicar diferentes estrategias de búsqueda.
@@ -24,6 +25,8 @@ public class SearchContext {
      */
     public void setStrategy(SearchStrategy strategy) {
         this.strategy = strategy;
+        String nombre = strategy == null ? "null" : strategy.getClass().getSimpleName();
+        System.out.println("[STRATEGY] Estrategia actual: " + nombre);
     }
 
     /**
@@ -36,6 +39,9 @@ public class SearchContext {
         if (strategy == null) {
             throw new IllegalStateException("Estrategia de búsqueda no establecida");
         }
+        System.out.println("[STRATEGY] Ejecutando busqueda con "
+                + strategy.getClass().getSimpleName()
+                + " | criterio='" + criterio + "' | total=" + estudiantes.size());
         return strategy.search(criterio, estudiantes);
     }
 }

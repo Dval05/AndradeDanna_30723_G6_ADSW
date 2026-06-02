@@ -21,11 +21,13 @@ public class CommandInvoker {
      * @return resultado de la ejecución
      */
     public String executeCommand(Command command) {
+        System.out.println("[COMMAND] Ejecutando: " + command.getDescription());
         String resultado = command.execute();
         if (resultado.contains("Éxito")) {
             historialEjecuciones.push(command);
             historialDeshaceres.clear(); // Limpiar historial de deshaceres
         }
+        System.out.println("[COMMAND] Resultado: " + resultado);
         return resultado;
     }
 
@@ -39,8 +41,10 @@ public class CommandInvoker {
         }
 
         Command command = historialEjecuciones.pop();
+        System.out.println("[COMMAND] Deshaciendo: " + command.getDescription());
         String resultado = command.undo();
         historialDeshaceres.push(command);
+        System.out.println("[COMMAND] Resultado: " + resultado);
         return resultado;
     }
 
@@ -54,8 +58,10 @@ public class CommandInvoker {
         }
 
         Command command = historialDeshaceres.pop();
+        System.out.println("[COMMAND] Rehaciendo: " + command.getDescription());
         String resultado = command.execute();
         historialEjecuciones.push(command);
+        System.out.println("[COMMAND] Resultado: " + resultado);
         return resultado;
     }
 

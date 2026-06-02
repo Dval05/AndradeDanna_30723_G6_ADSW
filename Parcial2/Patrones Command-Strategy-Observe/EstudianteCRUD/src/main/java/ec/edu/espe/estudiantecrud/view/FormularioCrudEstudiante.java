@@ -1,13 +1,27 @@
 package ec.edu.espe.estudiantecrud.view;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableModel;
+
 import ec.edu.espe.estudiantecrud.controller.ControlEstudiante;
 import ec.edu.espe.estudiantecrud.model.Estudiante;
 import ec.edu.espe.estudiantecrud.observer.ViewStudentObserver;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.util.List;
 
 /**
  * Formulario CRUD refactorizado con patrones:
@@ -299,10 +313,12 @@ public class FormularioCrudEstudiante extends JFrame implements ViewStudentObser
         } catch (NumberFormatException e) {
 
             mostrarMensaje("Edad invalida");
+            //mostrarMensaje(e.getMessage());
 
         } catch (Exception e) {
 
             mostrarMensaje(e.getMessage());
+            //mostrarMensaje("Edad invalida");
         }
     }
 

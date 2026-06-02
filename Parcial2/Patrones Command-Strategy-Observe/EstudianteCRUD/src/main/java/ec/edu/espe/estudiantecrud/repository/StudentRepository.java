@@ -1,10 +1,11 @@
 package ec.edu.espe.estudiantecrud.repository;
 
-import ec.edu.espe.estudiantecrud.model.Estudiante;
-import ec.edu.espe.estudiantecrud.observer.StudentObserver;
-import ec.edu.espe.estudiantecrud.observer.StudentObservable;
 import java.util.ArrayList;
 import java.util.List;
+
+import ec.edu.espe.estudiantecrud.model.Estudiante;
+import ec.edu.espe.estudiantecrud.observer.StudentObservable;
+import ec.edu.espe.estudiantecrud.observer.StudentObserver;
 
 /**
  * Repositorio refactorizado que implementa el patrón Observable.
@@ -83,16 +84,21 @@ public class StudentRepository implements StudentObservable {
     public void attach(StudentObserver observer) {
         if (!observadores.contains(observer)) {
             observadores.add(observer);
+            System.out.println("[OBSERVER] Registrado: " + observer.getClass().getSimpleName()
+                    + " | total=" + observadores.size());
         }
     }
 
     @Override
     public void detach(StudentObserver observer) {
         observadores.remove(observer);
+        System.out.println("[OBSERVER] Desregistrado: " + observer.getClass().getSimpleName()
+                + " | total=" + observadores.size());
     }
 
     @Override
     public void notifyStudentAdded(Estudiante estudiante) {
+        System.out.println("[OBSERVER] Notificando agregado | total=" + observadores.size());
         for (StudentObserver observer : observadores) {
             observer.onStudentAdded(estudiante);
         }
@@ -100,6 +106,7 @@ public class StudentRepository implements StudentObservable {
 
     @Override
     public void notifyStudentUpdated(Estudiante estudiante) {
+        System.out.println("[OBSERVER] Notificando actualizado | total=" + observadores.size());
         for (StudentObserver observer : observadores) {
             observer.onStudentUpdated(estudiante);
         }
@@ -107,6 +114,7 @@ public class StudentRepository implements StudentObservable {
 
     @Override
     public void notifyStudentDeleted(String id) {
+        System.out.println("[OBSERVER] Notificando eliminado | total=" + observadores.size());
         for (StudentObserver observer : observadores) {
             observer.onStudentDeleted(id);
         }

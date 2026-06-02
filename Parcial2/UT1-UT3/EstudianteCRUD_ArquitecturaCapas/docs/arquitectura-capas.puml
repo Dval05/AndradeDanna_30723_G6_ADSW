@@ -1,0 +1,16 @@
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+skinparam componentStyle rectangle
+
+[Presentacion] as Presentacion
+[Logica_Negocio] as Logica
+[Datos] as Datos
+[Modelo] as Modelo
+
+Presentacion --> Logica : Flujo CRUD
+Logica --> Datos : Persistencia
+Logica --> Modelo : Validacion y reglas
+Datos --> Modelo : Entidades
+
+@enduml
