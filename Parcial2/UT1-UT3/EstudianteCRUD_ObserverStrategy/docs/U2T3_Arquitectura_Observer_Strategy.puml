@@ -1,0 +1,116 @@
+@startuml U2T3_Arquitectura_Observer_Strategy
+title Arquitectura integrada del CRUD del estudiante - U2T3\nTres capas + Adapter + Decorator + Observer + Strategy
+
+left to right direction
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangleRoundCorner 12
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Estudiante /\nUsuario" as Usuario
+
+cloud "Datos externos\nCSV / JSON / API" as Externo #FFF2CC
+
+rectangle "Capa de Presentación" as CAPA_PRESENTACION #D9EAF7 {
+  rectangle "VistaEstudiante\nFormulario / Tabla CRUD" as Vista #EAF4FB
+}
+
+rectangle "Capa de Lógica_Negocio" as CAPA_NEGOCIO #DFF2E1 {
+
+  rectangle "IControlEstudiante\n(Interface)" as IControl #FFFFFF
+
+  rectangle "AdaptadorAuditoriaValidacion\n(Decorator)" as Decorator #FFE6CC
+  rectangle "AdaptadorEntradaEstudiante\n(Adapter)" as Adapter #FCE5CD
+  rectangle "ControlEstudiante\n(Servicio base)" as Servicio #F3FBF4
+
+  rectangle "GestorEventosEstudiante\n(Subject / Observable)" as Subject #EADCF8
+  rectangle "<<interface>>\nObservadorEstudiante" as IObserver #E8D5F5
+  rectangle "AuditoriaObserver" as ObsAuditoria #F4D9E7
+  rectangle "HistorialObserver" as ObsHistorial #F4D9E7
+
+  rectangle "<<interface>>\nEstrategiaBusqueda" as IStrategy #D0E4FA
+  rectangle "ContextoBusqueda\n(Strategy Context)" as CtxBusqueda #DCEBFA
+  rectangle "BuscarPorID" as EstrategiaID #E8F4FD
+  rectangle "BuscarPorNombre" as EstrategiaNombre #E8F4FD
+  rectangle "BuscarPorEdad" as EstrategiaEdad #E8F4FD
+}
+
+rectangle "Capa de Datos" as CAPA_DATOS #F3E0F7 {
+  rectangle "RepositorioEstudiante" as Repositorio #FAF1FC
+  database "Fuente de datos interna\nMemoria / Archivo / BD" as FuenteDatos #FFFFFF
+  rectangle "Estudiante\n(ID, Nombres, Edad)" as Entidad #FCF7FD
+}
+
+' === Relaciones de Presentación ===
+Usuario --> Vista : interacción
+Vista --> Decorator : solicitudes CRUD
+
+' === Relaciones Decorator / Adapter / Servicio ===
+Decorator ..|> IControl
+Servicio ..|> IControl
+Decorator --> IControl : contiene (wrap)
+
+Adapter --> IControl : invoca
+Externo --> Adapter : codigo, nombreCompleto, anios
+
+' === Relaciones Strategy ===
+Servicio --> CtxBusqueda : buscar estudiante
+CtxBusqueda --> IStrategy : usa estrategia activa
+EstrategiaID ..|> IStrategy
+EstrategiaNombre ..|> IStrategy
+EstrategiaEdad ..|> IStrategy
+
+' === Relaciones Observer ===
+Servicio --> Subject : notificar eventos
+Subject --> IObserver : notificar()
+ObsAuditoria ..|> IObserver
+ObsHistorial ..|> IObserver
+Subject --> ObsAuditoria : registrar evento
+Subject --> ObsHistorial : actualizar historial
+
+' === Relaciones Datos ===
+Servicio --> Repositorio : guardar / listar /\nactualizar / eliminar
+Repositorio --> FuenteDatos : persistencia
+Repositorio --> Entidad : almacena / recupera
+
+' === Notas explicativas ===
+note top of CtxBusqueda #FFF2CC
+Strategy:
+Permite cambiar dinámicamente
+la búsqueda por ID, por Nombre
+o por Edad sin modificar
+el cliente principal.
+end note
+
+note top of Subject #FFF2CC
+Observer:
+Notifica eventos cuando
+se crea, actualiza o elimina
+un estudiante.
+end note
+
+note bottom of Decorator #FFF2CC
+Decorator (U2T2):
+Agrega validación y auditoría
+sin modificar el servicio base.
+end note
+
+note bottom of Adapter #FFF2CC
+Adapter (U2T2):
+Convierte datos externos
+a la estructura interna Estudiante.
+end note
+
+legend right
+|= Color |= Significado |
+|<#D9EAF7>| Capa de Presentación |
+|<#DFF2E1>| Capa de Lógica_Negocio |
+|<#F3E0F7>| Capa de Datos |
+|<#FCE5CD>| Adapter (U2T2) |
+|<#FFE6CC>| Decorator (U2T2) |
+|<#EADCF8>| Subject / Observer (U2T3) |
+|<#DCEBFA>| Strategy (U2T3) |
+endlegend
+
+@enduml

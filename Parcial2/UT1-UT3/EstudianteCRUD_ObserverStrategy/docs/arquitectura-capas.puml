@@ -1,0 +1,59 @@
+@startuml U2T1_Arquitectura_Base
+title Arquitectura base del CRUD del estudiante - U2T1\nTres capas
+
+left to right direction
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangleRoundCorner 12
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Estudiante /\nUsuario" as Usuario
+
+rectangle "Capa de Presentación" as CAPA_PRESENTACION #D9EAF7 {
+  rectangle "VistaEstudiante\n(Formulario / Tabla CRUD)" as Vista #EAF4FB
+}
+
+rectangle "Capa de Lógica_Negocio" as CAPA_NEGOCIO #DFF2E1 {
+  rectangle "ServicioEstudiante\n(Validaciones y reglas)" as Servicio #F3FBF4
+}
+
+rectangle "Capa de Datos" as CAPA_DATOS #F3E0F7 {
+  rectangle "RepositorioEstudiante / DAO" as Repositorio #FAF1FC
+  database "Fuente de datos interna\n(Memoria / Archivo / BD)" as FuenteDatos #FFFFFF
+  rectangle "Estudiante\n(ID, Nombres, Edad)" as Entidad #FCF7FD
+}
+
+Usuario --> Vista : interacción
+Vista --> Servicio : solicitudes CRUD
+Servicio --> Repositorio : guardar / listar /\nactualizar / eliminar
+Repositorio --> FuenteDatos : persistencia
+Repositorio --> Entidad : almacena / recupera
+
+note bottom of Vista #FFF2CC
+Presentación:
+Interactúa con el usuario.
+No accede a datos directamente.
+end note
+
+note bottom of Servicio #FFF2CC
+Lógica_Negocio:
+Aplica reglas y validaciones.
+Comunica la Vista con los Datos.
+end note
+
+note bottom of Repositorio #FFF2CC
+Datos:
+Maneja la persistencia de
+la entidad Estudiante.
+end note
+
+legend right
+|= Color |= Significado |
+|<#D9EAF7>| Capa de Presentación |
+|<#DFF2E1>| Capa de Lógica_Negocio |
+|<#F3E0F7>| Capa de Datos |
+endlegend
+
+@enduml
+

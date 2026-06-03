@@ -1,0 +1,67 @@
+@startuml U2T2_Arquitectura_Adapter_Decorator
+title Arquitectura integrada del CRUD del estudiante - U2T2\nTres capas + Adapter + Decorator
+
+left to right direction
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangleRoundCorner 12
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Estudiante /\nUsuario" as Usuario
+
+cloud "Datos externos\nCSV / JSON / API" as Externo #FFF2CC
+
+rectangle "Capa de Presentación" as CAPA_PRESENTACION #D9EAF7 {
+  rectangle "VistaEstudiante\nFormulario / Tabla CRUD" as Vista #EAF4FB
+}
+
+rectangle "Capa de Lógica_Negocio" as CAPA_NEGOCIO #DFF2E1 {
+  rectangle "IControlEstudiante\n(Interface)" as IControl #FFFFFF
+  rectangle "AdaptadorAuditoriaValidacion\n(Decorator)" as Decorator #FFE6CC
+  rectangle "AdaptadorEntradaEstudiante\n(Adapter)" as Adapter #FCE5CD
+  rectangle "ControlEstudiante\n(Servicio base)" as Servicio #F3FBF4
+}
+
+rectangle "Capa de Datos" as CAPA_DATOS #F3E0F7 {
+  rectangle "RepositorioEstudiante" as Repositorio #FAF1FC
+  database "Fuente de datos interna\nMemoria / Archivo / BD" as FuenteDatos #FFFFFF
+  rectangle "Estudiante\n(ID, Nombres, Edad)" as Entidad #FCF7FD
+}
+
+Usuario --> Vista : interacción
+Vista --> Decorator : solicitudes CRUD
+
+Decorator ..|> IControl
+Servicio ..|> IControl
+Decorator --> IControl : contiene (wrap)
+
+Adapter --> IControl : invoca
+Externo --> Adapter : codigo, nombreCompleto, anios
+
+Servicio --> Repositorio : guardar / listar /\nactualizar / eliminar
+Repositorio --> FuenteDatos : persistencia
+Repositorio --> Entidad : almacena / recupera
+
+note bottom of Decorator #FFF2CC
+Decorator:
+Agrega validación y auditoría
+sin modificar el servicio base.
+end note
+
+note bottom of Adapter #FFF2CC
+Adapter:
+Convierte datos externos
+a la estructura interna Estudiante.
+end note
+
+legend right
+|= Color |= Significado |
+|<#D9EAF7>| Capa de Presentación |
+|<#DFF2E1>| Capa de Lógica_Negocio |
+|<#F3E0F7>| Capa de Datos |
+|<#FCE5CD>| Adapter |
+|<#FFE6CC>| Decorator |
+endlegend
+
+@enduml
