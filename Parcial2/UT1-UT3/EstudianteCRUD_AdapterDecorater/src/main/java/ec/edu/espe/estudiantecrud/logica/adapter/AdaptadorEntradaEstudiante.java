@@ -1,6 +1,5 @@
 package ec.edu.espe.estudiantecrud.logica.adapter;
 
-import ec.edu.espe.estudiantecrud.logica.Estudiante;
 import ec.edu.espe.estudiantecrud.logica.IControlEstudiante;
 
 public class AdaptadorEntradaEstudiante {
