@@ -1,0 +1,43 @@
+package com.tekmess.snaar.util;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+/**
+ * Singleton para la conexión a la base de datos PostgreSQL.
+ * Capa de Datos – gestión centralizada de conexiones JDBC.
+ */
+public class ConexionBD {
+
+    private static ConexionBD instancia;
+
+    private static final String URL = "jdbc:postgresql://localhost:5432/snaar_tekmess";
+    private static final String USUARIO = "postgres";
+    private static final String CONTRASENA = "postgres";
+
+    private ConexionBD() {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("Driver PostgreSQL no encontrado: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Obtiene la instancia única (Singleton).
+     */
+    public static synchronized ConexionBD getInstancia() {
+        if (instancia == null) {
+            instancia = new ConexionBD();
+        }
+        return instancia;
+    }
+
+    /**
+     * Obtiene una conexión activa a la base de datos.
+     */
+    public Connection getConexion() throws SQLException {
+        return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
+    }
+}

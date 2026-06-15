@@ -1,0 +1,105 @@
+@startuml CU_Nivel1_RF01_GestionarEmpleado
+
+title Diagrama de Casos de Uso – Nivel 1\nRF-01: Gestionar Empleado
+
+left to right direction
+
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecaseRoundCorner 15
+skinparam defaultTextAlignment center
+skinparam usecaseFontSize 11
+skinparam actorFontSize 12
+
+skinparam usecase {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+}
+
+' ============================================================
+' ACTORES
+' ============================================================
+actor "Jefe Logística\n/ Operación" as JefeLog #D9EAF7
+
+' ============================================================
+' SISTEMA
+' ============================================================
+rectangle "Sistema SNAAR – RF-01: Gestionar Empleado" as SISTEMA #F8FAFC {
+
+  usecase "RF-SNAAR-01.01:\nCrear Empleado" as CU0101 #D9EAF7
+  usecase "RF-SNAAR-01.02:\nEditar Empleado" as CU0102 #D9EAF7
+  usecase "RF-SNAAR-01.03:\nEliminar Empleado" as CU0103 #D9EAF7
+  usecase "RF-SNAAR-01.04:\nConsultar Empleados" as CU0104 #D9EAF7
+  usecase "RF-SNAAR-01.05:\nValidar Datos\ndel Empleado" as CU0105 #FFE6CC
+  usecase "RF-SNAAR-01.06:\nGenerar\nCredenciales" as CU0106 #FFE6CC
+
+}
+
+' ============================================================
+' RELACIONES ACTOR → CASOS DE USO
+' ============================================================
+JefeLog --> CU0101
+JefeLog --> CU0102
+JefeLog --> CU0103
+JefeLog --> CU0104
+
+' ============================================================
+' RELACIONES <<include>> Y <<extend>>
+' ============================================================
+CU0101 ..> CU0105 : <<include>>
+CU0102 ..> CU0105 : <<include>>
+CU0101 ..> CU0106 : <<include>>
+
+CU0102 ..> CU0104 : <<extend>>\n[seleccionar desde listado]
+CU0103 ..> CU0104 : <<extend>>\n[seleccionar desde listado]
+
+' ============================================================
+' NOTAS
+' ============================================================
+note right of CU0101 #FFF2CC
+  Registra nuevo empleado.
+  Valida datos (01.05).
+  Genera credenciales (01.06).
+  Verifica cédula no duplicada.
+end note
+
+note right of CU0102 #FFF2CC
+  Modifica nombres, correo o rol.
+  La cédula NO se puede editar.
+  Valida datos antes de guardar.
+end note
+
+note right of CU0103 #FFF2CC
+  Eliminación permanente.
+  Requiere confirmación.
+  Invalida sesión activa
+  del empleado eliminado.
+end note
+
+note bottom of CU0105 #E8F5E9
+  <<Proceso interno>>
+  Valida: cédula (10 dígitos),
+  rol válido, correo institucional.
+  Reutilizado por 01.01 y 01.02.
+end note
+
+note bottom of CU0106 #E8F5E9
+  <<Proceso interno>>
+  Genera usuario y contraseña.
+  Marca primer acceso obligatorio.
+  Invocado solo por 01.01.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Significado |
+|<#D9EAF7>| Caso de uso con actor |
+|<#FFE6CC>| Proceso interno del sistema |
+|<#E8F5E9>| Nota de proceso interno |
+|<#FFF2CC>| Nota explicativa |
+endlegend
+
+@enduml

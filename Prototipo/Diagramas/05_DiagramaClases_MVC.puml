@@ -1,0 +1,349 @@
+@startuml DiagramaClases_MVC_SNAAR
+
+title Diagrama de Clases – Arquitectura MVC en Capas\nSistema SNAAR – TekMess
+
+skinparam shadowing false
+skinparam classRoundCorner 10
+skinparam classFontSize 11
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+
+skinparam class {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+  HeaderBackgroundColor #D9EAF7
+}
+
+skinparam package {
+  BackgroundColor #FAFBFC
+  BorderColor #CBD5E1
+  FontColor #334155
+}
+
+' ============================================================
+' CAPA MODELO – ENTIDADES
+' ============================================================
+package "Modelo (Entidades)" #F3E0F7 {
+
+  enum Rol {
+    GUARDIA
+    SUPERVISOR
+    CENTRALISTA
+    JEFE_LOGISTICA
+  }
+
+  enum EstadoCuenta {
+    ACTIVO
+    BLOQUEADO
+    INACTIVO
+  }
+
+  class Empleado {
+    - cedula : String
+    - nombres : String
+    - correo : String
+    - rol : Rol
+    - fechaCreacion : Date
+    - fechaModificacion : Date
+    + getCedula() : String
+    + setCedula(cedula : String) : void
+    + getNombres() : String
+    + setNombres(nombres : String) : void
+    + getCorreo() : String
+    + setCorreo(correo : String) : void
+    + getRol() : Rol
+    + setRol(rol : Rol) : void
+    + getFechaCreacion() : Date
+    + getFechaModificacion() : Date
+  }
+
+  class Usuario {
+    - idUsuario : int
+    - nombreUsuario : String
+    - contrasenaHash : String
+    - estadoCuenta : EstadoCuenta
+    - intentosFallidos : int
+    - primerAcceso : boolean
+    - ultimoAcceso : Date
+    + getNombreUsuario() : String
+    + setNombreUsuario(nombre : String) : void
+    + getEstadoCuenta() : EstadoCuenta
+    + setEstadoCuenta(estado : EstadoCuenta) : void
+    + isPrimerAcceso() : boolean
+    + setPrimerAcceso(valor : boolean) : void
+    + getIntentosFallidos() : int
+    + incrementarIntentos() : void
+    + reiniciarIntentos() : void
+  }
+
+  class Sesion {
+    - idSesion : String
+    - fechaInicio : Date
+    - fechaExpiracion : Date
+    - activa : boolean
+    + isActiva() : boolean
+    + invalidar() : void
+    + renovar() : void
+    + isExpirada() : boolean
+  }
+
+  class Reporte {
+    - idReporte : int
+    - fechaGeneracion : Date
+    - fechaInicio : Date
+    - fechaFin : Date
+    - totalEmpleadosCreados : int
+    - totalEmpleadosEditados : int
+    - totalEmpleadosEliminados : int
+    - totalAccesosFallidos : int
+    - generadoPor : String
+    + getIdReporte() : int
+    + getFechaGeneracion() : Date
+    + getTotalEmpleadosCreados() : int
+    + getTotalAccesosFallidos() : int
+  }
+
+  class Anotacion {
+    - idAnotacion : int
+    - contenido : String
+    - fechaCreacion : Date
+    - autor : String
+    + getContenido() : String
+    + setContenido(texto : String) : void
+    + getAutor() : String
+  }
+
+  ' Relaciones entre entidades
+  Empleado "1" -- "1" Usuario : tiene >
+  Empleado --> Rol : posee >
+  Usuario --> EstadoCuenta : tiene >
+  Usuario "1" -- "0..*" Sesion : mantiene >
+  Reporte "1" -- "0..*" Anotacion : contiene >
+}
+
+' ============================================================
+' CAPA MODELO – DAO (Acceso a Datos)
+' ============================================================
+package "Modelo (DAO)" #FCF7FD {
+
+  interface IEmpleadoDAO <<interface>> {
+    + crear(empleado : Empleado) : boolean
+    + editar(empleado : Empleado) : boolean
+    + eliminar(cedula : String) : boolean
+    + buscarPorCedula(cedula : String) : Empleado
+    + listarTodos() : List<Empleado>
+    + existeCedula(cedula : String) : boolean
+  }
+
+  interface IUsuarioDAO <<interface>> {
+    + crear(usuario : Usuario) : boolean
+    + buscarPorNombreUsuario(nombre : String) : Usuario
+    + buscarPorCedula(cedula : String) : Usuario
+    + actualizarContrasena(idUsuario : int, hash : String) : boolean
+    + actualizarEstado(idUsuario : int, estado : EstadoCuenta) : boolean
+    + actualizarIntentos(idUsuario : int, intentos : int) : boolean
+  }
+
+  interface IReporteDAO <<interface>> {
+    + guardar(reporte : Reporte) : boolean
+    + buscarPorId(id : int) : Reporte
+    + listarPorFechas(inicio : Date, fin : Date) : List<Reporte>
+    + listarTodos() : List<Reporte>
+    + agregarAnotacion(idReporte : int, anotacion : Anotacion) : boolean
+  }
+
+  class EmpleadoDAO implements IEmpleadoDAO {
+    - conexion : Connection
+    + crear(empleado : Empleado) : boolean
+    + editar(empleado : Empleado) : boolean
+    + eliminar(cedula : String) : boolean
+    + buscarPorCedula(cedula : String) : Empleado
+    + listarTodos() : List<Empleado>
+    + existeCedula(cedula : String) : boolean
+  }
+
+  class UsuarioDAO implements IUsuarioDAO {
+    - conexion : Connection
+    + crear(usuario : Usuario) : boolean
+    + buscarPorNombreUsuario(nombre : String) : Usuario
+    + buscarPorCedula(cedula : String) : Usuario
+    + actualizarContrasena(idUsuario : int, hash : String) : boolean
+    + actualizarEstado(idUsuario : int, estado : EstadoCuenta) : boolean
+    + actualizarIntentos(idUsuario : int, intentos : int) : boolean
+  }
+
+  class ReporteDAO implements IReporteDAO {
+    - conexion : Connection
+    + guardar(reporte : Reporte) : boolean
+    + buscarPorId(id : int) : Reporte
+    + listarPorFechas(inicio : Date, fin : Date) : List<Reporte>
+    + listarTodos() : List<Reporte>
+    + agregarAnotacion(idReporte : int, anotacion : Anotacion) : boolean
+  }
+}
+
+' ============================================================
+' CAPA CONTROLADOR – SERVICIOS / LÓGICA DE NEGOCIO
+' ============================================================
+package "Controlador (Servicios)" #DFF2E1 {
+
+  interface IEmpleadoServicio <<interface>> {
+    + crearEmpleado(empleado : Empleado) : String
+    + editarEmpleado(empleado : Empleado) : String
+    + eliminarEmpleado(cedula : String) : String
+    + consultarEmpleados() : List<Empleado>
+    + buscarEmpleado(cedula : String) : Empleado
+  }
+
+  interface IAuthServicio <<interface>> {
+    + iniciarSesion(usuario : String, contrasena : String) : Sesion
+    + cambiarContrasena(usuario : String, actual : String, nueva : String) : String
+    + recuperarContrasena(correo : String, usuario : String, nueva : String) : String
+    + cerrarSesion(idSesion : String) : boolean
+  }
+
+  interface IReporteServicio <<interface>> {
+    + generarReporte(inicio : Date, fin : Date, generadoPor : String) : Reporte
+    + consultarHistorial(inicio : Date, fin : Date) : List<Reporte>
+    + agregarAnotacion(idReporte : int, anotacion : Anotacion) : boolean
+    + exportarPDF(idReporte : int) : byte[]
+  }
+
+  class EmpleadoServicio implements IEmpleadoServicio {
+    - empleadoDAO : IEmpleadoDAO
+    - validador : ValidadorDatos
+    - generadorCredenciales : GeneradorCredenciales
+    + crearEmpleado(empleado : Empleado) : String
+    + editarEmpleado(empleado : Empleado) : String
+    + eliminarEmpleado(cedula : String) : String
+    + consultarEmpleados() : List<Empleado>
+    + buscarEmpleado(cedula : String) : Empleado
+  }
+
+  class AuthServicio implements IAuthServicio {
+    - usuarioDAO : IUsuarioDAO
+    - cifrador : CifradorContrasena
+    + iniciarSesion(usuario : String, contrasena : String) : Sesion
+    + cambiarContrasena(usuario : String, actual : String, nueva : String) : String
+    + recuperarContrasena(correo : String, usuario : String, nueva : String) : String
+    + cerrarSesion(idSesion : String) : boolean
+  }
+
+  class ReporteServicio implements IReporteServicio {
+    - reporteDAO : IReporteDAO
+    - empleadoDAO : IEmpleadoDAO
+    - usuarioDAO : IUsuarioDAO
+    + generarReporte(inicio : Date, fin : Date, generadoPor : String) : Reporte
+    + consultarHistorial(inicio : Date, fin : Date) : List<Reporte>
+    + agregarAnotacion(idReporte : int, anotacion : Anotacion) : boolean
+    + exportarPDF(idReporte : int) : byte[]
+  }
+}
+
+' ============================================================
+' CAPA VISTA – CONTROLADORES HTTP (Servlets)
+' ============================================================
+package "Vista (Controladores HTTP)" #D9EAF7 {
+
+  class EmpleadoController {
+    - empleadoServicio : IEmpleadoServicio
+    + doGet(req : HttpServletRequest, resp : HttpServletResponse) : void
+    + doPost(req : HttpServletRequest, resp : HttpServletResponse) : void
+    - listarEmpleados(req, resp) : void
+    - mostrarFormulario(req, resp) : void
+    - crearEmpleado(req, resp) : void
+    - editarEmpleado(req, resp) : void
+    - eliminarEmpleado(req, resp) : void
+  }
+
+  class AuthController {
+    - authServicio : IAuthServicio
+    + doGet(req : HttpServletRequest, resp : HttpServletResponse) : void
+    + doPost(req : HttpServletRequest, resp : HttpServletResponse) : void
+    - mostrarLogin(req, resp) : void
+    - procesarLogin(req, resp) : void
+    - mostrarCambioContrasena(req, resp) : void
+    - procesarCambioContrasena(req, resp) : void
+    - procesarRecuperacion(req, resp) : void
+  }
+
+  class ReporteController {
+    - reporteServicio : IReporteServicio
+    + doGet(req : HttpServletRequest, resp : HttpServletResponse) : void
+    + doPost(req : HttpServletRequest, resp : HttpServletResponse) : void
+    - mostrarModuloReportes(req, resp) : void
+    - generarReporte(req, resp) : void
+    - consultarHistorial(req, resp) : void
+    - exportarPDF(req, resp) : void
+    - agregarAnotacion(req, resp) : void
+  }
+}
+
+' ============================================================
+' UTILIDADES
+' ============================================================
+package "Utilidades" #FFF2CC {
+
+  class ValidadorDatos {
+    + validarCedula(cedula : String) : String
+    + validarRol(rol : String) : String
+    + validarCorreo(correo : String) : String
+    + validarContrasena(contrasena : String) : String
+    + validarDatosEmpleado(emp : Empleado) : List<String>
+  }
+
+  class GeneradorCredenciales {
+    + generarNombreUsuario(empleado : Empleado) : String
+    + generarContrasenaInicial() : String
+  }
+
+  class CifradorContrasena {
+    + cifrar(contrasena : String) : String
+    + verificar(plano : String, hash : String) : boolean
+  }
+
+  class ConexionBD {
+    - {static} instancia : ConexionBD
+    - conexion : Connection
+    + {static} getInstancia() : ConexionBD
+    + getConexion() : Connection
+    + cerrar() : void
+  }
+}
+
+' ============================================================
+' RELACIONES ENTRE CAPAS
+' ============================================================
+EmpleadoController --> IEmpleadoServicio : usa
+AuthController --> IAuthServicio : usa
+ReporteController --> IReporteServicio : usa
+
+EmpleadoServicio --> IEmpleadoDAO : accede
+EmpleadoServicio --> ValidadorDatos : valida
+EmpleadoServicio --> GeneradorCredenciales : genera
+
+AuthServicio --> IUsuarioDAO : accede
+AuthServicio --> CifradorContrasena : cifra
+
+ReporteServicio --> IReporteDAO : accede
+ReporteServicio --> IEmpleadoDAO : consulta
+ReporteServicio --> IUsuarioDAO : consulta
+
+EmpleadoDAO --> ConexionBD : usa
+UsuarioDAO --> ConexionBD : usa
+ReporteDAO --> ConexionBD : usa
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Capa |
+|<#D9EAF7>| Vista (Controladores HTTP) |
+|<#DFF2E1>| Controlador (Servicios / Lógica) |
+|<#F3E0F7>| Modelo (Entidades) |
+|<#FCF7FD>| Modelo (DAO / Acceso a Datos) |
+|<#FFF2CC>| Utilidades |
+endlegend
+
+@enduml

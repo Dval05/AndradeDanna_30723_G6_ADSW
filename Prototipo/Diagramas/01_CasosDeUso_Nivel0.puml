@@ -1,0 +1,90 @@
+@startuml CU_Nivel0_SNAAR
+
+title Diagrama de Casos de Uso – Nivel 0\nSistema de Notificación Automática y Auditoría de Reportes (SNAAR)
+
+left to right direction
+
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecaseRoundCorner 15
+skinparam defaultTextAlignment center
+skinparam usecaseFontSize 12
+skinparam actorFontSize 12
+
+skinparam usecase {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+}
+
+' ============================================================
+' ACTORES
+' ============================================================
+actor "Jefe Logística\n/ Operación" as JefeLog #D9EAF7
+actor "Supervisor" as Supervisor #DFF2E1
+actor "Centralista" as Centralista #FFF2CC
+actor "Guardia" as Guardia #F3E0F7
+
+' ============================================================
+' SISTEMA
+' ============================================================
+rectangle "Sistema SNAAR – TekMess" as SISTEMA #F8FAFC {
+
+  usecase "RF-01:\nGestionar\nEmpleado" as RF01 #D9EAF7
+  usecase "RF-02:\nAdministrar\nSistema" as RF02 #DFF2E1
+  usecase "RF-03:\nGenerar Reporte\nAnalítico" as RF03 #F3E0F7
+
+}
+
+' ============================================================
+' RELACIONES
+' ============================================================
+JefeLog --> RF01
+JefeLog --> RF02
+JefeLog --> RF03
+
+Supervisor --> RF02
+Supervisor --> RF03
+
+Centralista --> RF02
+
+Guardia --> RF02
+
+' ============================================================
+' NOTAS
+' ============================================================
+note right of RF01 #FFF2CC
+  CRUD de empleados.
+  Validación de datos.
+  Generación de credenciales.
+  Solo acceso: Jefe Logística.
+end note
+
+note right of RF02 #FFF2CC
+  Autenticación con control
+  de intentos fallidos.
+  Cambio y recuperación
+  de contraseña.
+  Todos los roles.
+end note
+
+note right of RF03 #FFF2CC
+  Reportes de gestión de
+  empleados y accesos fallidos.
+  Filtro por fechas.
+  Exportación PDF.
+  Jefe Logística y Supervisor.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Significado |
+|<#D9EAF7>| RF-01: Gestionar Empleado |
+|<#DFF2E1>| RF-02: Administrar Sistema |
+|<#F3E0F7>| RF-03: Generar Reporte Analítico |
+|<#FFF2CC>| Notas explicativas |
+endlegend
+
+@enduml

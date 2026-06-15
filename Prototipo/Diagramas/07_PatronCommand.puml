@@ -1,0 +1,237 @@
+@startuml Patron_Command_SNAAR
+
+title Patrón Command – SNAAR TekMess\nEncapsulamiento de operaciones CRUD y de autenticación como comandos
+
+skinparam shadowing false
+skinparam classRoundCorner 10
+skinparam classFontSize 11
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+
+skinparam class {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+  HeaderBackgroundColor #D9EAF7
+}
+
+' ============================================================
+' INTERFACE COMMAND
+' ============================================================
+interface IComando <<interface>> #FFFFFF {
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+' ============================================================
+' RESULTADO DEL COMANDO
+' ============================================================
+class ResultadoComando #FFF2CC {
+  - exitoso : boolean
+  - mensaje : String
+  - datos : Object
+  + isExitoso() : boolean
+  + getMensaje() : String
+  + getDatos() : Object
+}
+
+' ============================================================
+' INVOKER (Invocador)
+' ============================================================
+class InvocadorOperaciones #D9EAF7 {
+  - historialComandos : Stack<IComando>
+  - comandosPendientes : Queue<IComando>
+  + ejecutarComando(comando : IComando) : ResultadoComando
+  + deshacerUltimo() : ResultadoComando
+  + agregarAPendientes(comando : IComando) : void
+  + ejecutarPendientes() : List<ResultadoComando>
+  + getHistorial() : List<IComando>
+  + limpiarHistorial() : void
+}
+
+' ============================================================
+' COMANDOS CONCRETOS – GESTIÓN DE EMPLEADOS (RF-01)
+' ============================================================
+class CrearEmpleadoComando #DFF2E1 {
+  - receptor : EmpleadoServicio
+  - empleado : Empleado
+  - credencialesGeneradas : String
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+class EditarEmpleadoComando #DFF2E1 {
+  - receptor : EmpleadoServicio
+  - empleado : Empleado
+  - datosAnteriores : Empleado
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+class EliminarEmpleadoComando #DFF2E1 {
+  - receptor : EmpleadoServicio
+  - cedula : String
+  - empleadoRespaldo : Empleado
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+class ConsultarEmpleadosComando #DFF2E1 {
+  - receptor : EmpleadoServicio
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+' ============================================================
+' COMANDOS CONCRETOS – AUTENTICACIÓN (RF-02)
+' ============================================================
+class IniciarSesionComando #FFE6CC {
+  - receptor : AuthServicio
+  - nombreUsuario : String
+  - contrasena : String
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+class CambiarContrasenaComando #FFE6CC {
+  - receptor : AuthServicio
+  - nombreUsuario : String
+  - contrasenaActual : String
+  - contrasenaNueva : String
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+class RecuperarContrasenaComando #FFE6CC {
+  - receptor : AuthServicio
+  - correo : String
+  - nombreUsuario : String
+  - contrasenaNueva : String
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+' ============================================================
+' COMANDOS CONCRETOS – REPORTES (RF-03)
+' ============================================================
+class GenerarReporteComando #F3E0F7 {
+  - receptor : ReporteServicio
+  - fechaInicio : Date
+  - fechaFin : Date
+  - generadoPor : String
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+class ExportarPDFComando #F3E0F7 {
+  - receptor : ReporteServicio
+  - idReporte : int
+  + ejecutar() : ResultadoComando
+  + deshacer() : ResultadoComando
+  + getDescripcion() : String
+}
+
+' ============================================================
+' RECEIVERS (Receptores – Servicios)
+' ============================================================
+class EmpleadoServicio <<Receiver>> #F3FBF4 {
+  + crearEmpleado(emp : Empleado) : String
+  + editarEmpleado(emp : Empleado) : String
+  + eliminarEmpleado(cedula : String) : String
+  + consultarEmpleados() : List<Empleado>
+}
+
+class AuthServicio <<Receiver>> #F3FBF4 {
+  + iniciarSesion(user : String, pass : String) : Sesion
+  + cambiarContrasena(user : String, actual : String, nueva : String) : String
+  + recuperarContrasena(correo : String, user : String, nueva : String) : String
+}
+
+class ReporteServicio <<Receiver>> #F3FBF4 {
+  + generarReporte(inicio : Date, fin : Date, autor : String) : Reporte
+  + exportarPDF(id : int) : byte[]
+}
+
+' ============================================================
+' RELACIONES
+' ============================================================
+IComando <|.. CrearEmpleadoComando
+IComando <|.. EditarEmpleadoComando
+IComando <|.. EliminarEmpleadoComando
+IComando <|.. ConsultarEmpleadosComando
+IComando <|.. IniciarSesionComando
+IComando <|.. CambiarContrasenaComando
+IComando <|.. RecuperarContrasenaComando
+IComando <|.. GenerarReporteComando
+IComando <|.. ExportarPDFComando
+
+InvocadorOperaciones --> "0..*" IComando : ejecuta / almacena
+
+CrearEmpleadoComando --> EmpleadoServicio : invoca
+EditarEmpleadoComando --> EmpleadoServicio : invoca
+EliminarEmpleadoComando --> EmpleadoServicio : invoca
+ConsultarEmpleadosComando --> EmpleadoServicio : invoca
+
+IniciarSesionComando --> AuthServicio : invoca
+CambiarContrasenaComando --> AuthServicio : invoca
+RecuperarContrasenaComando --> AuthServicio : invoca
+
+GenerarReporteComando --> ReporteServicio : invoca
+ExportarPDFComando --> ReporteServicio : invoca
+
+IComando ..> ResultadoComando : retorna
+
+' ============================================================
+' NOTAS
+' ============================================================
+note top of InvocadorOperaciones #D9EAF7
+  Invoker:
+  Los Controladores HTTP usan el
+  InvocadorOperaciones para ejecutar
+  comandos. Mantiene historial para
+  deshacer y trazabilidad.
+end note
+
+note bottom of CrearEmpleadoComando #E8F5E9
+  Guarda respaldo de credenciales
+  generadas. deshacer() elimina
+  el empleado recién creado.
+end note
+
+note bottom of EliminarEmpleadoComando #E8F5E9
+  Guarda copia del empleado
+  antes de eliminar. deshacer()
+  restaura el registro completo.
+end note
+
+note right of IniciarSesionComando #FFF2CC
+  Comandos de Auth NO soportan
+  deshacer() por seguridad.
+  Retornan ResultadoComando
+  con estado de la operación.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Rol en Command |
+|<#FFFFFF>| Interface IComando |
+|<#D9EAF7>| Invoker (InvocadorOperaciones) |
+|<#DFF2E1>| Comandos RF-01 (Empleados) |
+|<#FFE6CC>| Comandos RF-02 (Autenticación) |
+|<#F3E0F7>| Comandos RF-03 (Reportes) |
+|<#F3FBF4>| Receivers (Servicios) |
+|<#FFF2CC>| Resultado / Notas |
+endlegend
+
+@enduml

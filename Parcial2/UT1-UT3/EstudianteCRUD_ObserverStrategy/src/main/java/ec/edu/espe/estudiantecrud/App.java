@@ -7,7 +7,12 @@ import ec.edu.espe.estudiantecrud.presentacion.FormularioCrudEstudiante;
 /**
  * Punto de entrada del sistema.
  */
-public class App {
+public final class App {
+
+    private App() {
+        // Evita instanciación
+    }
+
     public static void main(String[] args) {
         // Iniciar la interfaz gráfica de forma segura
         SwingUtilities.invokeLater(() -> {

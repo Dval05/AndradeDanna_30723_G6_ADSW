@@ -1,0 +1,177 @@
+@startuml Patron_Observer_SNAAR
+
+title Patrón Observer – SNAAR TekMess\nNotificación automática de cambios en Gestión de Empleados y Autenticación
+
+skinparam shadowing false
+skinparam classRoundCorner 10
+skinparam classFontSize 11
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+
+skinparam class {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+  HeaderBackgroundColor #D9EAF7
+}
+
+' ============================================================
+' INTERFACE OBSERVER (Observador)
+' ============================================================
+interface IObservador <<interface>> #FFFFFF {
+  + actualizar(evento : EventoSistema) : void
+}
+
+' ============================================================
+' INTERFACE SUBJECT (Sujeto Observable)
+' ============================================================
+interface ISujeto <<interface>> #FFFFFF {
+  + agregarObservador(obs : IObservador) : void
+  + eliminarObservador(obs : IObservador) : void
+  + notificarObservadores(evento : EventoSistema) : void
+}
+
+' ============================================================
+' CLASE EVENTO
+' ============================================================
+class EventoSistema #FFF2CC {
+  - tipoEvento : TipoEvento
+  - datos : Map<String, Object>
+  - fechaHora : Date
+  - actor : String
+  + getTipoEvento() : TipoEvento
+  + getDatos() : Map<String, Object>
+  + getFechaHora() : Date
+  + getActor() : String
+}
+
+enum TipoEvento #FFF2CC {
+  EMPLEADO_CREADO
+  EMPLEADO_EDITADO
+  EMPLEADO_ELIMINADO
+  LOGIN_EXITOSO
+  LOGIN_FALLIDO
+  CUENTA_BLOQUEADA
+  CONTRASENA_CAMBIADA
+  REPORTE_GENERADO
+}
+
+' ============================================================
+' SUJETOS CONCRETOS (ConcreteSubject)
+' ============================================================
+class SujetoGestionEmpleado #DFF2E1 {
+  - observadores : List<IObservador>
+  - empleadoServicio : EmpleadoServicio
+  + agregarObservador(obs : IObservador) : void
+  + eliminarObservador(obs : IObservador) : void
+  + notificarObservadores(evento : EventoSistema) : void
+  + crearEmpleado(empleado : Empleado) : String
+  + editarEmpleado(empleado : Empleado) : String
+  + eliminarEmpleado(cedula : String) : String
+}
+
+class SujetoAutenticacion #DFF2E1 {
+  - observadores : List<IObservador>
+  - authServicio : AuthServicio
+  + agregarObservador(obs : IObservador) : void
+  + eliminarObservador(obs : IObservador) : void
+  + notificarObservadores(evento : EventoSistema) : void
+  + iniciarSesion(usuario : String, contrasena : String) : Sesion
+  + cambiarContrasena(usuario : String, actual : String, nueva : String) : String
+}
+
+' ============================================================
+' OBSERVADORES CONCRETOS (ConcreteObserver)
+' ============================================================
+class ObservadorAuditoria #FFE6CC {
+  - registroAuditoria : List<EventoSistema>
+  + actualizar(evento : EventoSistema) : void
+  - registrarEnBitacora(evento : EventoSistema) : void
+  + getRegistros() : List<EventoSistema>
+}
+
+class ObservadorNotificacion #FFE6CC {
+  + actualizar(evento : EventoSistema) : void
+  - enviarAlertaJefe(evento : EventoSistema) : void
+  - enviarAlertaSupervisor(evento : EventoSistema) : void
+  - notificarBloqueo(evento : EventoSistema) : void
+}
+
+class ObservadorReporte #FFE6CC {
+  - contadorEventos : Map<TipoEvento, Integer>
+  + actualizar(evento : EventoSistema) : void
+  - actualizarContadores(evento : EventoSistema) : void
+  + getContadorPorTipo(tipo : TipoEvento) : int
+  + getContadoresPorPeriodo(inicio : Date, fin : Date) : Map
+}
+
+' ============================================================
+' RELACIONES
+' ============================================================
+ISujeto <|.. SujetoGestionEmpleado
+ISujeto <|.. SujetoAutenticacion
+
+IObservador <|.. ObservadorAuditoria
+IObservador <|.. ObservadorNotificacion
+IObservador <|.. ObservadorReporte
+
+SujetoGestionEmpleado --> "0..*" IObservador : notifica
+SujetoAutenticacion --> "0..*" IObservador : notifica
+
+EventoSistema --> TipoEvento : tiene
+SujetoGestionEmpleado ..> EventoSistema : crea
+SujetoAutenticacion ..> EventoSistema : crea
+
+' ============================================================
+' NOTAS
+' ============================================================
+note top of SujetoGestionEmpleado #E8F5E9
+  ConcreteSubject (RF-01):
+  Notifica a observadores cuando
+  se crea, edita o elimina un
+  empleado. Datos del evento
+  incluyen cédula, acción y actor.
+end note
+
+note top of SujetoAutenticacion #E8F5E9
+  ConcreteSubject (RF-02):
+  Notifica en login exitoso,
+  login fallido, cuenta bloqueada
+  y cambio de contraseña.
+  Alimenta datos para RF-03.
+end note
+
+note bottom of ObservadorAuditoria #FFF2CC
+  Registra TODAS las operaciones
+  en bitácora para trazabilidad.
+  Quién, cuándo y qué operación.
+  Datos para RF-03 (reportes).
+end note
+
+note bottom of ObservadorNotificacion #FFF2CC
+  Envía alertas al Jefe Logística
+  ante eventos críticos:
+  bloqueo de cuenta, eliminación
+  de empleado, accesos fallidos.
+end note
+
+note bottom of ObservadorReporte #FFF2CC
+  Mantiene contadores actualizados
+  de cada tipo de evento para
+  la generación de reportes
+  analíticos (RF-03V2.01).
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Rol en Observer |
+|<#FFFFFF>| Interfaces (IObservador / ISujeto) |
+|<#DFF2E1>| Sujeto Concreto (ConcreteSubject) |
+|<#FFE6CC>| Observador Concreto (ConcreteObserver) |
+|<#FFF2CC>| Evento / Enumeración |
+|<#E8F5E9>| Nota de Sujeto |
+endlegend
+
+@enduml

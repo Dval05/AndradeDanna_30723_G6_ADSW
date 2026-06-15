@@ -1,0 +1,102 @@
+@startuml CU_Nivel1_RF03_GenerarReporte
+
+title Diagrama de Casos de Uso – Nivel 1\nRF-03V2: Generar Reporte Analítico
+
+left to right direction
+
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecaseRoundCorner 15
+skinparam defaultTextAlignment center
+skinparam usecaseFontSize 11
+skinparam actorFontSize 12
+
+skinparam usecase {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+}
+
+' ============================================================
+' ACTORES
+' ============================================================
+actor "Jefe Logística\n/ Operación" as JefeLog #D9EAF7
+actor "Supervisor" as Supervisor #DFF2E1
+
+' ============================================================
+' SISTEMA
+' ============================================================
+rectangle "Sistema SNAAR – RF-03V2: Generar Reporte Analítico" as SISTEMA #F8FAFC {
+
+  usecase "RF-SNAAR-03V2.01:\nGenerar Reporte" as CU0301 #F3E0F7
+  usecase "RF-SNAAR-03V2.02:\nConsultar Historial\nde Reportes" as CU0302 #F3E0F7
+
+  usecase "Exportar PDF" as ExportPDF #FFE6CC
+  usecase "Agregar\nAnotación" as Anotar #FFE6CC
+  usecase "Filtrar por\nRango de Fechas" as Filtrar #FFE6CC
+
+}
+
+' ============================================================
+' RELACIONES ACTOR → CASOS DE USO
+' ============================================================
+JefeLog --> CU0301
+JefeLog --> CU0302
+
+Supervisor --> CU0301
+Supervisor --> CU0302
+
+' ============================================================
+' RELACIONES <<include>> Y <<extend>>
+' ============================================================
+CU0301 ..> Filtrar : <<include>>
+CU0302 ..> Filtrar : <<include>>
+
+CU0301 ..> ExportPDF : <<extend>>\n[actor solicita exportar]
+CU0302 ..> ExportPDF : <<extend>>\n[actor solicita exportar]
+
+CU0301 ..> Anotar : <<extend>>\n[actor agrega nota]
+CU0302 ..> Anotar : <<extend>>\n[actor agrega nota]
+
+' ============================================================
+' NOTAS
+' ============================================================
+note right of CU0301 #FFF2CC
+  Genera reporte analítico
+  consolidando datos de:
+  • RF-01 (empleados CRUD)
+  • RF-02 (accesos fallidos)
+  Almacena reporte en BD.
+  Supervisor: solo sus guardias.
+  Jefe: todos los empleados.
+end note
+
+note right of CU0302 #FFF2CC
+  Consulta historial de reportes
+  previamente generados.
+  Filtro por fechas opcional.
+  Permite ver detalle, anotar
+  y exportar en PDF.
+  Datos base: solo lectura.
+end note
+
+note bottom of Filtrar #E8F5E9
+  Fecha fin debe ser
+  posterior a fecha inicio.
+  Si se omite, retorna
+  todos los reportes
+  según rol.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Significado |
+|<#F3E0F7>| Caso de uso principal |
+|<#FFE6CC>| Caso de uso secundario |
+|<#E8F5E9>| Nota de validación |
+|<#FFF2CC>| Nota explicativa |
+endlegend
+
+@enduml

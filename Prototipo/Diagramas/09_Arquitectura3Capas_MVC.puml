@@ -1,0 +1,203 @@
+@startuml Arquitectura_3Capas_SNAAR
+
+title Arquitectura de 3 Capas MVC + Observer + Command – SNAAR TekMess\nSistema de Notificación Automática y Auditoría de Reportes
+
+left to right direction
+
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangleRoundCorner 12
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Jefe Logística\n/ Operación" as JefeLog
+actor "Supervisor" as Supervisor
+actor "Centralista" as Centralista
+actor "Guardia" as Guardia
+
+' ============================================================
+' CAPA DE PRESENTACIÓN (Vista)
+' ============================================================
+rectangle "Capa de Presentación (Vista)" as CAPA_PRESENTACION #D9EAF7 {
+  rectangle "login.jsp\n(Boundary)\nFormulario de Acceso" as VistaLogin #EAF4FB
+  rectangle "empleados.jsp\n(Boundary)\nCRUD de Empleados" as VistaEmpleados #EAF4FB
+  rectangle "reportes.jsp\n(Boundary)\nReportes Analíticos" as VistaReportes #EAF4FB
+  rectangle "cambiarContrasena.jsp\n(Boundary)\nCambio de Contraseña" as VistaCambio #EAF4FB
+}
+
+' ============================================================
+' CAPA DE LÓGICA DE NEGOCIO (Controlador + Servicios)
+' ============================================================
+rectangle "Capa de Lógica de Negocio (Controlador)" as CAPA_NEGOCIO #DFF2E1 {
+
+  rectangle "<<Servlet>>\nAuthController\n(Controlador HTTP)" as CtrlAuth #F3FBF4
+  rectangle "<<Servlet>>\nEmpleadoController\n(Controlador HTTP)" as CtrlEmpleado #F3FBF4
+  rectangle "<<Servlet>>\nReporteController\n(Controlador HTTP)" as CtrlReporte #F3FBF4
+
+  rectangle "InvocadorOperaciones\n(Command – Invoker)" as Invoker #FFE6CC
+
+  rectangle "<<interface>>\nIComando" as IComando #FFFFFF
+
+  rectangle "CrearEmpleadoComando\nEditarEmpleadoComando\nEliminarEmpleadoComando\n(Command – ConcreteCommand)" as CmdEmpleado #FFE6CC
+
+  rectangle "IniciarSesionComando\nCambiarContrasenaComando\n(Command – ConcreteCommand)" as CmdAuth #FFE6CC
+
+  rectangle "GenerarReporteComando\nExportarPDFComando\n(Command – ConcreteCommand)" as CmdReporte #FFE6CC
+
+  rectangle "<<interface>>\nISujeto / IObservador" as IObserver #FFFFFF
+
+  rectangle "SujetoGestionEmpleado\nSujetoAutenticacion\n(Observer – Subject)" as Sujetos #CCEEFF
+
+  rectangle "ObservadorAuditoria\nObservadorNotificacion\nObservadorReporte\n(Observer – ConcreteObserver)" as Observadores #CCEEFF
+
+  rectangle "EmpleadoServicio\n(Receiver / Service)" as SrvEmpleado #F3FBF4
+  rectangle "AuthServicio\n(Receiver / Service)" as SrvAuth #F3FBF4
+  rectangle "ReporteServicio\n(Receiver / Service)" as SrvReporte #F3FBF4
+
+  rectangle "ValidadorDatos\n(Utilidad)" as Validador #FFF2CC
+  rectangle "GeneradorCredenciales\n(Utilidad)" as GenCred #FFF2CC
+  rectangle "CifradorContrasena\n(Utilidad)" as Cifrador #FFF2CC
+}
+
+' ============================================================
+' CAPA DE DATOS (Modelo)
+' ============================================================
+rectangle "Capa de Datos (Modelo)" as CAPA_DATOS #F3E0F7 {
+  rectangle "EmpleadoDAO\n(Persistencia / DAO)" as DAOEmpleado #FAF1FC
+  rectangle "UsuarioDAO\n(Persistencia / DAO)" as DAOUsuario #FAF1FC
+  rectangle "ReporteDAO\n(Persistencia / DAO)" as DAOReporte #FAF1FC
+  database "PostgreSQL\nBase de Datos\nSNAAR" as BD #FFFFFF
+  rectangle "Empleado | Usuario | Sesion\nReporte | Anotacion\n(Entities)" as Entidades #FCF7FD
+  rectangle "ConexionBD\n(Singleton)" as ConBD #FFF2CC
+}
+
+' ============================================================
+' RELACIONES ACTORES → PRESENTACIÓN
+' ============================================================
+JefeLog --> VistaLogin
+JefeLog --> VistaEmpleados
+JefeLog --> VistaReportes
+
+Supervisor --> VistaLogin
+Supervisor --> VistaReportes
+
+Centralista --> VistaLogin
+Guardia --> VistaLogin
+
+' ============================================================
+' PRESENTACIÓN → CONTROLADORES
+' ============================================================
+VistaLogin --> CtrlAuth : HTTP POST\n(login / recuperar)
+VistaEmpleados --> CtrlEmpleado : HTTP GET/POST\n(CRUD empleados)
+VistaReportes --> CtrlReporte : HTTP GET/POST\n(generar / consultar)
+VistaCambio --> CtrlAuth : HTTP POST\n(cambiar contraseña)
+
+' ============================================================
+' CONTROLADORES → INVOKER (Command)
+' ============================================================
+CtrlEmpleado --> Invoker : crea y ejecuta\ncomandos
+CtrlAuth --> Invoker : crea y ejecuta\ncomandos
+CtrlReporte --> Invoker : crea y ejecuta\ncomandos
+
+' ============================================================
+' INVOKER → COMANDOS
+' ============================================================
+Invoker --> IComando : ejecutar()
+CmdEmpleado ..|> IComando
+CmdAuth ..|> IComando
+CmdReporte ..|> IComando
+
+' ============================================================
+' COMANDOS → SERVICIOS (Receivers)
+' ============================================================
+CmdEmpleado --> SrvEmpleado : invoca
+CmdAuth --> SrvAuth : invoca
+CmdReporte --> SrvReporte : invoca
+
+' ============================================================
+' SERVICIOS → OBSERVER
+' ============================================================
+SrvEmpleado --> Sujetos : notifica eventos
+SrvAuth --> Sujetos : notifica eventos
+Sujetos ..|> IObserver
+Observadores ..|> IObserver
+Sujetos --> Observadores : notifica\nobservadores
+
+' ============================================================
+' SERVICIOS → UTILIDADES
+' ============================================================
+SrvEmpleado --> Validador : valida datos
+SrvEmpleado --> GenCred : genera credenciales
+SrvAuth --> Cifrador : cifra / verifica
+
+' ============================================================
+' SERVICIOS → DAO
+' ============================================================
+SrvEmpleado --> DAOEmpleado : CRUD
+SrvAuth --> DAOUsuario : consulta / actualiza
+SrvReporte --> DAOReporte : guarda / consulta
+SrvReporte --> DAOEmpleado : obtiene datos RF-01
+SrvReporte --> DAOUsuario : obtiene datos RF-02
+
+' ============================================================
+' DAO → BD
+' ============================================================
+DAOEmpleado --> ConBD : getConexion()
+DAOUsuario --> ConBD : getConexion()
+DAOReporte --> ConBD : getConexion()
+ConBD --> BD : JDBC
+DAOEmpleado --> Entidades : mapea
+DAOUsuario --> Entidades : mapea
+DAOReporte --> Entidades : mapea
+
+' ============================================================
+' NOTAS
+' ============================================================
+note bottom of Invoker #FFF2CC
+  Command Pattern:
+  Cada operación se encapsula
+  como un Comando con ejecutar()
+  y deshacer(). El Invoker mantiene
+  historial para trazabilidad.
+end note
+
+note bottom of Sujetos #E0F0FF
+  Observer Pattern:
+  Los servicios notifican eventos
+  (EMPLEADO_CREADO, LOGIN_FALLIDO,
+  CUENTA_BLOQUEADA) a los
+  observadores registrados.
+end note
+
+note bottom of VistaEmpleados #FFF2CC
+  La Presentación NUNCA
+  accede directamente a
+  los DAO ni a la BD.
+  Solo interactúa con los
+  Controladores HTTP.
+end note
+
+note bottom of ConBD #E8F5E9
+  Singleton Pattern:
+  Una única instancia de
+  conexión a PostgreSQL
+  compartida por todos
+  los DAOs.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Significado |
+|<#D9EAF7>| Capa de Presentación (Vista) |
+|<#DFF2E1>| Capa de Lógica de Negocio |
+|<#F3E0F7>| Capa de Datos (Modelo) |
+|<#FFE6CC>| Patrón Command |
+|<#CCEEFF>| Patrón Observer |
+|<#F3FBF4>| Controladores / Servicios |
+|<#FFF2CC>| Utilidades / Notas |
+|<#FFFFFF>| Interfaces / Base de Datos |
+endlegend
+
+@enduml

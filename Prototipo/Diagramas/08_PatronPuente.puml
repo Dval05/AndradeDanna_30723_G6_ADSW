@@ -1,0 +1,198 @@
+@startuml Patron_Puente_SNAAR
+
+title Patrón Bridge (Puente) – SNAAR TekMess\nDesacopla la abstracción de generación de reportes de su implementación de formato
+
+skinparam shadowing false
+skinparam classRoundCorner 10
+skinparam classFontSize 11
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+
+skinparam class {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+  HeaderBackgroundColor #D9EAF7
+}
+
+' ============================================================
+' IMPLEMENTOR (Interfaz de Implementación)
+' ============================================================
+interface IFormatoSalida <<Implementor>> #FFFFFF {
+  + renderizarEncabezado(titulo : String, periodo : String) : void
+  + renderizarSeccion(titulo : String, contenido : Map) : void
+  + renderizarTabla(encabezados : List, filas : List) : void
+  + renderizarGrafico(datos : Map, tipo : String) : void
+  + renderizarAnotaciones(anotaciones : List<Anotacion>) : void
+  + obtenerResultado() : Object
+  + getTipoFormato() : String
+}
+
+' ============================================================
+' IMPLEMENTORES CONCRETOS
+' ============================================================
+class FormatoPDF <<ConcreteImplementor>> #F3E0F7 {
+  - documento : PDFDocument
+  - paginaActual : int
+  + renderizarEncabezado(titulo : String, periodo : String) : void
+  + renderizarSeccion(titulo : String, contenido : Map) : void
+  + renderizarTabla(encabezados : List, filas : List) : void
+  + renderizarGrafico(datos : Map, tipo : String) : void
+  + renderizarAnotaciones(anotaciones : List<Anotacion>) : void
+  + obtenerResultado() : byte[]
+  + getTipoFormato() : String
+}
+
+class FormatoPantalla <<ConcreteImplementor>> #F3E0F7 {
+  - contenidoHTML : StringBuilder
+  + renderizarEncabezado(titulo : String, periodo : String) : void
+  + renderizarSeccion(titulo : String, contenido : Map) : void
+  + renderizarTabla(encabezados : List, filas : List) : void
+  + renderizarGrafico(datos : Map, tipo : String) : void
+  + renderizarAnotaciones(anotaciones : List<Anotacion>) : void
+  + obtenerResultado() : String
+  + getTipoFormato() : String
+}
+
+class FormatoCSV <<ConcreteImplementor>> #F3E0F7 {
+  - contenidoCSV : StringBuilder
+  + renderizarEncabezado(titulo : String, periodo : String) : void
+  + renderizarSeccion(titulo : String, contenido : Map) : void
+  + renderizarTabla(encabezados : List, filas : List) : void
+  + renderizarGrafico(datos : Map, tipo : String) : void
+  + renderizarAnotaciones(anotaciones : List<Anotacion>) : void
+  + obtenerResultado() : String
+  + getTipoFormato() : String
+}
+
+' ============================================================
+' ABSTRACTION (Abstracción)
+' ============================================================
+abstract class ReporteAbstracto <<Abstraction>> #DFF2E1 {
+  # formatoSalida : IFormatoSalida
+  # titulo : String
+  # fechaInicio : Date
+  # fechaFin : Date
+  # generadoPor : String
+  + ReporteAbstracto(formato : IFormatoSalida)
+  + setFormato(formato : IFormatoSalida) : void
+  + {abstract} construirReporte() : void
+  + {abstract} obtenerDatos() : Map<String, Object>
+  + generar() : Object
+}
+
+' ============================================================
+' REFINED ABSTRACTIONS (Abstracciones Refinadas)
+' ============================================================
+class ReporteGestionEmpleados <<RefinedAbstraction>> #D9EAF7 {
+  - empleadoDAO : IEmpleadoDAO
+  - totalCreados : int
+  - totalEditados : int
+  - totalEliminados : int
+  + construirReporte() : void
+  + obtenerDatos() : Map<String, Object>
+  - consultarEmpleadosCreados() : int
+  - consultarEmpleadosEditados() : int
+  - consultarEmpleadosEliminados() : int
+}
+
+class ReporteAccesosFallidos <<RefinedAbstraction>> #D9EAF7 {
+  - usuarioDAO : IUsuarioDAO
+  - totalAccesosFallidos : int
+  - desglosePorUsuario : Map<String, Integer>
+  - cuentasBloqueadas : int
+  + construirReporte() : void
+  + obtenerDatos() : Map<String, Object>
+  - consultarAccesosFallidos() : int
+  - consultarDesglose() : Map<String, Integer>
+}
+
+class ReporteConsolidado <<RefinedAbstraction>> #D9EAF7 {
+  - reporteEmpleados : ReporteGestionEmpleados
+  - reporteAccesos : ReporteAccesosFallidos
+  - anotaciones : List<Anotacion>
+  + construirReporte() : void
+  + obtenerDatos() : Map<String, Object>
+  + agregarAnotacion(anotacion : Anotacion) : void
+  + getAnotaciones() : List<Anotacion>
+}
+
+' ============================================================
+' CLIENTE
+' ============================================================
+class ReporteServicio <<Client>> #FFF2CC {
+  - reporteDAO : IReporteDAO
+  + generarReporte(inicio : Date, fin : Date, autor : String) : Reporte
+  + exportarPDF(id : int) : byte[]
+  + consultarHistorial(inicio : Date, fin : Date) : List<Reporte>
+  - crearReporteConsolidado(formato : IFormatoSalida) : ReporteConsolidado
+}
+
+' ============================================================
+' RELACIONES
+' ============================================================
+IFormatoSalida <|.. FormatoPDF
+IFormatoSalida <|.. FormatoPantalla
+IFormatoSalida <|.. FormatoCSV
+
+ReporteAbstracto o--> IFormatoSalida : usa (bridge)
+
+ReporteAbstracto <|-- ReporteGestionEmpleados
+ReporteAbstracto <|-- ReporteAccesosFallidos
+ReporteAbstracto <|-- ReporteConsolidado
+
+ReporteConsolidado --> ReporteGestionEmpleados : combina
+ReporteConsolidado --> ReporteAccesosFallidos : combina
+
+ReporteServicio --> ReporteConsolidado : crea
+ReporteServicio --> FormatoPDF : instancia
+ReporteServicio --> FormatoPantalla : instancia
+
+' ============================================================
+' NOTAS
+' ============================================================
+note top of ReporteAbstracto #E8F5E9
+  Bridge (Puente):
+  La abstracción (qué reporte generar)
+  se desacopla de la implementación
+  (en qué formato renderizarlo).
+  Permite agregar nuevos tipos de reporte
+  Y nuevos formatos independientemente.
+end note
+
+note bottom of FormatoPDF #FFF2CC
+  Genera archivo PDF con
+  encabezados, tablas y
+  gráficos. Retorna byte[]
+  para descarga directa.
+end note
+
+note bottom of FormatoPantalla #FFF2CC
+  Genera HTML renderizable
+  en la vista JSP del sistema.
+  Incluye estilos y estructura
+  para presentación en pantalla.
+end note
+
+note right of ReporteConsolidado #FFF2CC
+  RF-SNAAR-03V2.01:
+  Consolida datos de RF-01
+  (empleados gestionados)
+  y RF-02 (accesos fallidos)
+  en un único reporte.
+  Permite anotaciones.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Rol en Bridge |
+|<#FFFFFF>| Implementor (IFormatoSalida) |
+|<#F3E0F7>| ConcreteImplementor (Formatos) |
+|<#DFF2E1>| Abstraction (ReporteAbstracto) |
+|<#D9EAF7>| RefinedAbstraction (Reportes) |
+|<#FFF2CC>| Client / Notas |
+endlegend
+
+@enduml

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNAAR TekMess - Prototipo Interactivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.85);
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* Simulador de dispositivo móvil */
+        .device-simulator {
+            width: 390px;
+            height: 844px;
+            background: linear-gradient(135deg, var(--bg-color) 0%, #1e293b 50%, var(--bg-color) 100%);
+            border-radius: 40px;
+            border: 8px solid #333;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .view {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Componentes Comunes --- */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 16px;
+        }
+
+        .top-bar {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .top-bar h1 {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block; font-size: 12px; font-weight: 500;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+        .form-control {
+            width: 100%; padding: 14px; border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-main); font-size: 14px; font-family: 'Inter', sans-serif;
+        }
+        .form-control:focus {
+            outline: none; border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease; font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: white;
+        }
+        .btn-secondary {
+            background: rgba(100, 116, 139, 0.2);
+            color: #cbd5e1;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .badge {
+            padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600;
+        }
+
+        /* --- Vistas Específicas --- */
+        
+        /* Login */
+        #view-login {
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .login-logo { text-align: center; margin-bottom: 40px; }
+        .login-logo h1 { font-size: 32px; margin-bottom: 8px; }
+        .login-logo p { color: var(--text-muted); font-size: 14px; }
+
+        /* Dashboard */
+        .dash-card {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin: 16px; border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 16px;
+        }
+        .dash-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 24px;
+        }
+
+        /* Lista Empleados */
+        .emp-card {
+            background: var(--card-bg); border-radius: 16px; padding: 16px;
+            margin: 12px 16px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .emp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .emp-name { font-size: 15px; font-weight: 600; }
+        .emp-cedula { font-size: 12px; color: var(--text-muted); }
+        .emp-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+        /* Modal */
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: #1e293b; border-radius: 20px; padding: 24px;
+            width: 85%; border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="device-simulator">
+
+    <!-- ========================================== -->
+    <!-- RF-02: ADMINISTRAR SISTEMA (Autenticación) -->
+    <!-- ========================================== -->
+    <div id="view-login" class="view active">
+        <div class="glass-card" style="margin-top: 40px;">
+            <div class="login-logo">
+                <h1 style="background: linear-gradient(135deg, #818cf8, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SNAAR</h1>
+                <p>TekMess - Sistema de Auditoría</p>
+            </div>
+            
+            <div class="form-group">
+                <label>Nombre de usuario</label>
+                <input type="text" class="form-control" value="admin" placeholder="Ingrese su usuario">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" class="form-control" value="12345" placeholder="Ingrese su contraseña">
+            </div>
+            
+            <button class="btn btn-primary" onclick="navegar('view-dashboard')" style="margin-top: 16px;">Iniciar Sesión</button>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="#" style="color: var(--primary-hover); font-size: 13px; text-decoration: none;">¿Olvidó su contraseña?</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- DASHBOARD PRINCIPAL                        -->
+    <!-- ========================================== -->
+    <div id="view-dashboard" class="view">
+        <div class="top-bar">
+            <h1>SNAAR</h1>
+            <div style="font-size: 12px; color: var(--text-muted);" onclick="navegar('view-login')">Salir 🚪</div>
+        </div>
+        
+        <div style="padding: 24px 16px 8px;">
+            <p style="font-size: 14px; color: var(--text-muted);">Bienvenido,</p>
+            <h2 style="font-size: 22px; margin-bottom: 8px;">Administrador</h2>
+            <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #c4b5fd;">Jefe Logística/Operación</span>
+        </div>
+
+        <div class="dash-card" onclick="navegar('view-lista-empleados')">
+            <div class="dash-icon" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">👥</div>
+            <div>
+                <h3 style="font-size: 16px; margin-bottom: 4px;">Gestionar Empleados</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">RF-01: Crear, editar, dar de baja</p>
+            </div>
+        </div>
+
+        <div class="dash-card">
+            <div class="dash-icon" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">📊</div>
+            <div>
+                <h3 style="font-size: 16px; margin-bottom: 4px;">Reportes Analíticos</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">RF-03: Generar y exportar</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- RF-01: GESTIONAR EMPLEADOS (Listado)       -->
+    <!-- ========================================== -->
+    <div id="view-lista-empleados" class="view">
+        <div class="top-bar">
+            <div onclick="navegar('view-dashboard')" style="font-size: 20px; cursor:pointer;">←</div>
+            <h1>Empleados</h1>
+            <div onclick="navegar('view-form-empleado')" style="font-size: 20px; cursor:pointer;">➕</div>
+        </div>
+
+        <!-- Empleado 1 -->
+        <div class="emp-card">
+            <div class="emp-header">
+                <div>
+                    <div class="emp-name">Juan Pérez García</div>
+                    <div class="emp-cedula">C.I: 1712345678</div>
+                </div>
+                <span class="badge" style="background: rgba(34, 197, 94, 0.15); color: #86efac;">Guardia</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">jperez@tekmess.com</div>
+            <div class="emp-actions">
+                <button class="btn btn-secondary" style="padding: 8px; font-size: 12px;" onclick="navegar('view-form-empleado')">Editar</button>
+                <button class="btn btn-danger" style="padding: 8px; font-size: 12px;" onclick="abrirModal()">Dar de baja</button>
+            </div>
+        </div>
+
+        <!-- Empleado 2 -->
+        <div class="emp-card">
+            <div class="emp-header">
+                <div>
+                    <div class="emp-name">María López</div>
+                    <div class="emp-cedula">C.I: 1787654321</div>
+                </div>
+                <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd;">Supervisor</span>
+            </div>
+            <div style="font-size: 12px; color: var(--text-muted);">mlopez@tekmess.com</div>
+            <div class="emp-actions">
+                <button class="btn btn-secondary" style="padding: 8px; font-size: 12px;">Editar</button>
+                <button class="btn btn-danger" style="padding: 8px; font-size: 12px;">Dar de baja</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- RF-01: GESTIONAR EMPLEADOS (Formulario)    -->
+    <!-- ========================================== -->
+    <div id="view-form-empleado" class="view">
+        <div class="top-bar">
+            <div onclick="navegar('view-lista-empleados')" style="font-size: 20px; cursor:pointer;">←</div>
+            <h1>Registrar Empleado</h1>
+            <div style="width:20px;"></div>
+        </div>
+
+        <div class="glass-card">
+            <div class="form-group">
+                <label>Cédula (10 dígitos)</label>
+                <input type="number" class="form-control" placeholder="Ej: 1700000000">
+            </div>
+            <div class="form-group">
+                <label>Nombres Completos</label>
+                <input type="text" class="form-control" placeholder="Nombres y Apellidos">
+            </div>
+            <div class="form-group">
+                <label>Rol</label>
+                <select class="form-control">
+                    <option>Guardia</option>
+                    <option>Supervisor</option>
+                    <option>Centralista</option>
+                    <option>Jefe Logística/Operación</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Correo Institucional</label>
+                <input type="email" class="form-control" placeholder="ejemplo@tekmess.com">
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-secondary" onclick="navegar('view-lista-empleados')">Cancelar</button>
+                <button class="btn btn-primary" onclick="mostrarExito()">Registrar</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- PANTALLA DE ÉXITO (Credenciales Generadas) -->
+    <!-- ========================================== -->
+    <div id="view-exito" class="view">
+        <div style="display: flex; flex-direction: column; justify-content: center; height: 100%; padding: 24px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="font-size: 60px; margin-bottom: 16px;">✅</div>
+                <h2 style="font-size: 20px;">Empleado Registrado</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">RF-01.06: Credenciales generadas</p>
+            </div>
+
+            <div class="glass-card" style="margin: 0; background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3);">
+                <div class="form-group">
+                    <label style="color: #86efac;">Usuario generado:</label>
+                    <div style="font-size: 18px; font-weight: 600; letter-spacing: 1px;">jperez</div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label style="color: #86efac;">Contraseña temporal:</label>
+                    <div style="font-size: 18px; font-weight: 600; letter-spacing: 1px;">Tx8#kL2m9!</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 40px;" onclick="navegar('view-lista-empleados')">Volver al listado</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL CONFIRMAR ELIMINAR (RF-01.03)        -->
+    <!-- ========================================== -->
+    <div id="modal-eliminar" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span style="color: var(--danger);">⚠️</span> Confirmar Baja
+            </h3>
+            <p style="font-size: 14px; margin-bottom: 12px; line-height: 1.5;">
+                ¿Está seguro de dar de baja al empleado <strong>Juan Pérez García</strong>?
+            </p>
+            <p style="font-size: 12px; color: #fca5a5; margin-bottom: 24px;">
+                Esta acción es permanente y no podrá ser revertida.
+            </p>
+            
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn btn-danger" onclick="cerrarModal(); alert('Empleado eliminado.');">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Lógica simple de navegación para el prototipo
+    function navegar(viewId) {
+        // Ocultar todas las vistas
+        const views = document.querySelectorAll('.view');
+        views.forEach(v => {
+            v.classList.remove('active');
+            v.style.display = 'none';
+        });
+
+        // Mostrar la vista solicitada
+        const target = document.getElementById(viewId);
+        target.style.display = 'block';
+        
+        // Pequeño delay para la animación
+        setTimeout(() => {
+            target.classList.add('active');
+        }, 10);
+    }
+
+    function abrirModal() {
+        document.getElementById('modal-eliminar').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-eliminar').style.display = 'none';
+    }
+
+    function mostrarExito() {
+        navegar('view-exito');
+    }
+</script>
+
+</body>
+</html>

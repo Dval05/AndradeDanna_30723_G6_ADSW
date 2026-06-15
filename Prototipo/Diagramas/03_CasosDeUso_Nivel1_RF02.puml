@@ -1,0 +1,114 @@
+@startuml CU_Nivel1_RF02_AdministrarSistema
+
+title Diagrama de Casos de Uso – Nivel 1\nRF-02: Administrar Sistema (Autenticación Simple)
+
+left to right direction
+
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecaseRoundCorner 15
+skinparam defaultTextAlignment center
+skinparam usecaseFontSize 11
+skinparam actorFontSize 12
+
+skinparam usecase {
+  BackgroundColor #EAF4FB
+  BorderColor #3B82F6
+  FontColor #1E3A5F
+}
+
+' ============================================================
+' ACTORES
+' ============================================================
+actor "Guardia" as Guardia #F3E0F7
+actor "Supervisor" as Supervisor #DFF2E1
+actor "Centralista" as Centralista #FFF2CC
+actor "Jefe Logística\n/ Operación" as JefeLog #D9EAF7
+
+' ============================================================
+' SISTEMA
+' ============================================================
+rectangle "Sistema SNAAR – RF-02: Administrar Sistema" as SISTEMA #F8FAFC {
+
+  usecase "RF-SNAAR-02.01:\nIniciar Sesión" as CU0201 #DFF2E1
+  usecase "RF-SNAAR-02.02:\nCambiar\nContraseña" as CU0202 #DFF2E1
+  usecase "RF-SNAAR-02.03:\nRecuperar\nContraseña" as CU0203 #DFF2E1
+  usecase "RF-SNAAR-02.04:\nValidar\nCredenciales" as CU0204 #FFE6CC
+
+}
+
+' ============================================================
+' RELACIONES ACTOR → CASOS DE USO
+' ============================================================
+Guardia --> CU0201
+Guardia --> CU0202
+Guardia --> CU0203
+
+Supervisor --> CU0201
+Supervisor --> CU0202
+Supervisor --> CU0203
+
+Centralista --> CU0201
+Centralista --> CU0202
+Centralista --> CU0203
+
+JefeLog --> CU0201
+JefeLog --> CU0202
+JefeLog --> CU0203
+
+' ============================================================
+' RELACIONES <<include>> Y <<extend>>
+' ============================================================
+CU0201 ..> CU0204 : <<include>>
+CU0202 ..> CU0204 : <<include>>
+
+CU0201 ..> CU0202 : <<extend>>\n[primer acceso]
+
+CU0203 ..> CU0202 : <<include>>\n[restablecer contraseña]
+
+' ============================================================
+' NOTAS
+' ============================================================
+note right of CU0201 #FFF2CC
+  Autenticación por usuario
+  y contraseña.
+  Bloqueo al 3er intento fallido.
+  Sesión con timeout 120 min.
+  Primer acceso → cambio
+  obligatorio de contraseña.
+end note
+
+note right of CU0202 #FFF2CC
+  Política: mín. 8 caracteres,
+  1 mayúscula, 1 minúscula,
+  2 números, 1 carácter especial.
+  Nueva ≠ actual.
+end note
+
+note right of CU0203 #FFF2CC
+  Verificación interna por
+  correo + nombre de usuario.
+  No usa tokens ni OTP.
+  Mensaje genérico por seguridad.
+end note
+
+note bottom of CU0204 #E8F5E9
+  <<Proceso interno>>
+  Busca usuario en BD.
+  Verifica estado ACTIVO.
+  Compara contraseña cifrada.
+  Reutilizado por 02.01 y 02.02.
+end note
+
+' ============================================================
+' LEYENDA
+' ============================================================
+legend right
+|= Color |= Significado |
+|<#DFF2E1>| Caso de uso con actor |
+|<#FFE6CC>| Proceso interno del sistema |
+|<#E8F5E9>| Nota de proceso interno |
+|<#FFF2CC>| Nota explicativa |
+endlegend
+
+@enduml
