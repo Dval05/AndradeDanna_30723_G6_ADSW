@@ -1,58 +1,38 @@
-@startuml
-title RF-01: Gestionar Empleados - Nivel 0
+@startuml DiagramaN0_RF1_GestionarEmpleados
 
+skinparam actorStyle awesome
 left to right direction
-skinparam packageStyle rectangle
-skinparam shadowing false
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
 skinparam usecase {
-  BackgroundColor #EEF4FB
-  BorderColor #1A3A5C
-  ArrowColor #1A3A5C
-}
-skinparam actor {
-  BackgroundColor #FFF8E1
-  BorderColor #795548
+    BackgroundColor<<Admin>> #A94442
+    BorderColor black
+    FontColor white
 }
 
-actor "Jefe Logistica /\nOperacion" as Jefe
+actor "Jefe Operativo/\nLogistica" as Jefe
 
-rectangle "Sistema TekMess - Modulo Gestion de Empleados" {
+rectangle "Sistema TekMess - SNAAR\nGestionar Empleados (RF-01)" #White {
 
-  usecase "RF-SNAAR-01.01\nCrear Empleado"         as UC1
-  usecase "RF-SNAAR-01.02\nEditar Empleado"         as UC2
-  usecase "RF-SNAAR-01.03\nEliminar Empleado"       as UC3
-  usecase "RF-SNAAR-01.04\nConsultar Empleados"     as UC4
-  usecase "RF-SNAAR-01.05\nValidar Datos\ndel Empleado" as UC5
-  usecase "RF-SNAAR-01.06\nGenerar\nCredenciales"   as UC6
+    usecase "Crear Empleado"              as UC1 <<Admin>>
+    usecase "Editar Empleado"             as UC2 <<Admin>>
+    usecase "Eliminar Empleado"           as UC3 <<Admin>>
+    usecase "Consultar Empleados"         as UC4 <<Admin>>
+    usecase "Validar Datos\ndel Empleado" as UC5 <<Admin>>
+    usecase "Generar\nCredenciales"       as UC6 <<Admin>>
 
 }
 
-Jefe --> UC1
-Jefe --> UC2
-Jefe --> UC3
-Jefe --> UC4
+Jefe--UC1
+Jefe--UC2
+Jefe--UC3
+Jefe--UC4
 
 UC1 ..> UC5 : <<include>>
 UC2 ..> UC5 : <<include>>
 UC1 ..> UC6 : <<include>>
 
-note right of UC5
-  Validaciones:
-  - Cedula: 10 digitos numericos
-  - Rol: uno de los 4 roles RBAC validos
-  - Correo: formato institucional valido
-end note
-
-note right of UC6
-  Genera usuario y contrasena inicial.
-  Marca primer acceso como obligatorio
-  (activa RF-SNAAR-02.02 al ingresar).
-end note
-
-note right of UC3
-  Sin diagrama de secuencia.
-  Derivado del diagrama de clases:
-  metodo darBajaEmpleado(cedula).
-end note
-
+'Elaborado Grupo 6 - ADSW ESPE - 2026
 @enduml

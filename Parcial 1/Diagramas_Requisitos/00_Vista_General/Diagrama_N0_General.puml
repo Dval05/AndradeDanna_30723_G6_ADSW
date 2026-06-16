@@ -1,66 +1,46 @@
-@startuml
-title Sistema TekMess - SNAAR: Vista General de Requisitos (Nivel 0)
+@startuml DiagramaN0General
 
+skinparam actorStyle awesome
 left to right direction
-skinparam packageStyle rectangle
-skinparam shadowing false
+
+skinparam DefaultFontColor black
+skinparam BackgroundColor white
+
 skinparam usecase {
-  BackgroundColor #EEF4FB
-  BorderColor #1A3A5C
-  ArrowColor #1A3A5C
-}
-skinparam actor {
-  BackgroundColor #FFF8E1
-  BorderColor #795548
+    BackgroundColor<<Admin>>    #A94442
+    BackgroundColor<<Auth>>     #8A6D3B
+    BackgroundColor<<Reporte>>  #3C763D
+    BorderColor black
+    FontColor white
 }
 
-actor "Jefe Logistica /\nOperacion" as Jefe
-actor "Supervisor"                  as Sup
-actor "Guardia"                     as Guardia
-actor "Centralista"                 as Central
-actor "Usuario"                     as Usuario
+actor Usuario
+actor Guardia
+actor Centralista
+actor Supervisor
+actor "Jefe Operativo/Logistica" as Jefe
 
-Jefe    --|> Usuario
-Sup     --|> Usuario
-Guardia --|> Usuario
-Central --|> Usuario
+Usuario--Guardia
+Usuario--Centralista
+Usuario--Supervisor
+Usuario--Jefe
 
-rectangle "Sistema TekMess - SNAAR" {
+rectangle "Sistema TekMess - SNAAR" #White {
 
-  usecase "RF-01\nGestionar\nEmpleados"           as RF1
-  usecase "RF-02V2\nAdministrar Sistema\n(Autenticacion Simple)" as RF2
-  usecase "RF-03V2\nGenerar Reporte\nAnalitico"   as RF3
+    usecase "Gestionar Empleados"        as RF1 <<Admin>>
+    usecase "Administrar Sistema"        as RF2 <<Auth>>
+    usecase "Generar Reporte Analitico"  as RF3 <<Reporte>>
 
 }
 
-Jefe    --> RF1
-Jefe    --> RF3
-Sup     --> RF3
-Usuario --> RF2
+Jefe--RF1
+Usuario--RF2
+Jefe--RF3
+Supervisor--RF3
 
-RF3 ..> RF1 : <<usa datos de>>
-RF3 ..> RF2 : <<usa datos de>>
+RF1 ..> RF2 : <<include>>
+RF3 ..> RF1 : <<include>>
+RF3 ..> RF2 : <<include>>
 
-note bottom of RF1
-  Actor principal: Jefe Logistica/Operacion
-  Subprocesos: Crear, Editar, Eliminar,
-  Consultar Empleados, Validar Datos,
-  Generar Credenciales
-end note
-
-note bottom of RF2
-  Actor: Usuario (todos los roles)
-  Subprocesos: Iniciar Sesion,
-  Cambiar Contrasena, Recuperar
-  Contrasena, Validar Credenciales
-end note
-
-note bottom of RF3
-  Actores: Jefe Logistica/Operacion
-  (todos los reportes), Supervisor
-  (solo reportes de sus guardias)
-  Subprocesos: Generar Reporte,
-  Consultar Historial
-end note
-
+'Elaborado Grupo 6 - ADSW ESPE - 2026
 @enduml
