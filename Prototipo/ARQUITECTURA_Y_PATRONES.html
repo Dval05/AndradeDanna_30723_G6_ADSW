@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitectura y Patrones de Diseño - SNAAR TekMess</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            page-break-after: always;
+        }
+
+        /* Portada */
+        .portada {
+            text-align: center;
+            padding: 60px 0;
+            border-bottom: 3px solid #1a5f9f;
+            margin-bottom: 40px;
+        }
+
+        .portada h1 {
+            font-size: 48px;
+            color: #1a5f9f;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .portada .subtitle {
+            font-size: 24px;
+            color: #555;
+            margin-bottom: 40px;
+        }
+
+        .portada .meta {
+            font-size: 14px;
+            color: #777;
+            line-height: 1.8;
+        }
+
+        .portada .meta strong {
+            color: #1a5f9f;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #1a5f9f;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1a5f9f;
+            padding-left: 15px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #2c5aa0;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 16px;
+            color: #3d6ba3;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        strong {
+            color: #1a5f9f;
+        }
+
+        pre {
+            background: #f4f4f4;
+            border-left: 4px solid #1a5f9f;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #333;
+            page-break-inside: avoid;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #c7254e;
+        }
+
+        pre code {
+            background: none;
+            color: #333;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        table thead {
+            background: #1a5f9f;
+            color: white;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        table tbody tr:hover {
+            background: #f0f6ff;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .box {
+            background: #e8f4f8;
+            border-left: 4px solid #1a5f9f;
+            padding: 15px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .box-warning {
+            background: #fff3cd;
+            border-left-color: #ff9800;
+        }
+
+        .box-success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .diagram {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+
+        .toc {
+            background: #f0f6ff;
+            border: 1px solid #d4e8f7;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            page-break-inside: avoid;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            color: #1a5f9f;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin: 10px 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .toc li:before {
+            content: "→ ";
+            color: #1a5f9f;
+            font-weight: bold;
+        }
+
+        .toc ul ul li:before {
+            content: "  → ";
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Impresión */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                padding: 40px;
+                page-break-after: always;
+            }
+
+            h2 {
+                page-break-before: always;
+            }
+
+            pre, table, .box, .diagram {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            table th, table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Portada -->
+    <div class="portada">
+        <h1>SNAAR TekMess</h1>
+        <div class="subtitle">Arquitectura y Patrones de Diseño</div>
+        <div class="meta">
+            <p><strong>Proyecto:</strong> Sistema de Autenticación, Autorización y Reporte (SNAAR) de TekMess</p>
+            <p><strong>Versión:</strong> 1.0</p>
+            <p><strong>Fecha:</strong> 15 de junio de 2026</p>
+            <p><strong>Asignatura:</strong> Análisis y Diseño de Software</p>
+        </div>
+    </div>
+
+    <!-- Tabla de Contenidos -->
+    <div class="toc">
+        <h3>Tabla de Contenidos</h3>
+        <ul>
+            <li><a href="#introduccion">1. Introducción</a></li>
+            <li><a href="#arquitectura">2. Arquitectura de Tres Capas</a>
+                <ul>
+                    <li>2.1 Definición</li>
+                    <li>2.2 Estructura de Carpetas</li>
+                    <li>2.3 Justificación</li>
+                </ul>
+            </li>
+            <li><a href="#patrones">3. Patrones de Diseño Implementados</a>
+                <ul>
+                    <li>3.1 Patrón Command</li>
+                    <li>3.2 Patrón Observer</li>
+                    <li>3.3 Patrón DAO</li>
+                    <li>3.4 Patrón Bridge</li>
+                </ul>
+            </li>
+            <li><a href="#validacion">4. Patrones de Validación y Seguridad</a></li>
+            <li><a href="#credenciales">5. Generación de Credenciales</a></li>
+            <li><a href="#reportes">6. Reportes (RF-03V2)</a></li>
+            <li><a href="#autenticacion">7. Gestión de Sesiones y Autenticación</a></li>
+            <li><a href="#ventajas">8. Ventajas de la Arquitectura</a></li>
+            <li><a href="#tecnologicas">9. Decisiones Tecnológicas</a></li>
+            <li><a href="#riesgos">10. Riesgos y Mitigaciones</a></li>
+            <li><a href="#conclusion">11. Conclusión</a></li>
+            <li><a href="#referencias">12. Referencias</a></li>
+        </ul>
+    </div>
+
+    <!-- Sección 1 -->
+    <div class="page-break"></div>
+
+    <h2 id="introduccion">1. Introducción</h2>
+
+    <p>El sistema SNAAR implementa una arquitectura de <strong>tres capas (3-Tier Architecture)</strong> combinada con patrones de diseño específicos para garantizar mantenibilidad, escalabilidad y flexibilidad. Este documento justifica cada decisión arquitectónica y de diseño tomada.</p>
+
+    <!-- Sección 2 -->
+    <div class="page-break"></div>
+
+    <h2 id="arquitectura">2. Arquitectura de Tres Capas (3-Tier Architecture)</h2>
+
+    <h3>2.1 Definición</h3>
+
+    <p>La arquitectura se organiza en tres capas independientes:</p>
+
+    <div class="diagram">┌────────────────────────────────────────┐
+│    CAPA DE PRESENTACIÓN (View)         │
+│  - JSP (JavaServer Pages)              │
+│  - HTML, CSS, JavaScript               │
+└────────────────────────────────────────┘
+                    ↓↑
+┌────────────────────────────────────────┐
+│    CAPA DE LÓGICA DE NEGOCIO           │
+│  - Servicio HTTP (Controlador)         │
+│  - Lógica de validación                │
+│  - Orquestación de operaciones         │
+└────────────────────────────────────────┘
+                    ↓↑
+┌────────────────────────────────────────┐
+│    CAPA DE DATOS (Modelo/Persistencia) │
+│  - DAO (Data Access Objects)           │
+│  - Conexión a base de datos (JDBC)     │
+│  - Entidades de dominio                │
+└────────────────────────────────────────┘</div>
+
+    <h3>2.2 Estructura de Carpetas</h3>
+
+    <div class="diagram">src/main/java/com/tekmess/snaar/
+├── controlador/
+│   ├── http/              ← Servlets/Controladores HTTP
+│   │   ├── AuthController.java
+│   │   ├── EmpleadoController.java
+│   │   └── ...
+│   └── servicio/          ← Servicios de negocio
+│       ├── AuthServicio.java
+│       ├── EmpleadoServicio.java
+│       └── ReporteServicio.java
+├── modelo/
+│   ├── dao/               ← Data Access Objects
+│   │   ├── IEmpleadoDAO.java
+│   │   ├── EmpleadoDAO.java
+│   │   └── ...
+│   └── entidad/           ← Entidades de dominio
+│       ├── Empleado.java
+│       ├── Usuario.java
+│       └── ...
+├── patron/
+│   ├── command/           ← Patrón Command
+│   │   ├── IComando.java
+│   │   ├── CrearEmpleadoComando.java
+│   │   └── ...
+│   └── observer/          ← Patrón Observer
+│       ├── IObservador.java
+│       ├── ObservadorAuditoria.java
+│       └── ...
+└── util/
+    ├── CifradorContrasena.java
+    ├── ConexionBD.java
+    └── ValidadorDatos.java</div>
+
+    <h3>2.3 Justificación de la Arquitectura de Tres Capas</h3>
+
+    <h4>Ventajas:</h4>
+
+    <ol>
+        <li><strong>Separación de responsabilidades:</strong> Cada capa tiene una responsabilidad única y bien definida.
+            <ul>
+                <li>La capa de presentación <strong>NO</strong> accede directamente a la base de datos.</li>
+                <li>La capa de lógica de negocio <strong>NO</strong> conoce detalles de la presentación.</li>
+            </ul>
+        </li>
+        <li><strong>Mantenibilidad:</strong> Un cambio en la base de datos no afecta la interfaz de usuario.
+            <ul>
+                <li>Si se cambia de SQL a NoSQL, solo cambia la capa de datos.</li>
+                <li>Si se rediseña la UI, solo cambia la capa de presentación.</li>
+            </ul>
+        </li>
+        <li><strong>Testabilidad:</strong> Cada capa puede testearse independientemente.
+            <ul>
+                <li>Se pueden crear mocks de la capa de datos para testear servicios.</li>
+                <li>Se pueden testear servicios sin una base de datos real.</li>
+            </ul>
+        </li>
+        <li><strong>Escalabilidad:</strong> Fácil agregar nuevas funcionalidades sin afectar capas existentes.
+            <ul>
+                <li>Nuevos controladores se añaden sin modificar DAOs.</li>
+                <li>Nuevos servicios se crean sin tocar vistas.</li>
+            </ul>
+        </li>
+        <li><strong>Reutilización:</strong> La capa de servicios puede ser usada por múltiples controladores.
+            <ul>
+                <li><code>EmpleadoServicio</code> puede ser usado por controladores HTTP, tareas programadas y APIs internas.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h4>Desventajas y Mitigación:</h4>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Desventaja</th>
+                <th>Mitigación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Más capas = más archivos</td>
+                <td>Uso claro de interfaces (I-prefixed) y convenciones de nombrado</td>
+            </tr>
+            <tr>
+                <td>Overhead de comunicación entre capas</td>
+                <td>En sistemas pequeños, el impacto es negligible</td>
+            </tr>
+            <tr>
+                <td>Curva de aprendizaje</td>
+                <td>Documentación clara y patrones consistentes</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Sección 3 -->
+    <div class="page-break"></div>
+
+    <h2 id="patrones">3. Patrones de Diseño Implementados</h2>
+
+    <h3>3.1 Patrón Command</h3>
+
+    <h4>Ubicación en el código:</h4>
+
+    <div class="diagram">patron/command/
+├── IComando.java                    ← Interfaz base
+├── CrearEmpleadoComando.java        ← Comando concreto
+├── EditarEmpleadoComando.java
+├── EliminarEmpleadoComando.java
+├── InvocadorOperaciones.java        ← Invocador
+└── ResultadoComando.java            ← Resultado</div>
+
+    <h4>Definición:</h4>
+
+    <p>El patrón Command encapsula una solicitud como un objeto, permitiendo parametrizar clientes con diferentes solicitudes, encolar solicitudes y registrar el historial de operaciones.</p>
+
+    <h4>Implementación en SNAAR:</h4>
+
+    <pre><code>// Interfaz Command
+public interface IComando {
+    ResultadoComando ejecutar();
+}
+
+// Comando concreto: Crear empleado
+public class CrearEmpleadoComando implements IComando {
+    private Empleado empleado;
+    private EmpleadoServicio servicio;
+    
+    @Override
+    public ResultadoComando ejecutar() {
+        // Lógica de creación encapsulada
+        return servicio.crearEmpleado(empleado);
+    }
+}
+
+// Invocador: Gestiona comandos
+public class InvocadorOperaciones {
+    private Stack&lt;IComando&gt; historial = new Stack&lt;&gt;();
+    
+    public void ejecutar(IComando comando) {
+        ResultadoComando resultado = comando.ejecutar();
+        if (resultado.esExitoso()) {
+            historial.push(comando);  // Registra en historial
+        }
+    }
+}</code></pre>
+
+    <h4>Justificación:</h4>
+
+    <ol>
+        <li><strong>Encapsulación de operaciones:</strong> Cada operación (crear, editar, eliminar) es independiente.</li>
+        <li><strong>Historial de operaciones:</strong> Facilita la auditoría y el deshacer (<code>deshacerUltimaOperacion</code>).</li>
+        <li><strong>Extensibilidad:</strong> Agregar nuevas operaciones solo requiere implementar <code>IComando</code>.</li>
+        <li><strong>Testing:</strong> Cada comando puede testearse aisladamente.</li>
+    </ol>
+
+    <h4>Casos de uso:</h4>
+
+    <ul>
+        <li>RF-01.01: Crear empleado → <code>CrearEmpleadoComando</code></li>
+        <li>RF-01.02: Editar empleado → <code>EditarEmpleadoComando</code></li>
+        <li>RF-01.03: Eliminar empleado → <code>EliminarEmpleadoComando</code></li>
+        <li>Deshacer última operación → <code>InvocadorOperaciones.deshacer()</code></li>
+    </ul>
+
+    <h3>3.2 Patrón Observer</h3>
+
+    <h4>Ubicación en el código:</h4>
+
+    <div class="diagram">patron/observer/
+├── ISujeto.java                     ← Sujeto observable
+├── IObservador.java                 ← Observador
+├── SujetoGestionEmpleado.java       ← Sujeto concreto
+├── ObservadorAuditoria.java         ← Observador concreto
+└── ObservadorNotificacion.java</div>
+
+    <h4>Definición:</h4>
+
+    <p>El patrón Observer define una relación uno-a-muchos entre objetos, de modo que cuando un objeto cambia de estado, todos sus dependientes son notificados automáticamente.</p>
+
+    <h4>Implementación en SNAAR:</h4>
+
+    <pre><code>// Interfaz Sujeto
+public interface ISujeto {
+    void agregarObservador(IObservador obs);
+    void eliminarObservador(IObservador obs);
+    void notificarObservadores(EventoSistema evento);
+}
+
+// Sujeto concreto
+public class SujetoGestionEmpleado implements ISujeto {
+    private List&lt;IObservador&gt; observadores = new ArrayList&lt;&gt;();
+    
+    @Override
+    public void notificarObservadores(EventoSistema evento) {
+        for (IObservador obs : observadores) {
+            obs.actualizar(evento);  // Notifica a todos
+        }
+    }
+}
+
+// Observador concreto: Auditoría
+public class ObservadorAuditoria implements IObservador {
+    @Override
+    public void actualizar(EventoSistema evento) {
+        registrarAuditoria(evento.getTipo(), evento.getDetalles());
+    }
+}</code></pre>
+
+    <h4>Justificación:</h4>
+
+    <ol>
+        <li><strong>Desacoplamiento:</strong> La lógica de auditoría no está mezclada con creación de empleados.</li>
+        <li><strong>Extensibilidad:</strong> Agregar nuevos observadores (SMS, email) sin modificar el sujeto.</li>
+        <li><strong>Múltiples reacciones:</strong> Un evento dispara múltiples acciones simultáneamente.</li>
+        <li><strong>RF-03V2:</strong> Generación automática de reportes basada en eventos.</li>
+    </ol>
+
+    <h3>3.3 Patrón DAO (Data Access Object)</h3>
+
+    <h4>Ubicación en el código:</h4>
+
+    <div class="diagram">modelo/dao/
+├── IEmpleadoDAO.java                ← Interfaz
+├── EmpleadoDAO.java                 ← Implementación
+├── IUsuarioDAO.java
+├── UsuarioDAO.java
+└── ...</div>
+
+    <h4>Definición:</h4>
+
+    <p>El patrón DAO abstrae el acceso a la base de datos, proporcionando métodos de alto nivel para CRUD sin exponer detalles de implementación.</p>
+
+    <h4>Implementación en SNAAR:</h4>
+
+    <pre><code>public interface IEmpleadoDAO {
+    void crear(Empleado emp);
+    Empleado buscarPorCedula(String cedula);
+    List&lt;Empleado&gt; listarTodos();
+    void editar(Empleado emp);
+    void eliminar(String cedula);
+    boolean existeCedula(String cedula);
+}
+
+public class EmpleadoDAO implements IEmpleadoDAO {
+    private ConexionBD conexion;
+    
+    @Override
+    public void crear(Empleado emp) {
+        String sql = "INSERT INTO empleados (...) VALUES (...)";
+        try (Connection conn = conexion.obtenerConexion();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, emp.getCedula());
+            pstmt.setString(2, emp.getNombre());
+            pstmt.executeUpdate();
+        }
+    }
+}</code></pre>
+
+    <h4>Justificación:</h4>
+
+    <ol>
+        <li><strong>Abstracción:</strong> La capa de servicios no conoce que usa JDBC o SQL.</li>
+        <li><strong>Cambio de BD:</strong> Si se cambia a JPA/Hibernate, solo cambia <code>EmpleadoDAO</code>.</li>
+        <li><strong>Testing:</strong> Se puede crear un <code>EmpleadoDAOMock</code> para pruebas unitarias.</li>
+        <li><strong>Reutilización:</strong> El mismo DAO puede ser usado por múltiples servicios.</li>
+    </ol>
+
+    <!-- Sección 4 -->
+    <div class="page-break"></div>
+
+    <h2 id="validacion">4. Patrones de Validación y Seguridad</h2>
+
+    <h3>4.1 Validación en Múltiples Capas</h3>
+
+    <div class="diagram">Controlador HTTP
+     ↓
+EmpleadoServicio.validar()
+     ↓
+ValidadorDatos (Util)
+     ↓
+Base de Datos (Restricciones SQL)</div>
+
+    <p><strong>Justificación:</strong> La validación en múltiples niveles previene:</p>
+
+    <ul>
+        <li>Datos malformados en la UI</li>
+        <li>Lógica de negocio inconsistente</li>
+        <li>Violaciones de restricciones en BD</li>
+    </ul>
+
+    <h3>4.2 Cifrado de Contraseñas</h3>
+
+    <pre><code>public class CifradorContrasena {
+    public static String cifrar(String contrasena) {
+        // Usa algoritmo seguro (ej: BCrypt, PBKDF2)
+        return algoritmoSeguro(contrasena);
+    }
+}</code></pre>
+
+    <div class="box box-warning">
+        <strong>Importante:</strong> Las contraseñas <strong>NUNCA</strong> se almacenan en texto plano. Se usa hash + salt para resistir ataques de fuerza bruta.
+    </div>
+
+    <!-- Sección 5 -->
+    <h2 id="credenciales">5. Generación de Credenciales</h2>
+
+    <h3>5.1 Credenciales Automáticas (RF-01.06)</h3>
+
+    <pre><code>public class GeneradorCredenciales {
+    public Credenciales generar(Empleado emp) {
+        String usuario = generarUsuario(emp.getNombre());     // ej: "jperez"
+        String contrasena = generarContrasenaSegura();        // ej: "Tx8#kL2m9!"
+        return new Credenciales(usuario, contrasena);
+    }
+}</code></pre>
+
+    <div class="box box-success">
+        <strong>Ventajas:</strong>
+        <ul>
+            <li><strong>Seguridad:</strong> Las credenciales son únicas y complejas.</li>
+            <li><strong>Usabilidad:</strong> El administrador no ingresa credenciales débiles.</li>
+            <li><strong>Auditoría:</strong> Se registra quién generó qué credenciales.</li>
+        </ul>
+    </div>
+
+    <!-- Sección 6 -->
+    <h2 id="reportes">6. Reportes (RF-03V2)</h2>
+
+    <h3>6.1 Arquitectura de Reportes</h3>
+
+    <div class="diagram">ReporteServicio
+    ├── Consulta BD (historial)
+    ├── Procesa datos
+    ├── Genera estructura
+    └── Notifica observadores
+
+ObservadorAuditoria → Registra generación
+ObservadorNotificacion → Notifica al usuario</div>
+
+    <p><strong>Justificación:</strong></p>
+
+    <ul>
+        <li>Los reportes son <strong>generados bajo demanda</strong>, no precalculados.</li>
+        <li>El patrón Observer automáticamente notifica cuando se genera un reporte.</li>
+        <li>Los datos son <strong>auditados</strong> para cumplimiento normativo.</li>
+    </ul>
+
+    <!-- Sección 7 -->
+    <div class="page-break"></div>
+
+    <h2 id="autenticacion">7. Gestión de Sesiones y Autenticación (RF-02)</h2>
+
+    <h3>7.1 Flujo de Autenticación</h3>
+
+    <div class="diagram">1. Usuario envía credenciales
+    ↓
+2. AuthController.iniciarSesion()
+    ↓
+3. AuthServicio.autenticar()
+    ↓
+4. UsuarioDAO.buscarPorUsuario()
+    ↓
+5. Validación de contraseña con CifradorContrasena
+    ↓
+6. Si es válido: Crear sesión (Sesion.java)
+    ↓
+7. Si no: Registrar intento fallido (auditoría)</div>
+
+    <h3>7.2 Cambio de Contraseña (RF-02.02)</h3>
+
+    <pre><code>public class AuthServicio {
+    public void cambiarContrasena(String usuario, String antiguo, String nuevo) {
+        // 1. Validar que la contraseña antigua sea correcta
+        // 2. Validar que la nueva cumpla políticas
+        // 3. Actualizar en BD
+        // 4. Notificar observadores
+    }
+}</code></pre>
+
+    <h3>7.3 Recuperación de Contraseña (RF-02.03)</h3>
+
+    <pre><code>public class AuthServicio {
+    public void recuperarContrasena(String usuario, String correo) {
+        // 1. Validar que usuario y correo coincidan
+        // 2. Generar nueva contraseña temporal
+        // 3. Enviar por correo
+        // 4. Registrar en auditoría
+    }
+}</code></pre>
+
+    <div class="box">
+        <strong>Diseño:</strong> La lógica de autenticación está <strong>centralizada</strong> en <code>AuthServicio</code>. Cada operación es <strong>auditada</strong> para seguridad. Las contraseñas son <strong>generadas y cifradas</strong> automáticamente.
+    </div>
+
+    <!-- Sección 8 -->
+    <div class="page-break"></div>
+
+    <h2 id="ventajas">8. Ventajas de la Arquitectura Propuesta</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Aspecto</th>
+                <th>Ventaja</th>
+                <th>Justificación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Mantenibilidad</td>
+                <td>Cambios localizados</td>
+                <td>Separación de responsabilidades</td>
+            </tr>
+            <tr>
+                <td>Escalabilidad</td>
+                <td>Fácil agregar features</td>
+                <td>Cada capa es independiente</td>
+            </tr>
+            <tr>
+                <td>Testabilidad</td>
+                <td>Tests aislados</td>
+                <td>Interfaces y DAOs mockeables</td>
+            </tr>
+            <tr>
+                <td>Seguridad</td>
+                <td>Múltiples niveles</td>
+                <td>Validación y auditoría en cada capa</td>
+            </tr>
+            <tr>
+                <td>Auditoría</td>
+                <td>Historial completo</td>
+                <td>Patrón Observer registra eventos</td>
+            </tr>
+            <tr>
+                <td>Reutilización</td>
+                <td>Código DRY</td>
+                <td>Servicios reutilizables</td>
+            </tr>
+            <tr>
+                <td>Performance</td>
+                <td>Conexión pooling</td>
+                <td>Gestión eficiente de BD</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Sección 9 -->
+    <div class="page-break"></div>
+
+    <h2 id="tecnologicas">9. Decisiones Tecnológicas</h2>
+
+    <h3>9.1 ¿Por qué Java + Servlet + JSP?</h3>
+
+    <ul>
+        <li><strong>Robustez:</strong> Java es enterprise-grade y altamente confiable.</li>
+        <li><strong>Servlet API:</strong> Estándar de la industria para aplicaciones web.</li>
+        <li><strong>JSP:</strong> Facilita mezclar lógica y presentación (aunque separamos en servicios).</li>
+        <li><strong>JDBC:</strong> Control directo sobre queries SQL.</li>
+    </ul>
+
+    <h3>9.2 ¿Por qué no usar frameworks como Spring o Hibernate?</h3>
+
+    <p><strong>Contexto:</strong> Este es un prototipo académico que debe demostrar patrones de diseño.</p>
+
+    <ul>
+        <li><strong>Spring:</strong> Añadiría abstracción pero ocultaría los patrones.</li>
+        <li><strong>Hibernate:</strong> JPA es más abstracto pero menos educativo.</li>
+        <li><strong>JDBC puro:</strong> Permite entender cómo funciona realmente la persistencia.</li>
+    </ul>
+
+    <div class="box box-warning">
+        <strong>Para producción, se recomienda:</strong>
+        <ul>
+            <li>Spring Boot (gestión de dependencias y configuración)</li>
+            <li>Spring Data JPA (abstracción de BD)</li>
+            <li>Spring Security (autenticación/autorización)</li>
+            <li>Thymeleaf (templates más seguros que JSP)</li>
+        </ul>
+    </div>
+
+    <h3>9.3 ¿Por qué Maven?</h3>
+
+    <ul>
+        <li>Gestión automática de dependencias.</li>
+        <li>Build reproducible.</li>
+        <li>Estándar en proyectos Java enterprise.</li>
+    </ul>
+
+    <!-- Sección 10 -->
+    <h2 id="riesgos">10. Riesgos y Mitigaciones</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Riesgo</th>
+                <th>Probabilidad</th>
+                <th>Impacto</th>
+                <th>Mitigación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>SQL Injection</td>
+                <td>Media</td>
+                <td>Alto</td>
+                <td>Usar PreparedStatement</td>
+            </tr>
+            <tr>
+                <td>Contraseña débil</td>
+                <td>Alta</td>
+                <td>Alto</td>
+                <td>Validación y generación automática</td>
+            </tr>
+            <tr>
+                <td>Falta de auditoría</td>
+                <td>Media</td>
+                <td>Alto</td>
+                <td>Patrón Observer en cada operación</td>
+            </tr>
+            <tr>
+                <td>Performance con BD</td>
+                <td>Baja</td>
+                <td>Medio</td>
+                <td>Connection pooling e índices</td>
+            </tr>
+            <tr>
+                <td>Falta de logs</td>
+                <td>Alta</td>
+                <td>Medio</td>
+                <td>Logging en servicios y DAOs</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Sección 11 -->
+    <div class="page-break"></div>
+
+    <h2 id="conclusion">11. Conclusión</h2>
+
+    <p>La arquitectura de <strong>tres capas</strong> combinada con patrones <strong>Command</strong>, <strong>Observer</strong> y <strong>DAO</strong> proporciona una base sólida para el sistema SNAAR. Cada decisión ha sido justificada considerando:</p>
+
+    <ol>
+        <li><strong>Separación de responsabilidades:</strong> Cada capa tiene un propósito claro.</li>
+        <li><strong>Mantenibilidad:</strong> Cambios futuros son fáciles de implementar.</li>
+        <li><strong>Testabilidad:</strong> Componentes pueden probarse aisladamente.</li>
+        <li><strong>Seguridad:</strong> Múltiples capas de validación y auditoría.</li>
+        <li><strong>Escalabilidad:</strong> Nuevas características se agregan sin rediseño.</li>
+    </ol>
+
+    <p>El presente documento valida que el prototipo SNAAR cumple con los estándares de arquitectura empresarial y patrones de diseño reconocidos en la industria.</p>
+
+    <!-- Sección 12 -->
+    <h2 id="referencias">12. Referencias y Lecturas Recomendadas</h2>
+
+    <ul>
+        <li><strong>Gang of Four (GoF) Design Patterns:</strong> <em>Design Patterns: Elements of Reusable Object-Oriented Software</em></li>
+        <li><strong>Enterprise Integration Patterns:</strong> Hohpe & Woolf</li>
+        <li><strong>Clean Architecture:</strong> Robert C. Martin</li>
+        <li><strong>The Pragmatic Programmer:</strong> Hunt & Thomas</li>
+        <li><strong>Java Design Patterns:</strong> https://refactoring.guru/design-patterns/java</li>
+    </ul>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>SNAAR TekMess v1.0</strong></p>
+        <p>Documento técnico de arquitectura y patrones de diseño</p>
+        <p>Análisis y Diseño de Software | Junio 2026</p>
+        <p style="margin-top: 20px; font-size: 11px; color: #999;">Este documento puede ser impreso o exportado a PDF manteniendo su formato profesional.</p>
+    </div>
+
+</div>
+
+</body>
+</html>

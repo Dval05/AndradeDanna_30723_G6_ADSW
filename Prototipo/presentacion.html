@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación TekMess</title>
+    <style>
+        /* Estilos generales y reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        /* Contenedor de cada diapositiva */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            page-break-after: always;
+            border-bottom: 2px solid #2a2a2a;
+        }
+
+        /* Caja de contenido central */
+        .content {
+            width: 85%;
+            max-width: 1100px;
+            padding: 50px;
+            background: #1e1e1e;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        /* Tipografía */
+        h1 {
+            color: #3b82f6;
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        h2 {
+            color: #3b82f6;
+            font-size: 2.8em;
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #2a2a2a;
+            padding-bottom: 15px;
+        }
+        p {
+            font-size: 1.5em;
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        /* Portada específica */
+        .subtitle {
+            text-align: center;
+            font-size: 1.8em;
+            color: #94a3b8;
+            margin-bottom: 40px;
+        }
+        .author-info {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #64748b;
+        }
+
+        /* Tabla SMART */
+        .smart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .smart-table th, .smart-table td {
+            border: 1px solid #333;
+            padding: 18px;
+            text-align: left;
+            font-size: 1.3em;
+        }
+        .smart-table th {
+            color: #60a5fa;
+            width: 25%;
+            background-color: #252525;
+        }
+
+        /* Botones de enlaces */
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 18px 35px;
+            background-color: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 1.4em;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+            max-width: 400px;
+        }
+        .btn:hover {
+            background-color: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+        }
+        .btn-secondary {
+            background-color: #475569;
+        }
+        .btn-secondary:hover {
+            background-color: #64748b;
+            box-shadow: 0 10px 20px rgba(100, 116, 139, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide">
+        <div class="content">
+            <h1>TekMess IA Generativa</h1>
+            <p class="subtitle">Análisis y Diseño del Sistema Inteligente de Auditoría de Seguridad y Gestión de Reportes Operativos</p>
+            
+            <div class="author-info">
+                <p><strong>Asignatura:</strong> Análisis y Diseño de software | <strong>NRC:</strong> 30723</p>
+                <p><strong>Estudiantes:</strong> Ariel Llumiquinga</p>
+                <p><strong></strong> David Pilaguano</p>
+                <p><strong></strong> Danna Andrade</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="content">
+            <h2>Objetivo del Proyecto (SMART)</h2>
+            <table class="smart-table">
+                <tr>
+                    <th>S - Específico</th>
+                    <td>Realizar el análisis y diseño detallado de los módulos de Gestión de Empleados, Administración y Reporteo de TekMess.</td>
+                </tr>
+                <tr>
+                    <th>M - Medible</th>
+                    <td>Modelar el 100% de los requisitos funcionales elegidos (RF-01, RF-02, RF-03) con trazabilidad total.</td>
+                </tr>
+                <tr>
+                    <th>A - Alcanzable</th>
+                    <td>Utilizando herramientas de modelado y asistentes de IA (NotebookLM, Gemini) para la generación de diagramas y documentación.</td>
+                </tr>
+                <tr>
+                    <th>R - Relevante</th>
+                    <td>Garantizar que el diseño arquitectónico (Puente) soporte la integración con la infraestructura de Bitakor.</td>
+                </tr>
+                <tr>
+                    <th>T - Temporal</th>
+                    <td>Finalización de la fase de modelado y diseño en un periodo de un mes (Mayo).</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="content">
+            <h2>Fase de Análisis y Diseño</h2>
+            <p>Acceso directo a los cuadernos de investigación y estructuración generados en NotebookLM para los sprints planificados y la justificación de la arquitectura.</p>
+            
+            <div class="btn-container">
+                <a href="https://notebooklm.google.com/notebook/d22033a7-961a-4e2a-95b3-23333305307d" class="btn" target="_blank">
+                    1. Cuaderno de Análisis
+                </a>
+                <a href="https://notebooklm.google.com/notebook/a2e8e086-d81b-41be-9660-8ae8dd4f4d38" class="btn" target="_blank">
+                    2. Cuaderno de Diseño
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide">
+        <div class="content">
+            <h2>Construcción y Prototipado</h2>
+            <p>Enlaces a la implementación de patrones de diseño, maquetado de interfaz de usuario y planificación de metodologías ágiles.</p>
+            
+            <div class="btn-container">
+                <a href="https://notebooklm.google.com/notebook/f828eba8-00bd-4603-90c7-0af41ed938f3" class="btn" target="_blank">
+                    3. Cuaderno de Construcción
+                </a>
+                <a href="https://g6-adsw-30723.atlassian.net/wiki/spaces/3/pages/4063234/Maqueta+UI+-+REQ001+Registro+de+empleados+y+generaci+n+de+credenciales" class="btn btn-secondary" target="_blank">
+                    Prototipo (Jira)
+                </a>
+                <a href="https://invented-oak-17a.notion.site/Planificaci-n-TEKMESS-517fce1129c782dcaf6401f20918baeb?source=copy%20link" class="btn btn-secondary" target="_blank">
+                    Metodologías (Notion)
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

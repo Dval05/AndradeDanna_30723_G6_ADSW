@@ -162,87 +162,20 @@
             background: #1e293b; border-radius: 20px; padding: 24px;
             width: 85%; border: 1px solid rgba(239, 68, 68, 0.3);
         }
-        .login-logo h1 {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            margin-bottom: 8px;
-        }
-        .login-logo p {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-        .dash-card {
-            margin: 16px;
-            padding: 18px;
-            border-radius: 24px;
-            background: rgba(15, 23, 42, 0.65);
-            border: 1px solid rgba(99, 102, 241, 0.18);
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-        }
-        .dash-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(15, 23, 42, 0.8);
-        }
-        .dash-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-        .emp-card {
-            background: rgba(15, 23, 42, 0.85);
-            border-radius: 22px;
-            padding: 18px;
-            margin: 12px 16px;
-            border: 1px solid rgba(99, 102, 241, 0.18);
-            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
-        }
-        .emp-header {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .emp-name {
-            font-size: 16px;
-            font-weight: 700;
-        }
-        .emp-cedula {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-        .emp-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
     </style>
 </head>
 <body>
 
 <div class="device-simulator">
 
+    <!-- RF-02.01: Iniciar sesión -->
     <div id="view-login" class="view active">
         <div class="glass-card" style="margin-top: 40px;">
             <div class="login-logo">
                 <h1>SNAAR</h1>
                 <p>TekMess - Autenticación de administrador</p>
             </div>
-            <div class="section-title">Iniciar sesión</div>
+            <div class="section-title">RF-02.01 Iniciar sesión</div>
             <div class="form-group">
                 <label>Usuario</label>
                 <input id="login-user" type="text" class="form-control" placeholder="admin" value="admin">
@@ -256,6 +189,7 @@
         </div>
     </div>
 
+    <!-- RF-02.02: Cambiar contraseña -->
     <div id="view-change-password" class="view">
         <div class="top-bar">
             <div onclick="navegar('view-login')" style="font-size: 20px; cursor:pointer;">←</div>
@@ -263,7 +197,7 @@
             <div style="width: 20px;"></div>
         </div>
         <div class="glass-card">
-            <div class="section-title">Cambiar contraseña</div>
+            <div class="section-title">RF-02.02 Cambio de contraseña</div>
             <div class="form-group">
                 <label>Contraseña actual</label>
                 <input type="password" class="form-control" placeholder="Contraseña actual">
@@ -280,6 +214,7 @@
         </div>
     </div>
 
+    <!-- RF-02.03: Recuperar contraseña -->
     <div id="view-recover-password" class="view">
         <div class="top-bar">
             <div onclick="navegar('view-login')" style="font-size: 20px; cursor:pointer;">←</div>
@@ -287,7 +222,7 @@
             <div style="width: 20px;"></div>
         </div>
         <div class="glass-card">
-            <div class="section-title">Recuperar contraseña</div>
+            <div class="section-title">RF-02.03 Recuperación de contraseña</div>
             <div class="form-group">
                 <label>Usuario</label>
                 <input type="text" class="form-control" placeholder="Usuario">
@@ -323,21 +258,21 @@
             <div class="dash-icon" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">👥</div>
             <div>
                 <h3 style="font-size: 16px; margin-bottom: 4px;">Gestionar Empleados</h3>
-                <p style="font-size: 12px; color: var(--text-muted);">Crear, editar, consultar y eliminar empleados</p>
+                <p style="font-size: 12px; color: var(--text-muted);">RF-01: Crear, editar, consultar y eliminar empleados</p>
             </div>
         </div>
         <div class="dash-card" onclick="navegar('view-reportes')">
             <div class="dash-icon" style="background: rgba(168, 85, 247, 0.2); color: #c084fc;">📊</div>
             <div>
                 <h3 style="font-size: 16px; margin-bottom: 4px;">Reportes Analíticos</h3>
-                <p style="font-size: 12px; color: var(--text-muted);">Generar reportes y ver historial</p>
+                <p style="font-size: 12px; color: var(--text-muted);">RF-03V2: Generar reportes y ver historial</p>
             </div>
         </div>
         <div class="dash-card" onclick="navegar('view-change-password')">
             <div class="dash-icon" style="background: rgba(234, 179, 8, 0.18); color: #fbbf24;">🔐</div>
             <div>
                 <h3 style="font-size: 16px; margin-bottom: 4px;">Seguridad</h3>
-                <p style="font-size: 12px; color: var(--text-muted);">Cambios de contraseña y recuperación de acceso</p>
+                <p style="font-size: 12px; color: var(--text-muted);">RF-02.02 / RF-02.03</p>
             </div>
         </div>
     </div>
@@ -350,7 +285,7 @@
             <div onclick="navegar('view-form-empleado')" style="font-size: 20px; cursor:pointer;">➕</div>
         </div>
         <div class="glass-card" style="margin-top: 12px;">
-            <div class="section-title">Consultar empleados</div>
+            <div class="section-title">RF-01.04 Consultar empleados</div>
             <p style="font-size: 13px; color: var(--text-muted);">Listado de empleados registrados en TekMess.</p>
         </div>
         <div class="emp-card">
@@ -391,7 +326,7 @@
             <div style="width: 20px;"></div>
         </div>
         <div class="glass-card">
-            <div class="section-title">Crear o editar empleado</div>
+            <div class="section-title">RF-01.01 / RF-01.02 Crear o editar empleado</div>
             <div class="form-group">
                 <label>Cédula</label>
                 <input id="empleado-cedula" type="text" class="form-control" placeholder="1700000000">
@@ -419,7 +354,7 @@
                 <button class="btn btn-secondary" onclick="navegar('view-lista-empleados')">Cancelar</button>
                 <button class="btn btn-primary" onclick="registrarEmpleado()">Guardar</button>
             </div>
-            <div class="message-box">El sistema valida cédula, rol y correo electrónicamente.</div>
+            <div class="message-box">RF-01.05 Validar datos del empleado: cédula, rol y correo.</div>
         </div>
     </div>
 
@@ -429,7 +364,7 @@
             <div style="text-align: center; margin-bottom: 24px;">
                 <div style="font-size: 60px; margin-bottom: 16px;">✅</div>
                 <h2 style="font-size: 20px; margin-bottom: 8px;">Empleado registrado</h2>
-                <p style="font-size: 13px; color: var(--text-muted);">Credenciales generadas automáticamente</p>
+                <p style="font-size: 13px; color: var(--text-muted);">RF-01.06 Generar credenciales y primer acceso</p>
             </div>
             <div class="glass-card" style="margin: 0; background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3);">
                 <div class="form-group">
@@ -445,7 +380,7 @@
         </div>
     </div>
 
-    <!-- Generar reportes -->
+    <!-- Reportes -->
     <div id="view-reportes" class="view">
         <div class="top-bar">
             <div onclick="navegar('view-dashboard')" style="font-size: 20px; cursor:pointer;">←</div>
@@ -453,7 +388,7 @@
             <div onclick="navegar('view-report-history')" style="font-size: 20px; cursor:pointer;">📜</div>
         </div>
         <div class="glass-card" style="margin-top: 12px;">
-            <div class="section-title">Generar reporte</div>
+            <div class="section-title">RF-03V2.01 Generar reporte</div>
             <div class="date-row">
                 <div class="form-group">
                     <label>Fecha inicio</label>
@@ -470,7 +405,7 @@
             </div>
             <button class="btn btn-primary" onclick="navegar('view-report-success')">Generar Reporte</button>
         </div>
-        <div class="message-box">Consulta el historial de reportes anteriores.</div>
+        <div class="message-box">RF-03V2.02 Consultar historial de reportes disponibles.</div>
     </div>
 
     <!-- Reporte generado -->
@@ -481,7 +416,7 @@
             <div style="width: 20px;"></div>
         </div>
         <div class="glass-card" style="margin-top: 12px;">
-            <div class="section-title">Reporte analítico</div>
+            <div class="section-title">RF-03V2.01 Reporte analítico</div>
             <div class="report-card">
                 <div class="report-title">Gestión de Empleados</div>
                 <div class="report-meta">01/06/2026 - 15/06/2026</div>
@@ -508,7 +443,7 @@
             <div style="width: 20px;"></div>
         </div>
         <div class="glass-card" style="margin-top: 12px;">
-            <div class="section-title">Historial de reportes</div>
+            <div class="section-title">RF-03V2.02 Historial de reportes</div>
             <p style="font-size: 13px; color: var(--text-muted);">Consulta reportes previos por fecha de generación.</p>
         </div>
         <div class="report-card">
@@ -549,7 +484,6 @@
             </div>
         </div>
     </div>
-    <div style="position: absolute; bottom: 16px; left: 0; width: 100%; text-align: center; color: rgba(226, 232, 240, 0.55); font-size: 12px;">Prototipo TekMess - 15/06/2026</div>
 
 </div>
 

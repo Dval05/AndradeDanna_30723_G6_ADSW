@@ -1,0 +1,67 @@
+@startuml U2T1_Arquitectura_Base
+
+title Arquitectura base del CRUD de Empleados - Proyecto TekMess
+
+left to right direction
+
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangleRoundCorner 12
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+
+actor "Usuario" as Usuario
+
+rectangle "Capa de Presentación" as CAPA_PRESENTACION #D9EAF7 {
+  rectangle "EmpleadoController\n(src/main/java/com/tekmess/snaar/controlador/http)" as Controlador #EAF4FB
+  rectangle "Vistas JSP\n(vistas/empleados/formulario.jsp, listar.jsp)" as Vistas #EAF4FB
+}
+
+rectangle "Capa de Lógica_Negocio" as CAPA_NEGOCIO #DFF2E1 {
+  rectangle "EmpleadoServicio\n(src/main/java/com/tekmess/snaar/controlador/servicio)" as Servicio #F3FBF4
+  rectangle "InvocadorOperaciones\n(Patrón Command)" as Command #F3FBF4
+}
+
+rectangle "Capa de Datos" as CAPA_DATOS #F3E0F7 {
+  rectangle "EmpleadoDAO / UsuarioDAO\n(src/main/java/com/tekmess/snaar/modelo/dao)" as DAO #FAF1FC
+  database "PostgreSQL / BD\n(ConexionBD)" as FuenteDatos #FFFFFF
+  rectangle "Empleado\n(cedula, nombres, correo, rol)" as EntidadEmpleado #FCF7FD
+  rectangle "Usuario\n(cedula, nombreUsuario, contrasenaHash)" as EntidadUsuario #FCF7FD
+}
+
+Usuario --> Controlador : solicita CRUD
+Controlador --> Servicio : invoca operaciones
+Controlador --> Vistas : muestra formularios / listados
+Servicio --> DAO : crear / editar / eliminar / listar
+Servicio --> Command : encapsula comandos CRUD
+Command --> Servicio : ejecutar comando
+DAO --> FuenteDatos : persistencia JDBC
+DAO --> EntidadEmpleado : mapea datos
+DAO --> EntidadUsuario : gestiona credenciales
+
+note bottom of Controlador #FFF2CC
+Presentación:
+Servlet que recibe peticiones HTTP
+y despacha a JSP y servicio.
+end note
+
+note bottom of Servicio #FFF2CC
+Lógica de negocio:
+Valida datos, genera credenciales,
+y comunica capa de presentación con datos.
+end note
+
+note bottom of DAO #FFF2CC
+Datos:
+Implementa persistencia JDBC
+para empleados y usuarios.
+end note
+
+legend right
+|= Color |= Significado |
+|| Capa de Presentación |
+|| Capa de Lógica_Negocio |
+|| Capa de Datos |
+endlegend
+
+@enduml

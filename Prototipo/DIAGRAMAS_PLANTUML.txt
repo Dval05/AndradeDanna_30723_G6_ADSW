@@ -1,0 +1,952 @@
+================================================================================
+DIAGRAMAS PLANTUML - SNAAR TekMess
+Archivo: DIAGRAMAS_PLANTUML.txt
+Fecha: 15 de junio de 2026
+Proyecto: Sistema de Autenticación, Autorización y Reporte (SNAAR)
+================================================================================
+
+1. DIAGRAMA DE CASOS DE USO - NIVEL 0 (General)
+================================================================================
+
+@startuml Casos_Uso_Nivel_0
+
+title Casos de Uso - Nivel 0\nSNAAR TekMess
+
+actor "Administrador" as admin
+actor "Empleado" as emp
+
+rectangle "SNAAR TekMess" {
+    usecase "Gestionar Empleados" as UC1
+    usecase "Gestionar Autenticación" as UC2
+    usecase "Generar Reportes" as UC3
+}
+
+admin --> UC1
+admin --> UC2
+admin --> UC3
+emp --> UC2
+
+@enduml
+
+
+2. DIAGRAMA DE CASOS DE USO - NIVEL 1 (RF-01: Gestión de Empleados)
+================================================================================
+
+@startuml Casos_Uso_Nivel1_RF01
+
+title Casos de Uso - Nivel 1\nRF-01: Gestión de Empleados
+
+actor "Administrador" as admin
+
+rectangle "Gestión de Empleados" {
+    usecase "Crear Empleado" as UC1.1
+    usecase "Editar Empleado" as UC1.2
+    usecase "Consultar Empleados" as UC1.3
+    usecase "Eliminar Empleado" as UC1.4
+    usecase "Generar Credenciales" as UC1.5
+    usecase "Validar Datos" as UC1.6
+}
+
+admin --> UC1.1
+admin --> UC1.2
+admin --> UC1.3
+admin --> UC1.4
+
+UC1.1 --> UC1.5
+UC1.1 --> UC1.6
+UC1.2 --> UC1.6
+UC1.4 --> UC1.6
+
+@enduml
+
+
+3. DIAGRAMA DE CASOS DE USO - NIVEL 1 (RF-02: Autenticación)
+================================================================================
+
+@startuml Casos_Uso_Nivel1_RF02
+
+title Casos de Uso - Nivel 1\nRF-02: Autenticación y Sesión
+
+actor "Administrador" as admin
+actor "Usuario" as user
+
+rectangle "Autenticación y Sesión" {
+    usecase "Iniciar Sesión" as UC2.1
+    usecase "Cambiar Contraseña" as UC2.2
+    usecase "Recuperar Contraseña" as UC2.3
+    usecase "Cerrar Sesión" as UC2.4
+    usecase "Cifrar Contraseña" as UC2.5
+}
+
+admin --> UC2.1
+user --> UC2.1
+admin --> UC2.2
+user --> UC2.2
+admin --> UC2.3
+user --> UC2.3
+admin --> UC2.4
+user --> UC2.4
+
+UC2.1 --> UC2.5
+UC2.2 --> UC2.5
+UC2.3 --> UC2.5
+
+@enduml
+
+
+4. DIAGRAMA DE CASOS DE USO - NIVEL 1 (RF-03V2: Reportes)
+================================================================================
+
+@startuml Casos_Uso_Nivel1_RF03V2
+
+title Casos de Uso - Nivel 1\nRF-03V2: Generación de Reportes
+
+actor "Administrador" as admin
+
+rectangle "Reportes Analíticos" {
+    usecase "Generar Reporte" as UC3.1
+    usecase "Consultar Historial" as UC3.2
+    usecase "Procesar Datos" as UC3.3
+    usecase "Notificar Usuario" as UC3.4
+    usecase "Registrar en Auditoría" as UC3.5
+}
+
+admin --> UC3.1
+admin --> UC3.2
+
+UC3.1 --> UC3.3
+UC3.3 --> UC3.4
+UC3.3 --> UC3.5
+
+@enduml
+
+
+5. DIAGRAMA DE CLASES - ARQUITECTURA MVC
+================================================================================
+
+@startuml Diagrama_Clases_MVC
+
+title Diagrama de Clases\nArquitectura MVC - SNAAR TekMess
+
+' ============ CAPA DE PRESENTACIÓN ============
+package "Capa de Presentación (Views)" {
+    class LoginJSP {
+        - usuario: String
+        - contrasena: String
+        + mostrarFormulario()
+        + enviarCredenciales()
+    }
+    
+    class EmpleadosJSP {
+        - listaEmpleados: List
+        + mostrarListado()
+        + mostrarFormulario()
+        + actualizarVista()
+    }
+    
+    class ReportesJSP {
+        - reporte: Reporte
+        + mostrarReporte()
+        + generarPDF()
+    }
+}
+
+' ============ CAPA DE CONTROLADOR ============
+package "Capa de Controlador (HTTP Servlets)" {
+    class AuthController {
+        - authServicio: AuthServicio
+        + iniciarSesion(request, response)
+        + cambiarContrasena(request, response)
+        + recuperarContrasena(request, response)
+        + cerrarSesion(request, response)
+    }
+    
+    class EmpleadoController {
+        - empleadoServicio: EmpleadoServicio
+        - invocador: InvocadorOperaciones
+        + crearEmpleado(request, response)
+        + editarEmpleado(request, response)
+        + listarEmpleados(request, response)
+        + eliminarEmpleado(request, response)
+        + deshacerOperacion()
+    }
+    
+    class ReporteController {
+        - reporteServicio: ReporteServicio
+        + generarReporte(request, response)
+        + consultarHistorial(request, response)
+    }
+}
+
+' ============ CAPA DE SERVICIOS ============
+package "Capa de Servicios (Lógica de Negocio)" {
+    class AuthServicio {
+        - usuarioDAO: IUsuarioDAO
+        - cifrador: CifradorContrasena
+        + autenticar(usuario, contrasena): Sesion
+        + cambiarContrasena(usuario, antigua, nueva)
+        + recuperarContrasena(usuario, correo)
+        + validarSesion(sesion): boolean
+    }
+    
+    class EmpleadoServicio {
+        - empleadoDAO: IEmpleadoDAO
+        - validador: ValidadorDatos
+        - generador: GeneradorCredenciales
+        - sujeto: ISujeto
+        + crearEmpleado(empleado): Empleado
+        + editarEmpleado(empleado)
+        + eliminarEmpleado(cedula)
+        + consultarEmpleados(): List
+        + buscarEmpleado(cedula): Empleado
+        + validarDatos(empleado): boolean
+    }
+    
+    class ReporteServicio {
+        - reporteDAO: IReporteDAO
+        - sujeto: ISujeto
+        + generarReporte(fechaInicio, fechaFin): Reporte
+        + consultarHistorial(): List
+        + procesarDatos(eventos): ReporteAnalisis
+    }
+}
+
+' ============ CAPA DAO ============
+package "Capa DAO (Persistencia)" {
+    interface IEmpleadoDAO {
+        + crear(Empleado)
+        + buscarPorCedula(cedula): Empleado
+        + listarTodos(): List
+        + editar(Empleado)
+        + eliminar(cedula)
+    }
+    
+    interface IUsuarioDAO {
+        + crear(Usuario)
+        + buscarPorUsuario(usuario): Usuario
+        + buscarPorCorreo(correo): Usuario
+        + editar(Usuario)
+    }
+    
+    interface IReporteDAO {
+        + crear(Reporte)
+        + buscarPorFecha(inicio, fin): List
+        + listarTodos(): List
+    }
+    
+    class EmpleadoDAO {
+        - conexion: ConexionBD
+        + crear(Empleado)
+        + buscarPorCedula(cedula): Empleado
+        + listarTodos(): List
+        + editar(Empleado)
+        + eliminar(cedula)
+    }
+    
+    class UsuarioDAO {
+        - conexion: ConexionBD
+        + crear(Usuario)
+        + buscarPorUsuario(usuario): Usuario
+        + buscarPorCorreo(correo): Usuario
+        + editar(Usuario)
+    }
+    
+    class ReporteDAO {
+        - conexion: ConexionBD
+        + crear(Reporte)
+        + buscarPorFecha(inicio, fin): List
+        + listarTodos(): List
+    }
+    
+    IEmpleadoDAO <|.. EmpleadoDAO
+    IUsuarioDAO <|.. UsuarioDAO
+    IReporteDAO <|.. ReporteDAO
+}
+
+' ============ CAPA MODELO (ENTIDADES) ============
+package "Capa Modelo (Entidades)" {
+    class Empleado {
+        - cedula: String
+        - nombre: String
+        - rol: String
+        - correo: String
+        - usuario: String
+        - contrasenaCifrada: String
+        - estado: String
+        + getters/setters
+    }
+    
+    class Usuario {
+        - cedula: String
+        - usuario: String
+        - contrasenaCifrada: String
+        - rol: Rol
+        - estado: EstadoCuenta
+        + getters/setters
+    }
+    
+    class Sesion {
+        - usuarioId: String
+        - tokenSesion: String
+        - fechaInicio: LocalDateTime
+        - fechaExpiracion: LocalDateTime
+        + isValida(): boolean
+        + renovar()
+    }
+    
+    class Reporte {
+        - id: String
+        - generadoPor: String
+        - fechaInicio: LocalDate
+        - fechaFin: LocalDate
+        - datos: Map
+        - fechaGeneracion: LocalDateTime
+        + generarJSON(): String
+        + generarPDF(): byte[]
+    }
+    
+    class Rol {
+        - id: String
+        - nombre: String
+        - permisos: List
+    }
+    
+    class EstadoCuenta {
+        - estado: String [ACTIVO, INACTIVO, BLOQUEADO]
+        - motivo: String
+    }
+}
+
+' ============ PATRONES DE DISEÑO ============
+package "Patrones de Diseño" {
+    interface IComando {
+        + ejecutar(): ResultadoComando
+        + deshacer()
+    }
+    
+    class CrearEmpleadoComando {
+        - empleado: Empleado
+        - servicio: EmpleadoServicio
+        + ejecutar(): ResultadoComando
+        + deshacer()
+    }
+    
+    class InvocadorOperaciones {
+        - historialOperaciones: Stack
+        + ejecutar(IComando): ResultadoComando
+        + deshacerUltima()
+        + rehacer()
+    }
+    
+    interface ISujeto {
+        + agregarObservador(IObservador)
+        + eliminarObservador(IObservador)
+        + notificarObservadores(EventoSistema)
+    }
+    
+    interface IObservador {
+        + actualizar(EventoSistema)
+        + getNombre(): String
+    }
+    
+    class SujetoGestionEmpleado {
+        - observadores: List
+        + agregarObservador(IObservador)
+        + eliminarObservador(IObservador)
+        + notificarObservadores(EventoSistema)
+    }
+    
+    class ObservadorAuditoria {
+        + actualizar(EventoSistema)
+        + getNombre(): String
+        - registrarEnBD(String)
+    }
+    
+    class ObservadorNotificacion {
+        + actualizar(EventoSistema)
+        + getNombre(): String
+        - enviarNotificacion(String, String)
+    }
+    
+    IComando <|.. CrearEmpleadoComando
+    ISujeto <|.. SujetoGestionEmpleado
+    IObservador <|.. ObservadorAuditoria
+    IObservador <|.. ObservadorNotificacion
+}
+
+' ============ UTILIDADES ============
+package "Utilidades" {
+    class CifradorContrasena {
+        + {static} cifrar(contrasena): String
+        + {static} verificar(contrasena, hash): boolean
+    }
+    
+    class GeneradorCredenciales {
+        + generarUsuario(nombre): String
+        + generarContrasena(): String
+    }
+    
+    class ValidadorDatos {
+        + validarCedula(cedula): boolean
+        + validarCorreo(correo): boolean
+        + validarNombre(nombre): boolean
+        + validarRol(rol): boolean
+    }
+    
+    class ConexionBD {
+        - datasource: DataSource
+        + obtenerConexion(): Connection
+        + cerrarConexion(Connection)
+    }
+}
+
+' ============ RELACIONES ============
+AuthController --> AuthServicio
+EmpleadoController --> EmpleadoServicio
+EmpleadoController --> InvocadorOperaciones
+ReporteController --> ReporteServicio
+
+AuthServicio --> IUsuarioDAO
+EmpleadoServicio --> IEmpleadoDAO
+EmpleadoServicio --> ISujeto
+ReporteServicio --> IReporteDAO
+ReporteServicio --> ISujeto
+
+EmpleadoServicio --> ValidadorDatos
+EmpleadoServicio --> GeneradorCredenciales
+AuthServicio --> CifradorContrasena
+
+CrearEmpleadoComando --> EmpleadoServicio
+InvocadorOperaciones --> IComando
+
+SujetoGestionEmpleado --> IObservador
+ObservadorAuditoria --> ConexionBD
+ObservadorNotificacion --> ConexionBD
+
+@enduml
+
+
+6. DIAGRAMA DE PATRONES - PATRÓN OBSERVER
+================================================================================
+
+@startuml Patron_Observer
+
+title Patrón Observer\nGestión de Empleados - SNAAR TekMess
+
+participant "EmpleadoServicio" as servicio
+participant "SujetoGestionEmpleado" as sujeto
+participant "ObservadorAuditoria" as auditoria
+participant "ObservadorNotificacion" as notificacion
+participant "BaseDatos" as bd
+
+servicio -> sujeto: crearEmpleado(empleado)
+sujeto -> sujeto: validar datos
+sujeto -> bd: INSERT INTO empleados
+sujeto -> sujeto: notificarObservadores(evento)
+
+sujeto -> auditoria: actualizar(evento)
+auditoria -> bd: INSERT INTO auditoria
+auditoria <-- bd: OK
+
+sujeto -> notificacion: actualizar(evento)
+notificacion -> notificacion: enviarNotificacion()
+notificacion <-- notificacion: OK
+
+sujeto <-- auditoria: OK
+sujeto <-- notificacion: OK
+servicio <-- sujeto: empleado creado
+
+@enduml
+
+
+7. DIAGRAMA DE PATRONES - PATRÓN COMMAND
+================================================================================
+
+@startuml Patron_Command
+
+title Patrón Command\nOperaciones sobre Empleados - SNAAR TekMess
+
+participant "EmpleadoController" as controlador
+participant "InvocadorOperaciones" as invocador
+participant "CrearEmpleadoComando" as comando
+participant "EmpleadoServicio" as servicio
+participant "EmpleadoDAO" as dao
+
+controlador -> invocador: ejecutar(CrearEmpleadoComando)
+invocador -> comando: ejecutar()
+comando -> servicio: crearEmpleado(empleado)
+servicio -> servicio: validarDatos()
+servicio -> servicio: generarCredenciales()
+servicio -> dao: crear(empleado)
+dao <-- dao: empleado guardado
+
+invocador -> invocador: agregarAlHistorial(comando)
+invocador <-- comando: ResultadoComando
+
+note over invocador
+    Historial:
+    [CrearEmpleadoComando,
+     EditarEmpleadoComando,
+     ...]
+end note
+
+controlador <-- invocador: resultado exitoso
+
+controlador -> invocador: deshacerUltima()
+invocador -> comando: deshacer()
+comando -> servicio: eliminarEmpleado()
+invocador <-- comando: OK
+controlador <-- invocador: operación deshecha
+
+@enduml
+
+
+8. DIAGRAMA DE ARQUITECTURA - TRES CAPAS
+================================================================================
+
+@startuml Arquitectura_Tres_Capas
+
+title Arquitectura de Tres Capas\nSNAAR TekMess
+
+rectangle "CAPA DE PRESENTACIÓN" {
+    rectangle "JSP Views" as vistas {
+        [login.jsp]
+        [empleados/listar.jsp]
+        [empleados/formulario.jsp]
+        [reportes/generar.jsp]
+    }
+}
+
+rectangle "CAPA DE LÓGICA DE NEGOCIO" {
+    rectangle "HTTP Servlets" as http {
+        [AuthController]
+        [EmpleadoController]
+        [ReporteController]
+    }
+    
+    rectangle "Servicios" as servicios {
+        [AuthServicio]
+        [EmpleadoServicio]
+        [ReporteServicio]
+    }
+    
+    rectangle "Patrones" as patrones {
+        [Command Pattern]
+        [Observer Pattern]
+    }
+}
+
+rectangle "CAPA DE DATOS" {
+    rectangle "DAO Layer" as dao {
+        [IEmpleadoDAO]
+        [EmpleadoDAO]
+        [IUsuarioDAO]
+        [UsuarioDAO]
+        [IReporteDAO]
+        [ReporteDAO]
+    }
+    
+    rectangle "Entidades" as entidades {
+        [Empleado]
+        [Usuario]
+        [Sesion]
+        [Reporte]
+    }
+}
+
+rectangle "BASE DE DATOS" {
+    database "PostgreSQL/MySQL" as bd {
+        [empleados table]
+        [usuarios table]
+        [reportes table]
+        [auditoria table]
+    }
+}
+
+vistas --> http: HTTP Requests
+http --> servicios: Method Calls
+servicios --> patrones: Command/Observer
+servicios --> dao: CRUD Operations
+dao --> entidades: Entity Mapping
+entidades --> bd: JDBC Connection
+
+@enduml
+
+
+9. DIAGRAMA DE SECUENCIA - CREAR EMPLEADO
+================================================================================
+
+@startuml Secuencia_Crear_Empleado
+
+title Secuencia: Crear Empleado\nRF-01.01 - SNAAR TekMess
+
+actor Usuario
+participant "FormularioEmpleado.jsp" as formulario
+participant "EmpleadoController" as controller
+participant "InvocadorOperaciones" as invocador
+participant "CrearEmpleadoComando" as comando
+participant "EmpleadoServicio" as servicio
+participant "EmpleadoDAO" as dao
+participant "SujetoGestionEmpleado" as sujeto
+participant "ObservadorAuditoria" as auditoria
+participant "ObservadorNotificacion" as notificacion
+participant "BaseDatos" as bd
+
+Usuario -> formulario: Ingresa datos
+Usuario -> formulario: Click Crear
+formulario -> controller: POST /api/empleados
+controller -> invocador: ejecutar(CrearEmpleadoComando)
+
+invocador -> comando: ejecutar()
+comando -> servicio: crearEmpleado(empleado)
+
+servicio -> servicio: validarDatos(empleado)
+servicio -> servicio: generarCredenciales(empleado)
+servicio -> dao: crear(empleado)
+
+dao -> bd: INSERT empleado
+bd --> dao: OK
+
+servicio -> sujeto: notificarObservadores(evento)
+
+sujeto -> auditoria: actualizar(evento)
+auditoria -> bd: INSERT auditoria
+bd --> auditoria: OK
+
+sujeto -> notificacion: actualizar(evento)
+notificacion -> notificacion: enviarNotificacion()
+
+comando --> invocador: ResultadoComando(exitoso)
+invocador --> controller: resultado
+controller --> formulario: HTTP 201 Created + credenciales
+formulario --> Usuario: Mostrar credentials
+
+@enduml
+
+
+10. DIAGRAMA DE SECUENCIA - AUTENTICACIÓN
+================================================================================
+
+@startuml Secuencia_Autenticacion
+
+title Secuencia: Iniciar Sesión\nRF-02.01 - SNAAR TekMess
+
+actor Usuario
+participant "login.jsp" as login
+participant "AuthController" as controller
+participant "AuthServicio" as servicio
+participant "UsuarioDAO" as dao
+participant "CifradorContrasena" as cifrador
+participant "BaseDatos" as bd
+participant "SujetoGestionEmpleado" as sujeto
+participant "ObservadorAuditoria" as auditoria
+
+Usuario -> login: Ingresa usuario y contraseña
+login -> controller: POST /api/auth/login
+controller -> servicio: autenticar(usuario, contraseña)
+
+servicio -> dao: buscarPorUsuario(usuario)
+dao -> bd: SELECT FROM usuarios WHERE usuario=?
+bd --> dao: Usuario encontrado
+
+servicio -> cifrador: verificar(contraseña, hash)
+cifrador --> servicio: true/false
+
+alt Credenciales válidas
+    servicio -> servicio: crearSesion(usuario)
+    servicio -> sujeto: notificarObservadores(evento)
+    sujeto -> auditoria: actualizar(evento)
+    auditoria -> bd: INSERT auditoria
+    servicio --> controller: Sesion activa
+    controller --> login: HTTP 200 + Cookie sesión
+    login --> Usuario: Redirect al dashboard
+else Credenciales inválidas
+    servicio -> sujeto: notificarObservadores(intento_fallido)
+    sujeto -> auditoria: registrarIntentofallido()
+    servicio --> controller: HTTP 401 Unauthorized
+    controller --> login: Mostrar error
+    login --> Usuario: "Credenciales inválidas"
+end
+
+@enduml
+
+
+11. DIAGRAMA DE SECUENCIA - GENERAR REPORTE
+================================================================================
+
+@startuml Secuencia_Generar_Reporte
+
+title Secuencia: Generar Reporte\nRF-03V2.01 - SNAAR TekMess
+
+actor Usuario
+participant "generar.jsp" as vista
+participant "ReporteController" as controller
+participant "ReporteServicio" as servicio
+participant "ReporteDAO" as dao
+participant "BaseDatos" as bd
+participant "SujetoGestionEmpleado" as sujeto
+participant "ObservadorAuditoria" as auditoria
+participant "ObservadorNotificacion" as notificacion
+
+Usuario -> vista: Selecciona fechas y opciones
+Usuario -> vista: Click Generar Reporte
+vista -> controller: POST /api/reportes/generar
+controller -> servicio: generarReporte(fechaInicio, fechaFin)
+
+servicio -> dao: consultarEventos(fechaInicio, fechaFin)
+dao -> bd: SELECT FROM auditoria WHERE fecha BETWEEN ? AND ?
+bd --> dao: Lista de eventos
+
+servicio -> servicio: procesarDatos(eventos)
+servicio -> servicio: calcularEstadísticas()
+servicio -> dao: crearReporte(reporte)
+
+dao -> bd: INSERT INTO reportes
+bd --> dao: Reporte guardado
+
+servicio -> sujeto: notificarObservadores(REPORTE_GENERADO)
+
+sujeto -> auditoria: actualizar(evento)
+auditoria -> bd: INSERT auditoria
+bd --> auditoria: OK
+
+sujeto -> notificacion: actualizar(evento)
+notificacion -> notificacion: enviarNotificacion()
+
+servicio --> controller: Reporte generado
+controller --> vista: HTTP 200 + JSON reporte
+vista --> Usuario: Mostrar reporte
+
+@enduml
+
+
+12. DIAGRAMA DE ESTADOS - EMPLEADO
+================================================================================
+
+@startuml Diagrama_Estados_Empleado
+
+title Diagrama de Estados\nCiclo de Vida del Empleado - SNAAR TekMess
+
+[*] --> CREACION
+
+CREACION: Generando credenciales
+CREACION --> ACTIVO: Empleado creado\ny credenciales generadas
+
+ACTIVO: Empleado en sistema
+ACTIVO --> EDITADO: editar datos\n(nombre, rol, correo)
+EDITADO --> ACTIVO: cambios guardados
+
+ACTIVO --> INACTIVO: eliminar empleado\n(soft delete)
+INACTIVO --> ACTIVO: reactivar
+
+ACTIVO --> BLOQUEADO: Múltiples\nintento fallidos
+
+BLOQUEADO --> ACTIVO: Desbloquear\n(admin)
+BLOQUEADO --> INACTIVO: Permanente
+
+INACTIVO --> [*]
+
+@enduml
+
+
+13. DIAGRAMA DE COMPONENTES - FLUJO DE DATOS
+================================================================================
+
+@startuml Diagrama_Componentes
+
+title Diagrama de Componentes\nFlujo de Datos - SNAAR TekMess
+
+package "Cliente" {
+    [Navegador Web] as browser
+    [JSP Templates] as jsp
+}
+
+package "Servidor - Capa Web" {
+    [AuthController] as authCtrl
+    [EmpleadoController] as empCtrl
+    [ReporteController] as repCtrl
+}
+
+package "Servidor - Capa Negocio" {
+    [AuthServicio] as authSrv
+    [EmpleadoServicio] as empSrv
+    [ReporteServicio] as repSrv
+}
+
+package "Servidor - Patrones" {
+    [InvocadorOperaciones] as invoker
+    [SujetoGestionEmpleado] as sujeto
+    [Observadores] as obs
+}
+
+package "Servidor - Persistencia" {
+    [EmpleadoDAO] as empDao
+    [UsuarioDAO] as usrDao
+    [ReporteDAO] as repDao
+}
+
+package "Base de Datos" {
+    database "Tablas SQL" as db
+}
+
+browser --> jsp
+jsp --> authCtrl: HTTP Request
+jsp --> empCtrl: HTTP Request
+jsp --> repCtrl: HTTP Request
+
+authCtrl --> authSrv: call
+empCtrl --> empSrv: call
+repCtrl --> repSrv: call
+
+empCtrl --> invoker: executeCommand
+invoker --> empSrv: call
+
+empSrv --> invoker: notifyObservers
+invoker --> sujeto: notify
+sujeto --> obs: update
+
+authSrv --> usrDao: query/update
+empSrv --> empDao: query/update
+repSrv --> repDao: query/update
+
+empDao --> db: JDBC
+usrDao --> db: JDBC
+repDao --> db: JDBC
+
+@enduml
+
+
+14. DIAGRAMA ENTIDAD RELACIÓN (ER)
+================================================================================
+
+@startuml Diagrama_ER
+
+title Diagrama Entidad Relación\nBD SNAAR TekMess
+
+entity "usuarios" as usuarios {
+    * cedula : VARCHAR(10)
+    --
+    * usuario : VARCHAR(50)
+    * contrasena_hash : VARCHAR(255)
+    rol_id : INT
+    estado : ENUM
+    fecha_creacion : TIMESTAMP
+    fecha_ultima_login : TIMESTAMP
+}
+
+entity "empleados" as empleados {
+    * cedula : VARCHAR(10)
+    --
+    * nombre : VARCHAR(100)
+    rol : VARCHAR(50)
+    correo : VARCHAR(100)
+    usuario : VARCHAR(50)
+    contrasena_hash : VARCHAR(255)
+    estado : ENUM
+    fecha_creacion : TIMESTAMP
+}
+
+entity "reportes" as reportes {
+    * id : INT
+    --
+    generado_por : VARCHAR(50)
+    fecha_inicio : DATE
+    fecha_fin : DATE
+    datos : JSON
+    fecha_generacion : TIMESTAMP
+    estado : ENUM
+}
+
+entity "auditoria" as auditoria {
+    * id : INT
+    --
+    tipo_evento : VARCHAR(50)
+    usuario : VARCHAR(50)
+    descripcion : TEXT
+    datos_json : JSON
+    fecha_evento : TIMESTAMP
+    ip_origen : VARCHAR(45)
+}
+
+entity "sesiones" as sesiones {
+    * token : VARCHAR(255)
+    --
+    cedula : VARCHAR(10)
+    fecha_inicio : TIMESTAMP
+    fecha_expiracion : TIMESTAMP
+    ip : VARCHAR(45)
+    estado : ENUM
+}
+
+entity "roles" as roles {
+    * id : INT
+    --
+    nombre : VARCHAR(50)
+    descripcion : TEXT
+}
+
+usuarios ||--o{ sesiones: ""
+usuarios }o--|| roles: ""
+empleados ||--o{ reportes: ""
+usuarios ||--o{ auditoria: ""
+
+@enduml
+
+
+15. DIAGRAMA TIMELINE - CICLO DE VIDA DEL SISTEMA
+================================================================================
+
+@startuml Timeline_Proyecto
+
+title Timeline\nCiclo de Vida del Sistema SNAAR TekMess
+
+2026-06-01 : Análisis de Requisitos
+2026-06-02 : Diseño de Arquitectura
+2026-06-03 : Implementación Patrón Command
+2026-06-04 : Implementación Patrón Observer
+2026-06-05 : Implementación DAO
+2026-06-06 : Implementación Controladores
+2026-06-07 : Implementación Servicios
+2026-06-08 : Pruebas Unitarias
+2026-06-09 : Pruebas Integración
+2026-06-10 : Pruebas de Seguridad
+2026-06-11 : Validación de Requisitos
+2026-06-12 : Documentación
+2026-06-15 : Entrega Final
+
+@enduml
+
+================================================================================
+FIN DE DIAGRAMAS PLANTUML
+================================================================================
+
+INSTRUCCIONES DE USO:
+
+1. Copiar cada diagrama desde la sección correspondiente
+2. Pegarlo en: https://www.plantuml.com/plantuml/uml/
+3. O instalar PlantUML localmente:
+   - Descargar desde: http://plantuml.com/download
+   - Usar con Visual Studio Code + extensión PlantUML
+   - Usar con otros editores que soporten PlantUML
+
+EXTENSIONES RECOMENDADAS:
+
+Para Visual Studio Code:
+- PlantUML (id: jebbs.plantuml)
+- PlantUML Preview (id: eightHundreds.vscode-plantuml)
+
+FORMATOS DE SALIDA SOPORTADOS:
+
+- PNG (Default)
+- SVG (Escalable Vector Graphics)
+- PDF (Documento imprimible)
+- EPS (Encapsulated PostScript)
+- LATEX (LaTeX compatible)
+
+EJEMPLO DE EXPORTACIÓN EN TERMINAL:
+
+plantuml -tpng DIAGRAMAS_PLANTUML.txt
+plantuml -tsvg DIAGRAMAS_PLANTUML.txt
+plantuml -tpdf DIAGRAMAS_PLANTUML.txt
+
+================================================================================
