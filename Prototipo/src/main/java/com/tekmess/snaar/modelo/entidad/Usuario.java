@@ -128,4 +128,18 @@ public class Usuario {
                 ", primerAcceso=" + primerAcceso +
                 '}';
     }
+
+    // Compatibility getters for older JSPs/views that expect different names
+    public String getUsuario() {
+        return this.nombreUsuario;
+    }
+
+    public String getNombre() {
+        return this.nombreUsuario;
+    }
+
+    public com.tekmess.snaar.modelo.entidad.Rol getRol() {
+        // Usuario does not store Rol; return null by default.
+        return null;
+    }
 }

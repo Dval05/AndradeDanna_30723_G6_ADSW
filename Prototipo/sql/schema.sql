@@ -101,5 +101,5 @@ ON CONFLICT (cedula) DO NOTHING;
 
 -- Contraseña: Admin@2026 (hash BCrypt)
 INSERT INTO usuarios (cedula, nombre_usuario, contrasena_hash, estado_cuenta, primer_acceso)
-VALUES ('1700000001', 'admin', '$2a$12$LJ3m4YlFw0wYrV8VvE5P6.yN5YQf5Q5Z5h5F5g5H5j5K5l5M5n5O5', 'ACTIVO', TRUE)
+VALUES ('1700000001', 'admin', '$2a$12$uwku1iMBrTarT5Dpd.4wq.MMbfl0LorH8U4dKfljiN.WbJ/S/z50O', 'ACTIVO', TRUE)
 ON CONFLICT (cedula) DO NOTHING;

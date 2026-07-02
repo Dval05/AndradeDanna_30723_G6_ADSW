@@ -1,0 +1,12 @@
+HTTP/1.1 302 
+Set-Cookie: JSESSIONID=CCADB07165012245F8423E6E9F825E00; Path=/snaar; HttpOnly
+Location: /snaar/dashboard
+Content-Length: 0
+Date: Thu, 02 Jul 2026 06:18:39 GMT
+
+HTTP/1.1 405 
+Content-Type: text/html;charset=utf-8
+Content-Language: en
+Content-Length: 753
+Date: Thu, 02 Jul 2026 06:18:39 GMT
+

@@ -34,7 +34,22 @@ public class AuthController extends HttpServlet {
 
         switch (path) {
             case "/login":
-                req.getRequestDispatcher("/vistas/login.jsp").forward(req, resp);
+                try {
+                    req.getRequestDispatcher("/vistas/login.jsp").forward(req, resp);
+                } catch (Exception ex) {
+                    // Fallback: render a minimal login form if JSP fails to compile/load
+                    resp.setContentType("text/html;charset=UTF-8");
+                    java.io.PrintWriter out = resp.getWriter();
+                    String error = req.getParameter("error") != null ? req.getParameter("error") : (String) req.getAttribute("error");
+                    out.println("<!doctype html><html><head><meta charset=\"utf-8\"><title>Login</title></head><body style=\"font-family:Arial,sans-serif;background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh;\">");
+                    out.println("<form method=\"post\" action=\"" + req.getContextPath() + "/auth/login\" style=\"background:#112233;padding:24px;border-radius:8px;\">\n<h2 style=\"margin:0 0 8px;color:#fff\">SNAAR - Iniciar Sesión</h2>");
+                    if (error != null) out.println("<div style=\"color:#fca5a5;margin-bottom:8px;\">" + error + "</div>");
+                    out.println("<div><label>Usuario</label><br/><input name=\"usuario\" required style=\"padding:8px;margin-top:4px;width:100%\"/></div>");
+                    out.println("<div style=\"margin-top:8px\"><label>Contraseña</label><br/><input type=\"password\" name=\"contrasena\" required style=\"padding:8px;margin-top:4px;width:100%\"/></div>");
+                    out.println("<div style=\"margin-top:12px;text-align:right\"><button style=\"padding:8px 12px;background:#6366f1;color:#fff;border:none;border-radius:6px;\">Entrar</button></div>");
+                    out.println("</form></body></html>");
+                    out.flush();
+                }
                 break;
             case "/cambiar-contrasena":
                 req.getRequestDispatcher("/vistas/cambiarContrasena.jsp").forward(req, resp);

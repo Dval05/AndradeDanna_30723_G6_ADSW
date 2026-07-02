@@ -183,6 +183,11 @@ public class AuthServicio {
 
     private String obtenerRolUsuario(String cedula) {
         // Se obtiene del empleado asociado
-        return "GUARDIA"; // Default, se resuelve en la integración completa
+        com.tekmess.snaar.modelo.dao.EmpleadoDAO empleadoDAO = new com.tekmess.snaar.modelo.dao.EmpleadoDAO();
+        com.tekmess.snaar.modelo.entidad.Empleado emp = empleadoDAO.buscarPorCedula(cedula);
+        if (emp != null && emp.getRol() != null) {
+            return emp.getRol().name();
+        }
+        return "GUARDIA"; // Default fallback
     }
 }

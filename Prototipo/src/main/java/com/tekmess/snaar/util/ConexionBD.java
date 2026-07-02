@@ -12,9 +12,9 @@ public class ConexionBD {
 
     private static ConexionBD instancia;
 
-    private static final String URL = "jdbc:postgresql://localhost:5432/snaar_tekmess";
-    private static final String USUARIO = "postgres";
-    private static final String CONTRASENA = "postgres";
+    private static final String URL = System.getenv("DB_URL") != null ? System.getenv("DB_URL") : "jdbc:postgresql://localhost:5432/snaar_tekmess";
+    private static final String USUARIO = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "postgres";
+    private static final String CONTRASENA = System.getenv("DB_PASSWORD") != null ? System.getenv("DB_PASSWORD") : "postgres";
 
     private ConexionBD() {
         try {

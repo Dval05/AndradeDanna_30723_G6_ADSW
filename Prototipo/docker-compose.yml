@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:15
+    container_name: snaar_db
+    environment:
+      POSTGRES_DB: snaar_tekmess
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  app:
+    build: . # Esto disparará el Dockerfile de arriba
+    container_name: snaar_app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/snaar_tekmess
+      DB_USER: postgres
+      DB_PASSWORD: postgrespassword
+    depends_on:
+      - db
+
+volumes:
+  db_data:
