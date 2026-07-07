@@ -15,13 +15,24 @@
         .actions{ margin-top:12px; text-align:right; }
         .btn{ padding:8px 12px; border-radius:8px; background:linear-gradient(90deg,#06b6d4,#6366f1); color:white; text-decoration:none; }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
+<body class="app-page roles-page">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
     <div class="card">
-        <h3>Gestión de Roles</h3>
-        <p class="muted">Edita descripciones y activa/desactiva roles del sistema.</p>
-        <form method="post">
-            <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px;">
+        <div class="page-heading">
+            <p class="eyebrow">Gobierno de acceso</p>
+            <h1>Roles del sistema</h1>
+            <p class="page-subtitle">Administra el catalogo operativo. Los cambios se aplican a la descripcion y disponibilidad de cada rol.</p>
+        </div>
+        <% if (request.getAttribute("exito") != null) { %>
+            <div class="alert alert-success" style="margin-top:20px;"><%= request.getAttribute("exito") %></div>
+        <% } %>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="alert alert-error" style="margin-top:20px;"><%= request.getAttribute("error") %></div>
+        <% } %>
+        <form method="post" data-validate>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:26px;">
                 <%
                     List<Map<String,Object>> cfg = (List<Map<String,Object>>) request.getAttribute("configList");
                     if (cfg != null) {
@@ -30,10 +41,10 @@
                             String desc = (String) m.get("description");
                             boolean active = Boolean.TRUE.equals(m.get("active"));
                 %>
-                <div style="display:flex;gap:10px;align-items:center;">
-                    <div style="width:160px;"><strong><%= name %></strong></div>
-                    <div style="flex:1;"><input type="text" name="desc_<%= name %>" value="<%= desc %>"/></div>
-                    <div><label><input type="checkbox" name="active_<%= name %>" <%= active?"checked":"" %> /> activo</label></div>
+                <div class="role-row">
+                    <div class="role-name"><strong><%= name.replace('_', ' ') %></strong><small>Nivel operativo</small></div>
+                    <div><input type="text" name="desc_<%= name %>" value="<%= desc %>" aria-label="Descripcion de <%= name %>" required minlength="8" maxlength="120"/></div>
+                    <label class="role-switch"><input type="checkbox" name="active_<%= name %>" <%= active?"checked":"" %> /> Activo</label>
                 </div>
                 <%      }
                     }
@@ -42,5 +53,6 @@
             <div class="actions"><button class="btn" type="submit">Guardar cambios</button></div>
         </form>
     </div>
+    <script src="${pageContext.request.contextPath}/assets/js/validaciones.js"></script>
 </body>
 </html>

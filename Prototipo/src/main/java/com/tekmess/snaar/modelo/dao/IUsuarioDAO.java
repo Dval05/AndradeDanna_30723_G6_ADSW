@@ -18,6 +18,10 @@ public interface IUsuarioDAO {
 
     boolean actualizarContrasena(int idUsuario, String hash);
 
+    boolean actualizarContrasenaTemporal(int idUsuario, String contrasenaTemporal);
+
+    boolean actualizarCredencialesTemporales(int idUsuario, String hash, String contrasenaTemporal);
+
     boolean actualizarEstado(int idUsuario, EstadoCuenta estado);
 
     boolean actualizarIntentos(int idUsuario, int intentos);

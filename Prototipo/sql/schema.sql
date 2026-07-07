@@ -20,6 +20,23 @@ CREATE TABLE IF NOT EXISTS empleados (
 );
 
 -- ============================================================
+-- TABLA: locaciones operativas
+-- ============================================================
+CREATE TABLE IF NOT EXISTS locaciones (
+    id_locacion     SERIAL PRIMARY KEY,
+    nombre          VARCHAR(120) NOT NULL UNIQUE,
+    ciudad          VARCHAR(80) NOT NULL,
+    direccion       VARCHAR(180) NOT NULL,
+    responsable     VARCHAR(120) NOT NULL,
+    capacidad       INTEGER NOT NULL DEFAULT 0,
+    activa          BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE empleados
+    ADD COLUMN IF NOT EXISTS id_locacion INTEGER REFERENCES locaciones(id_locacion);
+
+-- ============================================================
 -- TABLA: usuarios (RF-SNAAR-02)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS usuarios (
@@ -27,6 +44,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     cedula           VARCHAR(10) NOT NULL UNIQUE REFERENCES empleados(cedula) ON DELETE CASCADE,
     nombre_usuario   VARCHAR(50) NOT NULL UNIQUE,
     contrasena_hash  VARCHAR(255) NOT NULL,
+    contrasena_temporal VARCHAR(100),
     estado_cuenta    VARCHAR(15) NOT NULL DEFAULT 'ACTIVO' CHECK (estado_cuenta IN ('ACTIVO', 'BLOQUEADO', 'INACTIVO')),
     intentos_fallidos INTEGER NOT NULL DEFAULT 0,
     primer_acceso    BOOLEAN NOT NULL DEFAULT TRUE,
@@ -100,6 +118,6 @@ VALUES ('1700000001', 'Administrador SNAAR', 'admin@tekmess.com', 'JEFE_LOGISTIC
 ON CONFLICT (cedula) DO NOTHING;
 
 -- Contraseña: Admin@2026 (hash BCrypt)
-INSERT INTO usuarios (cedula, nombre_usuario, contrasena_hash, estado_cuenta, primer_acceso)
-VALUES ('1700000001', 'admin', '$2a$12$uwku1iMBrTarT5Dpd.4wq.MMbfl0LorH8U4dKfljiN.WbJ/S/z50O', 'ACTIVO', TRUE)
+INSERT INTO usuarios (cedula, nombre_usuario, contrasena_hash, contrasena_temporal, estado_cuenta, primer_acceso)
+VALUES ('1700000001', 'admin', '$2a$12$uwku1iMBrTarT5Dpd.4wq.MMbfl0LorH8U4dKfljiN.WbJ/S/z50O', 'Admin@2026', 'ACTIVO', TRUE)
 ON CONFLICT (cedula) DO NOTHING;

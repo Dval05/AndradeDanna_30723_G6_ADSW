@@ -112,10 +112,12 @@
         .modal-content h3 { margin-bottom: 16px; }
         .modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
+<body class="app-page employees-page">
     <!-- Barra de navegación -->
-    <nav class="navbar">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
+    <nav class="navbar legacy-navbar">
         <h2>SNAAR — TekMess</h2>
         <div class="nav-links">
             <a href="${pageContext.request.contextPath}/empleados/listar" id="nav-empleados">Empleados</a>
@@ -128,7 +130,12 @@
     <div class="container">
         <!-- Encabezado -->
         <div class="header-section">
-            <h1>Gestión de Empleados</h1>
+            <div class="page-heading">
+                <p class="eyebrow">Directorio operativo</p>
+                <h1>Personal</h1>
+                <p class="page-subtitle">Consulta colaboradores, responsabilidades y accesos desde un único lugar.</p>
+            </div>
+            <c:if test="${puedeGestionarPersonal}">
             <div style="display: flex; gap: 12px;">
                 <a href="${pageContext.request.contextPath}/empleados/nuevo" class="btn btn-primary" id="btn-nuevo-empleado">
                     + Registrar Empleado
@@ -137,6 +144,7 @@
                     <button type="submit" class="btn btn-secondary" id="btn-deshacer">↩ Deshacer</button>
                 </form>
             </div>
+            </c:if>
         </div>
 
         <!-- Mensajes -->
@@ -147,6 +155,39 @@
             <div class="alert alert-success" id="msg-exito">${exito}</div>
         </c:if>
 
+        <form class="filters personnel-filters personnel-filters-wide" action="${pageContext.request.contextPath}/empleados/listar" method="GET">
+            <div>
+                <label for="q">Buscar personal</label>
+                <input type="text" id="q" name="q" value="${q}" placeholder="Cédula, nombre o correo">
+            </div>
+            <div>
+                <label for="rol">Rol</label>
+                <select id="rol" name="rol">
+                    <option value="" ${empty rolFiltro ? 'selected' : ''}>Todos los roles</option>
+                    <option value="GUARDIA" ${rolFiltro == 'GUARDIA' ? 'selected' : ''}>Guardia</option>
+                    <option value="SUPERVISOR" ${rolFiltro == 'SUPERVISOR' ? 'selected' : ''}>Supervisor</option>
+                    <option value="CENTRALISTA" ${rolFiltro == 'CENTRALISTA' ? 'selected' : ''}>Centralista</option>
+                    <option value="JEFE_LOGISTICA" ${rolFiltro == 'JEFE_LOGISTICA' ? 'selected' : ''}>Jefe Logística</option>
+                </select>
+            </div>
+            <div>
+                <label for="locacion">Locación</label>
+                <select id="locacion" name="locacion">
+                    <option value="" ${empty locacionFiltro ? 'selected' : ''}>Todas las locaciones</option>
+                    <c:forEach var="loc" items="${locaciones}">
+                        <option value="${loc.idLocacion}" ${locacionFiltro == loc.idLocacion ? 'selected' : ''}>
+                            ${loc.nombre}
+                        </option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+                <a href="${pageContext.request.contextPath}/empleados/exportar?q=${q}&rol=${rolFiltro}&locacion=${locacionFiltro}" class="btn btn-secondary">Exportar CSV</a>
+                <a href="${pageContext.request.contextPath}/empleados/listar" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </form>
+
         <!-- Tabla de empleados (RF-SNAAR-01.04) -->
         <div class="table-card">
             <table id="tabla-empleados">
@@ -155,12 +196,18 @@
                         <th>Cédula</th>
                         <th>Nombres</th>
                         <th>Rol</th>
+                        <th>Locación</th>
                         <th>Correo</th>
+                        <c:if test="${puedeGestionarPersonal}">
+                            <th>Acceso</th>
+                            <th>Estado</th>
+                        </c:if>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach var="emp" items="${empleados}">
+                        <c:set var="usuarioEmp" value="${usuariosPorCedula[emp.cedula]}" />
                         <tr>
                             <td>${emp.cedula}</td>
                             <td>${emp.nombres}</td>
@@ -176,8 +223,39 @@
                                     ${emp.rol.descripcion}
                                 </span>
                             </td>
-                            <td>${emp.correo}</td>
                             <td>
+                                <span class="location-pill">${empty emp.nombreLocacion ? 'Sin asignar' : emp.nombreLocacion}</span>
+                            </td>
+                            <td>${emp.correo}</td>
+                            <c:if test="${puedeGestionarPersonal}">
+                                <td>
+                                    <div class="credential-cell">
+                                        <span class="credential-user">${empty usuarioEmp ? 'Sin usuario' : usuarioEmp.nombreUsuario}</span>
+                                        <c:choose>
+                                            <c:when test="${not empty usuarioEmp.contrasenaTemporal}">
+                                                <code class="credential-key">${usuarioEmp.contrasenaTemporal}</code>
+                                            </c:when>
+                                            <c:when test="${not empty usuarioEmp and not usuarioEmp.primerAcceso}">
+                                                <span class="badge badge-neutral">Ya cambiada</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge badge-neutral">No disponible</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="account-state">
+                                        <span class="badge ${usuarioEmp.estadoCuenta == 'BLOQUEADO' ? 'badge-danger' : 'badge-success'}">
+                                            ${empty usuarioEmp ? 'Sin cuenta' : usuarioEmp.estadoCuenta}
+                                        </span>
+                                        <small>${empty usuarioEmp ? '' : usuarioEmp.intentosFallidos} intentos fallidos</small>
+                                    </div>
+                                </td>
+                            </c:if>
+                            <td>
+                                <c:choose>
+                                <c:when test="${puedeGestionarPersonal}">
                                 <div class="acciones">
                                     <a href="${pageContext.request.contextPath}/empleados/editar?cedula=${emp.cedula}"
                                        class="btn btn-warning" id="btn-editar-${emp.cedula}">Editar</a>
@@ -186,13 +264,24 @@
                                             onclick="confirmarEliminacion('${emp.cedula}', '${emp.nombres}')">
                                         Dar de baja
                                     </button>
+                                    <form action="${pageContext.request.contextPath}/empleados/reset-password" method="POST" style="display:inline;">
+                                        <input type="hidden" name="cedula" value="${emp.cedula}">
+                                        <button type="submit" class="btn btn-secondary">Nueva clave</button>
+                                    </form>
+                                    <form action="${pageContext.request.contextPath}/empleados/desbloquear" method="POST" style="display:inline;">
+                                        <input type="hidden" name="cedula" value="${emp.cedula}">
+                                        <button type="submit" class="btn btn-secondary">Desbloquear</button>
+                                    </form>
                                 </div>
+                                </c:when>
+                                <c:otherwise><span class="badge badge-neutral">Solo lectura</span></c:otherwise>
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>
                     <c:if test="${empty empleados}">
                         <tr>
-                            <td colspan="5" style="text-align:center; padding:40px; color:#64748b;">
+                            <td colspan="${puedeGestionarPersonal ? 8 : 6}" style="text-align:center; padding:40px; color:#64748b;">
                                 No hay empleados registrados en el sistema.
                             </td>
                         </tr>

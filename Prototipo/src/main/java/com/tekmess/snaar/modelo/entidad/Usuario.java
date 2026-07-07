@@ -13,6 +13,7 @@ public class Usuario {
     private String cedula;
     private String nombreUsuario;
     private String contrasenaHash;
+    private String contrasenaTemporal;
     private EstadoCuenta estadoCuenta;
     private int intentosFallidos;
     private boolean primerAcceso;
@@ -67,6 +68,14 @@ public class Usuario {
 
     public void setContrasenaHash(String contrasenaHash) {
         this.contrasenaHash = contrasenaHash;
+    }
+
+    public String getContrasenaTemporal() {
+        return contrasenaTemporal;
+    }
+
+    public void setContrasenaTemporal(String contrasenaTemporal) {
+        this.contrasenaTemporal = contrasenaTemporal;
     }
 
     public EstadoCuenta getEstadoCuenta() {

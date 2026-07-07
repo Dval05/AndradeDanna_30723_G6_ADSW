@@ -28,25 +28,31 @@
         .req-list li.valid { color: #28a745; }
         .req-list li.valid::before { content: "●"; color: #28a745; }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
+<body class="app-page password-page security-page">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
     <div class="container">
-        <h2>Cambiar Contraseña</h2>
+        <p class="eyebrow">Seguridad de la cuenta</p>
+        <h2>Actualizar contraseña</h2>
         <% if (request.getAttribute("error") != null) { %>
             <div class="error"><%= request.getAttribute("error") %></div>
         <% } %>
-        <p style="text-align:center; font-size: 13px; color: #666; margin-bottom: 20px;">Por seguridad, debes actualizar tu contraseña.</p>
-        <form action="${pageContext.request.contextPath}/auth/cambiar-contrasena" method="POST">
+        <p class="page-subtitle" style="margin-bottom: 24px;">Usa una clave única y robusta para proteger tu acceso al sistema.</p>
+        <form action="${pageContext.request.contextPath}/auth/cambiar-contrasena" method="POST" data-validate>
             
             <div class="form-group">
                 <label for="contrasenaActual">Contraseña Actual:</label>
-                <input type="password" id="contrasenaActual" name="contrasenaActual" required>
+                <input type="password" id="contrasenaActual" name="contrasenaActual" required minlength="8" maxlength="72">
                 <span class="toggle-pwd" onclick="togglePassword('contrasenaActual', this)">👁</span>
             </div>
             
             <div class="form-group">
                 <label for="contrasenaNueva">Nueva Contraseña:</label>
-                <input type="password" id="contrasenaNueva" name="contrasenaNueva" required onkeyup="checkPasswordStrength()">
+                <input type="password" id="contrasenaNueva" name="contrasenaNueva" required minlength="8" maxlength="72"
+                       pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*\d)(?=.*[!@#$%^&*()_+\-={}|;:',.<>?/]).{8,}$"
+                       title="Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 2 números y 1 carácter especial."
+                       onkeyup="checkPasswordStrength()">
                 <span class="toggle-pwd" onclick="togglePassword('contrasenaNueva', this)">👁</span>
             </div>
 
@@ -66,7 +72,7 @@
             
             <div class="form-group">
                 <label for="confirmacion">Confirmar Contraseña:</label>
-                <input type="password" id="confirmacion" name="confirmacion" required>
+                <input type="password" id="confirmacion" name="confirmacion" required minlength="8" maxlength="72">
                 <!-- No se incluye el ojito en este campo -->
             </div>
             
@@ -74,6 +80,7 @@
         </form>
     </div>
 
+    <script src="${pageContext.request.contextPath}/assets/js/validaciones.js"></script>
     <script>
         function togglePassword(inputId, iconElement) {
             const input = document.getElementById(inputId);

@@ -85,11 +85,26 @@
         }
         .recuperar-link a:hover { color: #a5b4fc; }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
+<body class="auth-page login-page">
+    <main class="auth-shell">
+        <section class="brand-panel" aria-label="Presentacion SNAAR">
+            <div class="brand-mark"><span>S</span> SNAAR · TEKMESS</div>
+            <div class="brand-copy">
+                <p class="brand-kicker">Operaciones y auditoría</p>
+                <h1>Control claro.<br>Decisiones seguras.</h1>
+                <p>Centraliza la gestión del personal, supervisa accesos y convierte la actividad operativa en información útil.</p>
+            </div>
+            <div class="brand-status">
+                <span><i></i>Sistema disponible</span>
+                <span>Acceso protegido</span>
+            </div>
+        </section>
+        <section class="auth-panel">
     <div class="login-container">
         <div class="logo">
-            <h1>SNAAR</h1>
+            <h1>Bienvenido de nuevo</h1>
             <p>TekMess — Sistema de Notificación y Auditoría</p>
         </div>
 
@@ -100,16 +115,19 @@
             <div class="success-msg" id="success-message">${exito}</div>
         </c:if>
 
-        <form action="${pageContext.request.contextPath}/auth/login" method="POST" id="login-form">
+        <form action="${pageContext.request.contextPath}/auth/login" method="POST" id="login-form" data-validate>
             <div class="form-group">
                 <label for="usuario">Nombre de usuario</label>
                 <input type="text" id="usuario" name="usuario" required
+                       minlength="3" maxlength="30" pattern="[A-Za-z0-9._-]{3,30}"
+                       title="Use de 3 a 30 caracteres: letras, números, punto, guion o guion bajo."
                        placeholder="Ingrese su usuario" autocomplete="username">
             </div>
 
             <div class="form-group">
                 <label for="contrasena">Contraseña</label>
                 <input type="password" id="contrasena" name="contrasena" required
+                       minlength="8" maxlength="72"
                        placeholder="Ingrese su contraseña" autocomplete="current-password">
             </div>
 
@@ -122,5 +140,8 @@
             </a>
         </div>
     </div>
+        </section>
+    </main>
+    <script src="${pageContext.request.contextPath}/assets/js/validaciones.js"></script>
 </body>
 </html>

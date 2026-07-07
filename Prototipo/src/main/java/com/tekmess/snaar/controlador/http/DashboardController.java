@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import com.tekmess.snaar.controlador.servicio.EmpleadoServicio;
 import com.tekmess.snaar.modelo.dao.EmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.LocacionDAO;
 import com.tekmess.snaar.modelo.dao.ReporteDAO;
 import com.tekmess.snaar.modelo.dao.UsuarioDAO;
 import com.tekmess.snaar.modelo.entidad.Empleado;
@@ -29,12 +30,14 @@ public class DashboardController extends HttpServlet {
     private EmpleadoServicio empleadoServicio;
     private ReporteDAO reporteDAO;
     private UsuarioDAO usuarioDAO;
+    private LocacionDAO locacionDAO;
 
     @Override
     public void init() throws ServletException {
         this.empleadoServicio = new EmpleadoServicio(new EmpleadoDAO(), new UsuarioDAO());
         this.reporteDAO = new ReporteDAO();
         this.usuarioDAO = new UsuarioDAO();
+        this.locacionDAO = new LocacionDAO();
     }
 
     @Override
@@ -54,6 +57,7 @@ public class DashboardController extends HttpServlet {
         }
 
         int totalReportes = reporteDAO.listarTodos().size();
+        int totalLocacionesActivas = locacionDAO.contarActivas();
 
         // Accesos fallidos del día
         Calendar cal = Calendar.getInstance();
@@ -159,6 +163,7 @@ public class DashboardController extends HttpServlet {
         req.setAttribute("totalEmpleados", totalEmpleados);
         req.setAttribute("empleadosRecientes", empleadosRecientes);
         req.setAttribute("totalReportes", totalReportes);
+        req.setAttribute("totalLocacionesActivas", totalLocacionesActivas);
         req.setAttribute("accesosFallidosHoy", accesosFallidosHoy);
         req.setAttribute("roleLabelsJson", roleLabelsJson);
         req.setAttribute("roleValuesJson", roleValuesJson);
@@ -174,7 +179,6 @@ public class DashboardController extends HttpServlet {
             req.setAttribute("usuariosList", new java.util.ArrayList<>());
         }
 
-        // Forward to a simpler dashboard while fragment issues are resolved
-        req.getRequestDispatcher("/vistas/dashboard_simple.jsp").forward(req, resp);
+        req.getRequestDispatcher("/vistas/dashboard.jsp").forward(req, resp);
     }
 }

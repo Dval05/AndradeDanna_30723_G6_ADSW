@@ -15,18 +15,23 @@ import java.util.List;
  */
 public class UsuarioDAO implements IUsuarioDAO {
 
+    public UsuarioDAO() {
+        asegurarColumnaContrasenaTemporal();
+    }
+
     @Override
     public boolean crear(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (cedula, nombre_usuario, contrasena_hash, estado_cuenta, " +
-                "intentos_fallidos, primer_acceso) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (cedula, nombre_usuario, contrasena_hash, contrasena_temporal, estado_cuenta, " +
+                "intentos_fallidos, primer_acceso) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
                 PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, usuario.getCedula());
             ps.setString(2, usuario.getNombreUsuario());
             ps.setString(3, usuario.getContrasenaHash());
-            ps.setString(4, usuario.getEstadoCuenta().name());
-            ps.setInt(5, usuario.getIntentosFallidos());
-            ps.setBoolean(6, usuario.isPrimerAcceso());
+            ps.setString(4, usuario.getContrasenaTemporal());
+            ps.setString(5, usuario.getEstadoCuenta().name());
+            ps.setInt(6, usuario.getIntentosFallidos());
+            ps.setBoolean(7, usuario.isPrimerAcceso());
             int filas = ps.executeUpdate();
             if (filas > 0) {
                 ResultSet keys = ps.getGeneratedKeys();
@@ -75,7 +80,7 @@ public class UsuarioDAO implements IUsuarioDAO {
 
     @Override
     public boolean actualizarContrasena(int idUsuario, String hash) {
-        String sql = "UPDATE usuarios SET contrasena_hash = ? WHERE id_usuario = ?";
+        String sql = "UPDATE usuarios SET contrasena_hash = ?, contrasena_temporal = NULL WHERE id_usuario = ?";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
                 PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, hash);
@@ -83,6 +88,36 @@ public class UsuarioDAO implements IUsuarioDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error al actualizar contraseña: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean actualizarContrasenaTemporal(int idUsuario, String contrasenaTemporal) {
+        String sql = "UPDATE usuarios SET contrasena_temporal = ? WHERE id_usuario = ?";
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, contrasenaTemporal);
+            ps.setInt(2, idUsuario);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar contraseña temporal: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean actualizarCredencialesTemporales(int idUsuario, String hash, String contrasenaTemporal) {
+        String sql = "UPDATE usuarios SET contrasena_hash = ?, contrasena_temporal = ?, primer_acceso = TRUE, " +
+                "estado_cuenta = 'ACTIVO', intentos_fallidos = 0 WHERE id_usuario = ?";
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, hash);
+            ps.setString(2, contrasenaTemporal);
+            ps.setInt(3, idUsuario);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar credenciales temporales: " + e.getMessage());
         }
         return false;
     }
@@ -180,6 +215,11 @@ public class UsuarioDAO implements IUsuarioDAO {
         u.setCedula(rs.getString("cedula"));
         u.setNombreUsuario(rs.getString("nombre_usuario"));
         u.setContrasenaHash(rs.getString("contrasena_hash"));
+        try {
+            u.setContrasenaTemporal(rs.getString("contrasena_temporal"));
+        } catch (SQLException ignored) {
+            u.setContrasenaTemporal(null);
+        }
         u.setEstadoCuenta(EstadoCuenta.valueOf(rs.getString("estado_cuenta")));
         u.setIntentosFallidos(rs.getInt("intentos_fallidos"));
         u.setPrimerAcceso(rs.getBoolean("primer_acceso"));
@@ -203,5 +243,15 @@ public class UsuarioDAO implements IUsuarioDAO {
             System.err.println("Error al listar usuarios: " + e.getMessage());
         }
         return lista;
+    }
+
+    private void asegurarColumnaContrasenaTemporal() {
+        String sql = "ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS contrasena_temporal VARCHAR(100)";
+        try (Connection conn = ConexionBD.getInstancia().getConexion();
+                Statement st = conn.createStatement()) {
+            st.execute(sql);
+        } catch (SQLException e) {
+            System.err.println("No se pudo asegurar columna contrasena_temporal: " + e.getMessage());
+        }
     }
 }

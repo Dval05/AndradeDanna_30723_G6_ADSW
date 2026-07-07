@@ -15,18 +15,24 @@ import java.util.List;
  */
 public class EmpleadoDAO implements IEmpleadoDAO {
 
+    public EmpleadoDAO() {
+        new LocacionDAO();
+    }
+
     @Override
     public boolean crear(Empleado empleado) {
-        String sql = "INSERT INTO empleados (cedula, nombres, correo, rol, fecha_creacion, fecha_modificacion) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO empleados (cedula, nombres, correo, rol, id_locacion, fecha_creacion, fecha_modificacion) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, empleado.getCedula());
             ps.setString(2, empleado.getNombres());
             ps.setString(3, empleado.getCorreo());
             ps.setString(4, empleado.getRol().name());
-            ps.setTimestamp(5, new Timestamp(empleado.getFechaCreacion().getTime()));
-            ps.setTimestamp(6, new Timestamp(empleado.getFechaModificacion().getTime()));
+            if (empleado.getIdLocacion() != null) ps.setInt(5, empleado.getIdLocacion());
+            else ps.setNull(5, Types.INTEGER);
+            ps.setTimestamp(6, new Timestamp(empleado.getFechaCreacion().getTime()));
+            ps.setTimestamp(7, new Timestamp(empleado.getFechaModificacion().getTime()));
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error al crear empleado: " + e.getMessage());
@@ -36,15 +42,17 @@ public class EmpleadoDAO implements IEmpleadoDAO {
 
     @Override
     public boolean editar(Empleado empleado) {
-        String sql = "UPDATE empleados SET nombres = ?, correo = ?, rol = ?, fecha_modificacion = ? " +
+        String sql = "UPDATE empleados SET nombres = ?, correo = ?, rol = ?, id_locacion = ?, fecha_modificacion = ? " +
                      "WHERE cedula = ?";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, empleado.getNombres());
             ps.setString(2, empleado.getCorreo());
             ps.setString(3, empleado.getRol().name());
-            ps.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
-            ps.setString(5, empleado.getCedula());
+            if (empleado.getIdLocacion() != null) ps.setInt(4, empleado.getIdLocacion());
+            else ps.setNull(4, Types.INTEGER);
+            ps.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+            ps.setString(6, empleado.getCedula());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error al editar empleado: " + e.getMessage());
@@ -67,7 +75,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
 
     @Override
     public Empleado buscarPorCedula(String cedula) {
-        String sql = "SELECT * FROM empleados WHERE cedula = ?";
+        String sql = "SELECT e.*, l.nombre AS nombre_locacion FROM empleados e LEFT JOIN locaciones l ON l.id_locacion = e.id_locacion WHERE e.cedula = ?";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, cedula);
@@ -84,7 +92,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
     @Override
     public List<Empleado> listarTodos() {
         List<Empleado> empleados = new ArrayList<>();
-        String sql = "SELECT * FROM empleados ORDER BY nombres";
+        String sql = "SELECT e.*, l.nombre AS nombre_locacion FROM empleados e LEFT JOIN locaciones l ON l.id_locacion = e.id_locacion ORDER BY e.nombres";
         try (Connection conn = ConexionBD.getInstancia().getConexion();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
@@ -162,6 +170,13 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         emp.setNombres(rs.getString("nombres"));
         emp.setCorreo(rs.getString("correo"));
         emp.setRol(Rol.valueOf(rs.getString("rol")));
+        int idLocacion = rs.getInt("id_locacion");
+        if (!rs.wasNull()) emp.setIdLocacion(idLocacion);
+        try {
+            emp.setNombreLocacion(rs.getString("nombre_locacion"));
+        } catch (SQLException ignored) {
+            emp.setNombreLocacion(null);
+        }
         emp.setFechaCreacion(rs.getTimestamp("fecha_creacion"));
         emp.setFechaModificacion(rs.getTimestamp("fecha_modificacion"));
         return emp;

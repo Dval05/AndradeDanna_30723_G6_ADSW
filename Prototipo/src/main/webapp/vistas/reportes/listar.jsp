@@ -46,9 +46,11 @@
         .badge-primary { background: rgba(99, 102, 241, 0.16); color: #c7d2fe; }
         .empty-state { text-align: center; padding: 40px 0; color: #94a3b8; }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
-    <nav class="navbar">
+<body class="app-page reports-page">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
+    <nav class="navbar legacy-navbar">
         <h2>Reportes SNAAR</h2>
         <div class="nav-links">
             <a href="${pageContext.request.contextPath}/dashboard">Dashboard</a>
@@ -62,10 +64,14 @@
         <div class="card">
             <div class="header">
                 <div>
-                    <h1>Historial de Reportes</h1>
+                    <p class="eyebrow">Inteligencia operativa</p>
+                    <h1>Reportes y auditoria</h1>
                     <p style="color:#94a3b8; margin-top:6px;">Genera y consulta reportes analíticos sobre empleados y accesos fallidos.</p>
                 </div>
-                <a href="${pageContext.request.contextPath}/reportes" class="btn btn-secondary">Actualizar vista</a>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <a href="${pageContext.request.contextPath}/reportes/exportar?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}" class="btn btn-secondary">Exportar CSV</a>
+                    <a href="${pageContext.request.contextPath}/reportes" class="btn btn-secondary">Actualizar vista</a>
+                </div>
             </div>
 
             <c:if test="${not empty error}">
@@ -75,15 +81,15 @@
                 <div class="alert alert-success">${exito}</div>
             </c:if>
 
-            <form action="${pageContext.request.contextPath}/reportes/generar" method="POST">
+            <form action="${pageContext.request.contextPath}/reportes/generar" method="POST" data-validate>
                 <div class="filters">
                     <div>
                         <label for="fechaInicio">Fecha de inicio</label>
-                        <input type="date" id="fechaInicio" name="fechaInicio" value="${fechaInicio}">
+                        <input type="date" id="fechaInicio" name="fechaInicio" value="${fechaInicio}" required>
                     </div>
                     <div>
                         <label for="fechaFin">Fecha de fin</label>
-                        <input type="date" id="fechaFin" name="fechaFin" value="${fechaFin}">
+                        <input type="date" id="fechaFin" name="fechaFin" value="${fechaFin}" required>
                     </div>
                     <div style="align-self:end; display:flex; gap:12px;">
                         <button type="submit" class="btn btn-primary">Generar Reporte</button>
@@ -130,5 +136,6 @@
             </table>
         </div>
     </div>
+    <script src="${pageContext.request.contextPath}/assets/js/validaciones.js"></script>
 </body>
 </html>

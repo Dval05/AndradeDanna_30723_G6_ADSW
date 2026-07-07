@@ -75,11 +75,13 @@
             .sidebar { display: none; } /* En móvil se puede usar la navbar */
         }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
+<body class="app-page dashboard-page">
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
+    <!-- Barra anterior conservada solo como respaldo estructural -->
+    <nav class="navbar legacy-navbar">
         <h2>SNAAR — TekMess</h2>
         <div class="nav-links">
             <a href="${pageContext.request.contextPath}/empleados/listar">Empleados</a>
@@ -93,7 +95,7 @@
         <div class="grid">
             
             <!-- SIDEBAR -->
-            <aside class="sidebar">
+            <aside class="sidebar legacy-sidebar">
                 <h3>Navegación</h3>
                 <ul class="sidebar-menu">
                     <li><a href="${pageContext.request.contextPath}/dashboard">🏠 Dashboard</a></li>
@@ -107,7 +109,8 @@
             <main>
                 <!-- Mensaje de Bienvenida -->
                 <div class="card">
-                    <div class="welcome">Bienvenido, <span style="color:#a5b4fc;"><%= session.getAttribute("usuario") %></span></div>
+                    <p class="eyebrow">Centro de operaciones</p>
+                    <div class="welcome">Hola, <span style="color:#a5b4fc;"><%= session.getAttribute("usuario") %></span></div>
                     <div class="muted">Rol actual: <strong style="color: #67e8f9;"><%= session.getAttribute("rol") %></strong></div>
                     
                     <% if (request.getAttribute("exito") != null) { %>
@@ -125,6 +128,10 @@
                             <div class="value"><%= request.getAttribute("totalReportes") != null ? request.getAttribute("totalReportes") : 0 %></div>
                         </div>
                         <div class="metric">
+                            <h5>Locaciones Activas</h5>
+                            <div class="value"><%= request.getAttribute("totalLocacionesActivas") != null ? request.getAttribute("totalLocacionesActivas") : 0 %></div>
+                        </div>
+                        <div class="metric">
                             <h5>Accesos Fallidos (Hoy)</h5>
                             <div class="value" style="color: #f87171;"><%= request.getAttribute("accesosFallidosHoy") != null ? request.getAttribute("accesosFallidosHoy") : 0 %></div>
                         </div>
@@ -132,6 +139,31 @@
                 </div>
 
                 <!-- SECCIÓN DE GRÁFICOS (DINÁMICOS) -->
+                <div class="quick-actions-grid">
+                    <a class="quick-action-card" href="${pageContext.request.contextPath}/empleados/listar">
+                        <span>Personal</span>
+                        <strong>Buscar y gestionar colaboradores</strong>
+                    </a>
+                    <a class="quick-action-card" href="${pageContext.request.contextPath}/locaciones/listar">
+                        <span>Locaciones</span>
+                        <strong>Administrar sedes y puestos</strong>
+                    </a>
+                    <% if (Boolean.TRUE.equals(request.getAttribute("puedeGestionarPersonal"))) { %>
+                    <a class="quick-action-card" href="${pageContext.request.contextPath}/empleados/nuevo">
+                        <span>Alta rápida</span>
+                        <strong>Registrar empleado y crear acceso</strong>
+                    </a>
+                    <% } %>
+                    <a class="quick-action-card" href="${pageContext.request.contextPath}/reportes">
+                        <span>Auditoría</span>
+                        <strong>Generar, exportar y anotar reportes</strong>
+                    </a>
+                    <a class="quick-action-card" href="${pageContext.request.contextPath}/auth/cambiar-contrasena">
+                        <span>Seguridad</span>
+                        <strong>Actualizar credenciales de cuenta</strong>
+                    </a>
+                </div>
+
                 <div class="charts-container">
                     <div class="chart-box">
                         <h4>Distribución por Roles (Empleados)</h4>
@@ -148,7 +180,7 @@
                 </div>
 
                 <!-- SECCIÓN: DOS COLUMNAS (EMPLEADOS RECIENTES Y SEGUIMIENTO DE USUARIOS) -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; align-items: start;">
+                <div class="split-panels">
                     
                     <!-- Tarjeta: Empleados Recientes -->
                     <div class="card" style="margin-bottom: 0;">
@@ -167,10 +199,12 @@
                                     <div class="empleado-row">
                                         <div>
                                             <div class="empleado-name"><%= e.getNombres() %></div>
-                                            <div class="small"><%= e.getCedula() %> • <span style="color:#06b6d4;"><%= e.getRol() %></span></div>
+                                            <div class="small"><%= e.getCedula() %> • <span style="color:#06b6d4;"><%= e.getRol() %></span> • <%= e.getNombreLocacion() != null ? e.getNombreLocacion() : "Sin locación" %></div>
                                         </div>
                                         <div>
-                                            <a class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #fff;" href="${pageContext.request.contextPath}/empleados/formulario?cedula=<%= e.getCedula() %>">Ver</a>
+                                            <% if (Boolean.TRUE.equals(request.getAttribute("puedeGestionarPersonal"))) { %>
+                                                <a class="btn btn-sm btn-secondary" href="${pageContext.request.contextPath}/empleados/editar?cedula=<%= e.getCedula() %>">Editar</a>
+                                            <% } %>
                                         </div>
                                     </div>
                                 <% } %>
@@ -179,6 +213,7 @@
                     </div>
 
                     <!-- Tarjeta: Tabla de Usuarios del Sistema (Para Auditoría / Control) -->
+                    <% if (Boolean.TRUE.equals(request.getAttribute("puedeGestionarPersonal"))) { %>
                     <div class="card" style="margin-bottom: 0;">
                         <h4 style="font-size: 16px; margin-bottom: 14px;">Auditoría de Usuarios del Sistema</h4>
                         <div class="table-responsive">
@@ -222,6 +257,7 @@
                             </table>
                         </div>
                     </div>
+                    <% } %>
                 </div>
 
             </main>
@@ -246,7 +282,7 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                 labels: roleLabels,
                 datasets: [{
                     data: roleValues,
-                    backgroundColor: ['#60a5fa', '#f472b6', '#f59e0b', '#a78bfa'],
+                    backgroundColor: ['#5eead4', '#f9a8d4', '#fbbf24', '#a78bfa'],
                     borderWidth: 1,
                     borderColor: '#1e293b'
                 }]
@@ -270,8 +306,8 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                         type: 'line',
                         label: 'Empleados Creados',
                         data: daysValues,
-                        borderColor: '#38bdf8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        borderColor: '#5eead4',
+                        backgroundColor: 'rgba(94, 234, 212, 0.12)',
                         tension: 0.3,
                         fill: true
                     },
@@ -279,8 +315,8 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                         type: 'bar',
                         label: 'Reportes Generados',
                         data: reportDaysValues,
-                        backgroundColor: 'rgba(249, 115, 22, 0.6)',
-                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(244, 114, 182, 0.58)',
+                        borderColor: '#f472b6',
                         borderWidth: 1
                     }
                 ]

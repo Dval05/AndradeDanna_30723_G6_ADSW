@@ -75,11 +75,12 @@
             .sidebar { display: none; } /* En móvil se puede usar la navbar */
         }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
+<body class="app-page dashboard-page">
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
+    <nav class="navbar legacy-navbar">
         <h2>SNAAR — TekMess</h2>
         <div class="nav-links">
             <a href="${pageContext.request.contextPath}/empleados/listar">Empleados</a>
@@ -93,7 +94,7 @@
         <div class="grid">
             
             <!-- SIDEBAR -->
-            <aside class="sidebar">
+            <aside class="sidebar legacy-sidebar">
                 <h3>Navegación</h3>
                 <ul class="sidebar-menu">
                     <li><a href="${pageContext.request.contextPath}/dashboard">🏠 Dashboard</a></li>
@@ -107,7 +108,8 @@
             <main>
                 <!-- Mensaje de Bienvenida -->
                 <div class="card">
-                    <div class="welcome">Bienvenido, <span style="color:#a5b4fc;"><%= session.getAttribute("usuario") %></span></div>
+                    <p class="eyebrow">Centro de operaciones</p>
+                    <div class="welcome">Hola, <span style="color:#a5b4fc;"><%= session.getAttribute("usuario") %></span></div>
                     <div class="muted">Rol actual: <strong style="color: #67e8f9;"><%= session.getAttribute("rol") %></strong></div>
                     
                     <% if (request.getAttribute("exito") != null) { %>
@@ -148,7 +150,7 @@
                 </div>
 
                 <!-- SECCIÓN: DOS COLUMNAS (EMPLEADOS RECIENTES Y SEGUIMIENTO DE USUARIOS) -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; align-items: start;">
+                <div class="split-panels">
                     
                     <!-- Tarjeta: Empleados Recientes -->
                     <div class="card" style="margin-bottom: 0;">
@@ -170,7 +172,9 @@
                                             <div class="small"><%= e.getCedula() %> • <span style="color:#06b6d4;"><%= e.getRol() %></span></div>
                                         </div>
                                         <div>
-                                            <a class="btn btn-sm" style="background: rgba(255,255,255,0.08); color: #fff;" href="${pageContext.request.contextPath}/empleados/formulario?cedula=<%= e.getCedula() %>">Ver</a>
+                                            <% if (Boolean.TRUE.equals(request.getAttribute("puedeGestionarPersonal"))) { %>
+                                                <a class="btn btn-sm btn-secondary" href="${pageContext.request.contextPath}/empleados/editar?cedula=<%= e.getCedula() %>">Editar</a>
+                                            <% } %>
                                         </div>
                                     </div>
                                 <% } %>
@@ -179,6 +183,7 @@
                     </div>
 
                     <!-- Tarjeta: Tabla de Usuarios del Sistema (Para Auditoría / Control) -->
+                    <% if (Boolean.TRUE.equals(request.getAttribute("puedeGestionarPersonal"))) { %>
                     <div class="card" style="margin-bottom: 0;">
                         <h4 style="font-size: 16px; margin-bottom: 14px;">Auditoría de Usuarios del Sistema</h4>
                         <div class="table-responsive">
@@ -222,6 +227,7 @@
                             </table>
                         </div>
                     </div>
+                    <% } %>
                 </div>
 
             </main>
@@ -246,7 +252,7 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                 labels: roleLabels,
                 datasets: [{
                     data: roleValues,
-                    backgroundColor: ['#60a5fa', '#f472b6', '#f59e0b', '#a78bfa'],
+                    backgroundColor: ['#5eead4', '#f9a8d4', '#fbbf24', '#a78bfa'],
                     borderWidth: 1,
                     borderColor: '#1e293b'
                 }]
@@ -270,8 +276,8 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                         type: 'line',
                         label: 'Empleados Creados',
                         data: daysValues,
-                        borderColor: '#38bdf8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                        borderColor: '#5eead4',
+                        backgroundColor: 'rgba(94, 234, 212, 0.12)',
                         tension: 0.3,
                         fill: true
                     },
@@ -279,8 +285,8 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                         type: 'bar',
                         label: 'Reportes Generados',
                         data: reportDaysValues,
-                        backgroundColor: 'rgba(249, 115, 22, 0.6)',
-                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(244, 114, 182, 0.58)',
+                        borderColor: '#f472b6',
                         borderWidth: 1
                     }
                 ]

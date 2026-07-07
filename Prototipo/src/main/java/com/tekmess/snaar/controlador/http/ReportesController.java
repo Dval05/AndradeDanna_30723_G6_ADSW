@@ -5,7 +5,7 @@ import com.tekmess.snaar.modelo.dao.EmpleadoDAO;
 import com.tekmess.snaar.modelo.dao.ReporteDAO;
 import com.tekmess.snaar.modelo.dao.UsuarioDAO;
 import com.tekmess.snaar.modelo.entidad.Reporte;
-import com.tekmess.snaar.modelo.entidad.Sesion;
+import com.tekmess.snaar.util.ValidadorDatos;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,6 +24,7 @@ import java.util.List;
 public class ReportesController extends HttpServlet {
 
     private ReporteServicio reporteServicio;
+    private ValidadorDatos validador;
     private static final String FORMATO_FECHA = "yyyy-MM-dd";
 
     @Override
@@ -32,6 +33,7 @@ public class ReportesController extends HttpServlet {
                 new ReporteDAO(),
                 new EmpleadoDAO(),
                 new UsuarioDAO());
+        this.validador = new ValidadorDatos();
     }
 
     @Override
@@ -49,6 +51,11 @@ public class ReportesController extends HttpServlet {
 
         if ("/ver".equals(path)) {
             mostrarDetalle(req, resp);
+            return;
+        }
+
+        if ("/exportar".equals(path)) {
+            exportarCsv(req, resp);
             return;
         }
 
@@ -93,6 +100,12 @@ public class ReportesController extends HttpServlet {
             fechaFin = parseFecha(fechaFinParam);
             if (fechaInicio == null || fechaFin == null) {
                 req.setAttribute("error", "Debe ingresar fechas válidas en formato YYYY-MM-DD.");
+                fechaInicio = null;
+                fechaFin = null;
+            } else if (fechaFin.before(fechaInicio)) {
+                req.setAttribute("error", "La fecha de fin no puede ser anterior a la fecha de inicio.");
+                fechaInicio = null;
+                fechaFin = null;
             }
         }
 
@@ -148,6 +161,12 @@ public class ReportesController extends HttpServlet {
             return;
         }
 
+        if (fechaFin.before(fechaInicio)) {
+            req.setAttribute("error", "La fecha de fin no puede ser anterior a la fecha de inicio.");
+            listarReportes(req, resp);
+            return;
+        }
+
         HttpSession session = req.getSession(false);
         String usuario = (String) session.getAttribute("usuario");
 
@@ -172,15 +191,22 @@ public class ReportesController extends HttpServlet {
         HttpSession session = req.getSession(false);
         String autor = (String) session.getAttribute("usuario");
 
-        if (idParam == null || idParam.isBlank() || contenido == null || contenido.isBlank()) {
-            req.setAttribute("error", "El contenido de la anotación no puede estar vacío.");
+        if (idParam == null || idParam.isBlank()) {
+            req.setAttribute("error", "No se pudo identificar el reporte.");
+            mostrarDetalle(req, resp);
+            return;
+        }
+
+        String errorContenido = validador.validarTexto(contenido, "La anotación", 8, 500);
+        if (errorContenido != null) {
+            req.setAttribute("error", errorContenido);
             mostrarDetalle(req, resp);
             return;
         }
 
         try {
             int idReporte = Integer.parseInt(idParam);
-            boolean agregado = reporteServicio.agregarAnotacion(idReporte, contenido, autor);
+            boolean agregado = reporteServicio.agregarAnotacion(idReporte, contenido.trim(), autor);
             if (agregado) {
                 req.setAttribute("exito", "Anotación agregada correctamente.");
             } else {
@@ -191,6 +217,50 @@ public class ReportesController extends HttpServlet {
             req.setAttribute("error", "ID de reporte inválido.");
             mostrarDetalle(req, resp);
         }
+    }
+
+    private void exportarCsv(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        String fechaInicioParam = req.getParameter("fechaInicio");
+        String fechaFinParam = req.getParameter("fechaFin");
+        Date fechaInicio = parseFecha(fechaInicioParam);
+        Date fechaFin = parseFecha(fechaFinParam);
+
+        if ((fechaInicioParam == null || fechaInicioParam.isBlank()) ||
+                (fechaFinParam == null || fechaFinParam.isBlank()) ||
+                fechaInicio == null || fechaFin == null || fechaFin.before(fechaInicio)) {
+            fechaInicio = null;
+            fechaFin = null;
+        }
+
+        Object[] resultado = reporteServicio.consultarHistorial(fechaInicio, fechaFin);
+        @SuppressWarnings("unchecked")
+        List<Reporte> reportes = resultado[0] != null ? (List<Reporte>) resultado[0] : List.of();
+
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/csv;charset=UTF-8");
+        resp.setHeader("Content-Disposition", "attachment; filename=\"reportes-snaar.csv\"");
+
+        try (java.io.PrintWriter out = resp.getWriter()) {
+            out.println("ID,Fecha generación,Fecha inicio,Fecha fin,Creados,Editados,Eliminados,Accesos fallidos,Generado por");
+            for (Reporte reporte : reportes) {
+                out.printf("%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
+                        csv(reporte.getIdReporte()),
+                        csv(reporte.getFechaGeneracion()),
+                        csv(reporte.getFechaInicio()),
+                        csv(reporte.getFechaFin()),
+                        csv(reporte.getTotalEmpleadosCreados()),
+                        csv(reporte.getTotalEmpleadosEditados()),
+                        csv(reporte.getTotalEmpleadosEliminados()),
+                        csv(reporte.getTotalAccesosFallidos()),
+                        csv(reporte.getGeneradoPor()));
+            }
+        }
+    }
+
+    private String csv(Object valor) {
+        String texto = valor == null ? "" : String.valueOf(valor);
+        return "\"" + texto.replace("\"", "\"\"") + "\"";
     }
 
     private boolean isUsuarioAutenticado(HttpServletRequest req, HttpServletResponse resp)
@@ -208,7 +278,9 @@ public class ReportesController extends HttpServlet {
             return null;
         }
         try {
-            return new SimpleDateFormat(FORMATO_FECHA).parse(valor);
+            SimpleDateFormat formato = new SimpleDateFormat(FORMATO_FECHA);
+            formato.setLenient(false);
+            return formato.parse(valor);
         } catch (ParseException e) {
             return null;
         }

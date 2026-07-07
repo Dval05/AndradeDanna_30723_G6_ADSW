@@ -1,12 +1,16 @@
 # ETAPA 1: Construcción (usamos maven para compilar)
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY . .
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
 RUN mvn clean package -DskipTests
 
 # ETAPA 2: Ejecución (usamos tomcat)
-FROM tomcat:10.1
+FROM tomcat:10.1-jdk17-temurin
 # Borrar contenido por defecto de tomcat
 RUN rm -rf /usr/local/tomcat/webapps/*
 # Copiar el archivo .war generado en la etapa anterior
-COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/snaar.war
+COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
+
+EXPOSE 8080

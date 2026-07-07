@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:15
     container_name: snaar_db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: snaar_tekmess
       POSTGRES_USER: postgres
@@ -10,11 +11,19 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./sql/seed_data.sql:/docker-entrypoint-initdb.d/02-seed-data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
 
   app:
     build: . # Esto disparará el Dockerfile de arriba
     container_name: snaar_app
+    restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
@@ -22,7 +31,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgrespassword
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:

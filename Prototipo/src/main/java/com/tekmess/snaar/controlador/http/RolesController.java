@@ -3,6 +3,7 @@ package com.tekmess.snaar.controlador.http;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tekmess.snaar.modelo.entidad.Rol;
+import com.tekmess.snaar.util.ValidadorDatos;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,6 +21,7 @@ public class RolesController extends HttpServlet {
 
     private File configFile;
     private Gson gson = new Gson();
+    private ValidadorDatos validador = new ValidadorDatos();
 
     @Override
     public void init() throws ServletException {
@@ -71,8 +73,14 @@ public class RolesController extends HttpServlet {
             String name = (String) m.get("name");
             String desc = req.getParameter("desc_" + name);
             String active = req.getParameter("active_" + name);
-            if (desc != null)
-                m.put("description", desc);
+            String errorDesc = validador.validarTexto(desc, "La descripción de " + name.replace('_', ' '), 8, 120);
+            if (errorDesc != null) {
+                req.setAttribute("configList", cfg);
+                req.setAttribute("error", errorDesc);
+                req.getRequestDispatcher("/vistas/roles/manage.jsp").forward(req, resp);
+                return;
+            }
+            m.put("description", desc.trim());
             m.put("active", active != null && (active.equals("on") || active.equals("true")));
         }
         try (Writer w = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {

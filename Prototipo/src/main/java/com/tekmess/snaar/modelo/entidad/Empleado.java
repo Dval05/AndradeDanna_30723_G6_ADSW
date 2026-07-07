@@ -13,6 +13,8 @@ public class Empleado {
     private String nombres;
     private String correo;
     private Rol rol;
+    private Integer idLocacion;
+    private String nombreLocacion;
     private Date fechaCreacion;
     private Date fechaModificacion;
 
@@ -67,6 +69,22 @@ public class Empleado {
     public void setRol(Rol rol) {
         this.rol = rol;
         this.fechaModificacion = new Date();
+    }
+
+    public Integer getIdLocacion() {
+        return idLocacion;
+    }
+
+    public void setIdLocacion(Integer idLocacion) {
+        this.idLocacion = idLocacion;
+    }
+
+    public String getNombreLocacion() {
+        return nombreLocacion;
+    }
+
+    public void setNombreLocacion(String nombreLocacion) {
+        this.nombreLocacion = nombreLocacion;
     }
 
     public Date getFechaCreacion() {

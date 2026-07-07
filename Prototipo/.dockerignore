@@ -1,0 +1,13 @@
+.git
+.idea
+.vscode
+target
+prototipo
+Diagramas
+*.html
+*.md
+*.pdf
+cookies.txt
+headers.txt
+outputs
+work

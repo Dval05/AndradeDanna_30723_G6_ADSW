@@ -3,6 +3,7 @@ package com.tekmess.snaar.controlador.servicio;
 import com.tekmess.snaar.modelo.dao.IEmpleadoDAO;
 import com.tekmess.snaar.modelo.dao.IUsuarioDAO;
 import com.tekmess.snaar.modelo.entidad.Empleado;
+import com.tekmess.snaar.modelo.entidad.EstadoCuenta;
 import com.tekmess.snaar.modelo.entidad.Usuario;
 import com.tekmess.snaar.util.CifradorContrasena;
 import com.tekmess.snaar.util.GeneradorCredenciales;
@@ -39,6 +40,8 @@ public class EmpleadoServicio {
      * @return mensaje de resultado con credenciales generadas
      */
     public String crearEmpleado(Empleado empleado) {
+        normalizarEmpleado(empleado);
+
         // Paso 9: Ejecuta RF-SNAAR-01.05 (Validar Datos)
         List<String> errores = validador.validarDatosEmpleado(empleado);
         if (!errores.isEmpty()) {
@@ -71,6 +74,7 @@ public class EmpleadoServicio {
 
         // Crear usuario con primer acceso obligatorio
         Usuario usuario = new Usuario(empleado.getCedula(), nombreUsuario, contrasenaHash);
+        usuario.setContrasenaTemporal(contrasenaInicial);
         usuario.setPrimerAcceso(true);
         usuarioDAO.crear(usuario);
 
@@ -83,6 +87,8 @@ public class EmpleadoServicio {
      * Valida nuevos datos, localiza por cédula y actualiza.
      */
     public String editarEmpleado(Empleado empleado) {
+        normalizarEmpleado(empleado);
+
         // Paso 6: Validar datos
         List<String> errores = validador.validarDatosEmpleado(empleado);
         if (!errores.isEmpty()) {
@@ -140,5 +146,60 @@ public class EmpleadoServicio {
      */
     public Empleado buscarEmpleado(String cedula) {
         return empleadoDAO.buscarPorCedula(cedula);
+    }
+
+    public String regenerarContrasenaTemporal(String cedula) {
+        String errorCedula = validador.validarCedula(cedula);
+        if (errorCedula != null) {
+            return errorCedula;
+        }
+
+        Empleado empleado = empleadoDAO.buscarPorCedula(cedula.trim());
+        if (empleado == null) {
+            return "El empleado seleccionado no fue encontrado en el sistema.";
+        }
+
+        Usuario usuario = usuarioDAO.buscarPorCedula(cedula.trim());
+        if (usuario == null) {
+            return "El empleado no tiene una cuenta de usuario asociada.";
+        }
+
+        String temporal = generadorCredenciales.generarContrasenaInicial();
+        String hash = cifrador.cifrar(temporal);
+        boolean actualizado = usuarioDAO.actualizarCredencialesTemporales(usuario.getIdUsuario(), hash, temporal);
+
+        if (!actualizado) {
+            return "No se pudo regenerar la contraseña temporal.";
+        }
+
+        return "Contraseña temporal regenerada para " + usuario.getNombreUsuario() + ".";
+    }
+
+    public String desbloquearCuenta(String cedula) {
+        String errorCedula = validador.validarCedula(cedula);
+        if (errorCedula != null) {
+            return errorCedula;
+        }
+
+        Usuario usuario = usuarioDAO.buscarPorCedula(cedula.trim());
+        if (usuario == null) {
+            return "El empleado no tiene una cuenta de usuario asociada.";
+        }
+
+        boolean estadoOk = usuarioDAO.actualizarEstado(usuario.getIdUsuario(), EstadoCuenta.ACTIVO);
+        boolean intentosOk = usuarioDAO.actualizarIntentos(usuario.getIdUsuario(), 0);
+
+        return estadoOk && intentosOk
+                ? "Cuenta desbloqueada para " + usuario.getNombreUsuario() + "."
+                : "No se pudo desbloquear la cuenta.";
+    }
+
+    private void normalizarEmpleado(Empleado empleado) {
+        if (empleado == null) {
+            return;
+        }
+        empleado.setCedula(empleado.getCedula() == null ? null : empleado.getCedula().trim());
+        empleado.setNombres(validador.normalizarEspacios(empleado.getNombres()));
+        empleado.setCorreo(empleado.getCorreo() == null ? null : empleado.getCorreo().trim().toLowerCase());
     }
 }

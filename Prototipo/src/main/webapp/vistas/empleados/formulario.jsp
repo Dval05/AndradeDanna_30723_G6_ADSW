@@ -80,29 +80,36 @@
         }
         .hint { font-size: 11px; color: #64748b; margin-top: 4px; }
     </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
 </head>
-<body>
-    <nav class="navbar">
+<body class="app-page employee-form-page">
+    <jsp:include page="/vistas/fragments/navbar.jsp" />
+    <nav class="navbar legacy-navbar">
         <h2>SNAAR — TekMess</h2>
     </nav>
 
     <div class="container">
         <div class="form-card">
-            <h1>${editar ? 'Editar Empleado' : 'Registrar Nuevo Empleado'}</h1>
+            <div class="page-heading">
+                <p class="eyebrow">${editar ? 'Actualizacion de perfil' : 'Alta de personal'}</p>
+                <h1>${editar ? 'Editar empleado' : 'Registrar empleado'}</h1>
+                <p class="page-subtitle">Completa la informacion institucional y asigna el nivel operativo correspondiente.</p>
+            </div>
 
             <c:if test="${not empty error}">
                 <div class="alert alert-error" id="msg-error">${error}</div>
             </c:if>
 
             <form action="${pageContext.request.contextPath}/empleados/${editar ? 'editar' : 'crear'}"
-                  method="POST" id="form-empleado">
+                  method="POST" id="form-empleado" data-validate>
 
                 <!-- Cédula (RF-SNAAR-01.05: 10 dígitos) -->
                 <div class="form-group">
                     <label for="cedula">Cédula</label>
                     <input type="text" id="cedula" name="cedula"
                            value="${empleado.cedula}" required
-                           pattern="\d{10}" maxlength="10"
+                           inputmode="numeric" pattern="\d{10}" minlength="10" maxlength="10"
+                           title="La cédula debe tener exactamente 10 dígitos numéricos."
                            placeholder="Ingrese 10 dígitos"
                            ${editar ? 'disabled' : ''}>
                     <c:if test="${editar}">
@@ -116,7 +123,11 @@
                     <label for="nombres">Nombres completos</label>
                     <input type="text" id="nombres" name="nombres"
                            value="${empleado.nombres}" required
+                           minlength="7" maxlength="80"
+                           pattern="^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'´`.\-]+( [A-Za-zÁÉÍÓÚÜÑáéíóúüñ'´`.\-]+)+$"
+                           title="Ingrese nombre y apellido usando solo letras y espacios."
                            placeholder="Nombres y apellidos">
+                    <p class="hint">Debe incluir al menos nombre y apellido</p>
                 </div>
 
                 <!-- Rol (RF-SNAAR-01.05: rol válido) -->
@@ -131,11 +142,26 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="idLocacion">Locación / puesto asignado</label>
+                    <select id="idLocacion" name="idLocacion" required>
+                        <option value="">Seleccione una locación</option>
+                        <c:forEach var="loc" items="${locaciones}">
+                            <option value="${loc.idLocacion}" ${empleado.idLocacion == loc.idLocacion ? 'selected' : ''}>
+                                ${loc.nombre} — ${loc.ciudad}
+                            </option>
+                        </c:forEach>
+                    </select>
+                    <p class="hint">Define dónde prestará servicio o a qué sede pertenece.</p>
+                </div>
+
                 <!-- Correo (RF-SNAAR-01.05: formato institucional) -->
                 <div class="form-group">
                     <label for="correo">Correo institucional</label>
                     <input type="email" id="correo" name="correo"
-                           value="${empleado.correo}" required
+                           value="${empleado.correo}" required maxlength="120"
+                           pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+                           title="Ingrese un correo válido, por ejemplo nombre@tekmess.com."
                            placeholder="ejemplo@tekmess.com">
                     <p class="hint">Formato de correo institucional válido</p>
                 </div>
@@ -150,5 +176,6 @@
             </form>
         </div>
     </div>
+    <script src="${pageContext.request.contextPath}/assets/js/validaciones.js"></script>
 </body>
 </html>
