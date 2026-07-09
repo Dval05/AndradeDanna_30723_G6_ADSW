@@ -1,6 +1,7 @@
 package com.tekmess.snaar.controlador.servicio;
 
 import com.tekmess.snaar.modelo.dao.EmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.IEmpleadoDAO;
 import com.tekmess.snaar.modelo.dao.IUsuarioDAO;
 import com.tekmess.snaar.modelo.entidad.Empleado;
 import com.tekmess.snaar.modelo.entidad.EstadoCuenta;
@@ -16,13 +17,19 @@ import com.tekmess.snaar.util.ValidadorDatos;
 public class AuthServicio {
 
     private final IUsuarioDAO usuarioDAO;
+    private final IEmpleadoDAO empleadoDAO;
     private final CifradorContrasena cifrador;
     private final ValidadorDatos validador;
 
     private static final int MAX_INTENTOS = 3;
 
     public AuthServicio(IUsuarioDAO usuarioDAO) {
+        this(usuarioDAO, new EmpleadoDAO());
+    }
+
+    public AuthServicio(IUsuarioDAO usuarioDAO, IEmpleadoDAO empleadoDAO) {
         this.usuarioDAO = usuarioDAO;
+        this.empleadoDAO = empleadoDAO;
         this.cifrador = new CifradorContrasena();
         this.validador = new ValidadorDatos();
     }
@@ -136,7 +143,7 @@ public class AuthServicio {
             return "Cuenta bloqueada. Contacte al administrador del sistema.";
         }
 
-        Empleado empleado = new EmpleadoDAO().buscarPorCedula(usuario.getCedula());
+        Empleado empleado = empleadoDAO.buscarPorCedula(usuario.getCedula());
         if (empleado == null || empleado.getCorreo() == null ||
                 !empleado.getCorreo().equalsIgnoreCase(correo.trim())) {
             return "Los datos ingresados no corresponden a un usuario registrado.";
@@ -170,7 +177,7 @@ public class AuthServicio {
     }
 
     private String obtenerRolUsuario(String cedula) {
-        Empleado emp = new EmpleadoDAO().buscarPorCedula(cedula);
+        Empleado emp = empleadoDAO.buscarPorCedula(cedula);
         if (emp != null && emp.getRol() != null) {
             return emp.getRol().name();
         }

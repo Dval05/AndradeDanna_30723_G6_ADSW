@@ -1,0 +1,879 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\arraystretch}{1.25}
+
+\definecolor{azulTekMess}{HTML}{1F4E78}
+\definecolor{grisClaro}{HTML}{F2F2F2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Plan de Pruebas Funcionales}
+\rhead{SNAAR - TekMess}
+\cfoot{\thepage}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{azulTekMess}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{azulTekMess}}
+  {\thesubsection}{1em}{}
+
+\title{\textbf{Plan de Pruebas Funcionales}\\Sistema SNAAR - TekMess}
+\author{Danna Andrade \and Ariel Llumiquinga \and David Pilaguano}
+\date{9 de julio de 2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{center}
+\begin{tabular}{|p{4.5cm}|p{8.5cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Documento} & Plan de pruebas funcionales del prototipo TekMess \\
+\hline
+\textbf{Versión} & 1.0 \\
+\hline
+\textbf{Fecha de elaboración} & 9 de julio de 2026 \\
+\hline
+\textbf{Proyecto} & Sistema SNAAR - TekMess \\
+\hline
+\textbf{Tipo de pruebas} & Pruebas funcionales automatizadas con JUnit \\
+\hline
+\textbf{Responsables} & Danna Andrade, Ariel Llumiquinga, David Pilaguano \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Control del Documento}
+
+\subsection{Historial de Versiones}
+
+\begin{longtable}{|p{2cm}|p{3cm}|p{5.5cm}|p{3.5cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Versión} & \textbf{Fecha} & \textbf{Descripción} & \textbf{Responsable} \\
+\hline
+1.0 & 09/07/2026 & Elaboración inicial del plan de pruebas funcionales, matriz de casos y trazabilidad de requisitos. & Equipo TekMess \\
+\hline
+\end{longtable}
+
+\subsection{Propósito del Documento}
+
+El propósito de este documento es establecer una guía formal para planificar, diseñar y ejecutar las pruebas funcionales del prototipo del sistema SNAAR - TekMess. El plan define los objetivos, alcance, estrategia, ambiente, criterios, datos de prueba, responsabilidades y casos que permiten verificar el cumplimiento de los requisitos funcionales identificados.
+
+Este documento también sirve como evidencia técnica del proceso de aseguramiento de calidad aplicado al prototipo, permitiendo relacionar cada requisito con al menos un caso de prueba automatizado o verificable.
+
+\section{Introducción}
+
+El sistema SNAAR - TekMess es un prototipo web desarrollado en Java orientado a la gestión de empleados, generación de credenciales, autenticación por rol y administración de reportes analíticos. Debido a que el sistema maneja información de usuarios, roles y accesos, resulta necesario validar que las reglas de negocio se comporten de manera correcta antes de avanzar hacia pruebas integrales con base de datos y servidor de aplicaciones.
+
+Las pruebas propuestas se enfocan en las funcionalidades existentes en el prototipo y se desarrollan con JUnit 5. Para aislar la lógica de negocio y evitar dependencia directa de PostgreSQL durante la ejecución unitaria, se emplean objetos DAO en memoria que simulan el comportamiento esperado de la persistencia.
+
+La planificación considera los requisitos REQ001 a REQ009, relacionados con registro de empleados, listado, edición, eliminación, inicio de sesión, cambio de contraseña, recuperación de contraseña, generación de reportes e historial de reportes. Las pruebas fueron diseñadas desde cero con base en los requisitos entregados, sin reutilizar pruebas previas que pudieran existir en documentos externos.
+
+\section{Objetivos}
+
+\subsection{Objetivo General}
+
+Validar de forma sistemática y automatizada que el prototipo TekMess cumpla los requisitos funcionales REQ001 a REQ009, verificando los flujos principales, reglas de validación, estados del sistema y respuestas esperadas en los módulos de empleados, autenticación, contraseñas y reportes.
+
+\subsection{Objetivos Específicos}
+
+\begin{itemize}[leftmargin=*]
+    \item Verificar que el sistema permita registrar empleados válidos y genere credenciales de acceso iniciales.
+    \item Comprobar que la validación de datos impida registros con cédulas inválidas, roles incorrectos, correos no válidos o datos duplicados.
+    \item Confirmar que el listado de personal presente la información principal de cada empleado registrado.
+    \item Validar la edición de datos de empleados existentes, manteniendo reglas de integridad y consistencia.
+    \item Verificar la eliminación de empleados y la baja del usuario asociado.
+    \item Evaluar el inicio de sesión por rol, el control de intentos fallidos y el bloqueo de cuentas.
+    \item Comprobar el cambio de contraseña con política de seguridad, cifrado y actualización de primer acceso.
+    \item Validar la recuperación de contraseña mediante usuario y correo registrados.
+    \item Verificar la generación de reportes analíticos y la consulta del historial con anotaciones.
+    \item Registrar la trazabilidad entre requisitos, casos de prueba, datos utilizados y resultados esperados.
+\end{itemize}
+
+\section{Datos Generales del Proyecto}
+
+\begin{longtable}{|p{5cm}|p{9cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Campo} & \textbf{Descripción} \\
+\hline
+Nombre del proyecto & Sistema SNAAR - TekMess \\
+\hline
+Tipo de producto & Prototipo web Java basado en arquitectura MVC, servicios, DAOs y vistas JSP \\
+\hline
+Lenguaje principal & Java 17 \\
+\hline
+Herramienta de construcción & Maven \\
+\hline
+Framework de pruebas & JUnit 5 \\
+\hline
+Plugin de ejecución & Maven Surefire \\
+\hline
+Base de datos prevista & PostgreSQL \\
+\hline
+Módulos evaluados & Gestión de empleados, autenticación, cambio y recuperación de contraseña, reportes analíticos \\
+\hline
+Artefactos generados & Pruebas automatizadas JUnit, documento LaTeX del plan de pruebas y tablero Kanban en Excel \\
+\hline
+Fecha del plan & 9 de julio de 2026 \\
+\hline
+\end{longtable}
+
+\section{Involucrados}
+
+\begin{longtable}{|p{4cm}|p{4cm}|p{6cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Integrante} & \textbf{Rol en el proyecto} & \textbf{Responsabilidad en pruebas} \\
+\hline
+Danna Andrade & Integrante del equipo de desarrollo & Revisión de requisitos de gestión de empleados, validación de registro, eliminación y documentación del tablero Kanban. \\
+\hline
+Ariel Llumiquinga & Integrante del equipo de desarrollo & Revisión de requisitos de autenticación, inicio de sesión, bloqueo por intentos y trazabilidad de casos de prueba. \\
+\hline
+David Pilaguano & Integrante del equipo de desarrollo & Revisión de requisitos de reportes, historial, anotaciones y consistencia técnica del documento. \\
+\hline
+\end{longtable}
+
+\section{Alcance}
+
+\subsection{Funcionalidades Incluidas}
+
+El plan cubre las siguientes funcionalidades del prototipo:
+
+\begin{itemize}[leftmargin=*]
+    \item Registro de empleados y generación automática de credenciales.
+    \item Listado de empleados registrados.
+    \item Edición de información de empleados.
+    \item Eliminación de empleados y usuario asociado.
+    \item Inicio de sesión por rol y bloqueo por intentos fallidos.
+    \item Cambio de contraseña con política de seguridad.
+    \item Recuperación de contraseña mediante usuario y correo.
+    \item Generación de reportes analíticos.
+    \item Consulta de historial de reportes y registro de anotaciones.
+\end{itemize}
+
+\subsection{Funcionalidades No Incluidas}
+
+Quedan fuera del alcance de este plan:
+
+\begin{itemize}[leftmargin=*]
+    \item Pruebas de rendimiento, carga o estrés.
+    \item Pruebas de seguridad avanzadas como inyección SQL, análisis de vulnerabilidades o pruebas de penetración.
+    \item Pruebas visuales completas sobre JSP, CSS o experiencia de usuario.
+    \item Pruebas de compatibilidad entre navegadores.
+    \item Pruebas de integración real contra PostgreSQL, salvo que posteriormente se configure un entorno de base de datos controlado.
+    \item Validación de exportación PDF con inspección visual del archivo generado.
+\end{itemize}
+
+\section{Estrategia de Pruebas}
+
+La estrategia se basa en pruebas funcionales automatizadas sobre la capa de servicios y utilidades. Esta decisión permite validar las reglas de negocio de forma rápida, repetible y controlada, sin depender de elementos externos como servidor web, sesiones HTTP o base de datos real.
+
+\begin{longtable}{|p{4cm}|p{10cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Elemento} & \textbf{Estrategia Aplicada} \\
+\hline
+Nivel de prueba & Prueba funcional unitaria sobre servicios Java. \\
+\hline
+Enfoque & Validación de entradas, reglas de negocio, mensajes de respuesta y cambios de estado. \\
+\hline
+Aislamiento & Uso de DAOs en memoria para simular empleados, usuarios y reportes. \\
+\hline
+Automatización & Casos implementados en JUnit 5 dentro de \texttt{src/test/java}. \\
+\hline
+Datos de prueba & Datos controlados para empleados, usuarios, roles, contraseñas y reportes. \\
+\hline
+Ejecución & Comando esperado: \texttt{mvn test}. \\
+\hline
+Evidencia & Resultado de ejecución JUnit, código fuente de pruebas y trazabilidad incluida en este documento. \\
+\hline
+\end{longtable}
+
+\section{Ambiente de Pruebas}
+
+\begin{longtable}{|p{5cm}|p{9cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Recurso} & \textbf{Especificación} \\
+\hline
+Sistema operativo & Windows o entorno compatible con Java y Maven \\
+\hline
+JDK & Java 17 o superior \\
+\hline
+Gestor de dependencias & Maven configurado en PATH o Maven Wrapper del proyecto \\
+\hline
+Framework de pruebas & JUnit Jupiter 5.10.2 \\
+\hline
+Plugin de pruebas & Maven Surefire 3.2.5 \\
+\hline
+Base de datos & No requerida para la ejecución unitaria; se simula mediante DAOs en memoria \\
+\hline
+Comando de ejecución & \texttt{mvn test} \\
+\hline
+\end{longtable}
+
+\section{Criterios de Entrada y Salida}
+
+\subsection{Criterios de Entrada}
+
+\begin{itemize}[leftmargin=*]
+    \item El código fuente del prototipo debe estar disponible.
+    \item El archivo \texttt{pom.xml} debe incluir JUnit 5 y Maven Surefire.
+    \item Los requisitos funcionales REQ001 a REQ009 deben estar identificados.
+    \item Las clases de servicio y entidades deben compilar correctamente.
+    \item El entorno de ejecución debe contar con Java y Maven.
+\end{itemize}
+
+\subsection{Criterios de Salida}
+
+\begin{itemize}[leftmargin=*]
+    \item Cada requisito funcional debe tener al menos un caso de prueba asociado.
+    \item Las pruebas automatizadas deben ejecutarse sin errores.
+    \item Los resultados esperados deben coincidir con los resultados obtenidos.
+    \item Las incidencias detectadas deben registrarse para corrección.
+    \item El plan de pruebas y el tablero Kanban deben quedar actualizados como evidencia del trabajo realizado.
+\end{itemize}
+
+\section{Datos de Prueba}
+
+\begin{longtable}{|p{3.5cm}|p{4.5cm}|p{6cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Dato} & \textbf{Valor de Referencia} & \textbf{Uso Principal} \\
+\hline
+Cédula válida & 1712345678 & Registro, edición, eliminación y recuperación de usuario. \\
+\hline
+Nombre de empleado & Danna Andrade & Generación de usuario base \texttt{dandrade}. \\
+\hline
+Correo institucional & danna@tekmess.com & Validación de correo y recuperación de contraseña. \\
+\hline
+Rol válido & SUPERVISOR, GUARDIA, JEFE\_LOGISTICA & Validación de permisos y creación de sesión por rol. \\
+\hline
+Contraseña temporal & Temp123! & Inicio de sesión y cambio de contraseña. \\
+\hline
+Contraseña nueva & Nueva123! / Recupera123! & Cambio y recuperación de contraseña cumpliendo política. \\
+\hline
+Rango de fechas válido & Fecha inicio menor que fecha fin & Generación y consulta de reportes. \\
+\hline
+\end{longtable}
+
+\section{Matriz de Trazabilidad}
+
+\begin{longtable}{|p{2cm}|p{5cm}|p{4cm}|p{3cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Requisito} & \textbf{Funcionalidad Evaluada} & \textbf{Clase Principal} & \textbf{Casos} \\
+\hline
+REQ001 & Registro de empleados y generación de credenciales & \texttt{EmpleadoServicio}, \texttt{GeneradorCredenciales}, \texttt{ValidadorDatos} & TC-001, TC-002 \\
+\hline
+REQ002 & Listado de personal registrado & \texttt{EmpleadoServicio} & TC-003 \\
+\hline
+REQ003 & Edición de datos del empleado & \texttt{EmpleadoServicio} & TC-004 \\
+\hline
+REQ004 & Eliminación de empleados & \texttt{EmpleadoServicio} & TC-005 \\
+\hline
+REQ005 & Inicio de sesión por rol & \texttt{AuthServicio}, \texttt{Sesion} & TC-006, TC-007 \\
+\hline
+REQ006 & Cambio de contraseña & \texttt{AuthServicio}, \texttt{CifradorContrasena} & TC-008 \\
+\hline
+REQ007 & Recuperación de contraseña & \texttt{AuthServicio} & TC-009 \\
+\hline
+REQ008 & Generación de reporte analítico & \texttt{ReporteServicio} & TC-010 \\
+\hline
+REQ009 & Consulta de historial de reportes & \texttt{ReporteServicio} & TC-011, TC-012 \\
+\hline
+\end{longtable}
+
+\section{Desglose Detallado de Pruebas Funcionales}
+
+En esta sección se describe cada prueba de forma individual. Para cada caso se especifica el objetivo, requisito funcional relacionado, precondiciones, datos utilizados, procedimiento, elementos evaluados, resultado esperado y criterio de aprobación. Esta estructura permite comprender exactamente qué se valida en cada funcionalidad sin reducir el análisis a una matriz resumida.
+
+\subsection{TC-001: Registro correcto de empleado y generación de credenciales}
+
+\textbf{Requisito asociado:} REQ001 - Registro de empleados y generación de credenciales.
+
+\textbf{Objetivo de la prueba:} comprobar que el sistema permita registrar un empleado con datos válidos y que, como consecuencia del registro, genere automáticamente una cuenta de usuario con credenciales temporales.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item No debe existir un empleado registrado con la cédula utilizada en la prueba.
+    \item El DAO de empleados debe estar disponible en memoria.
+    \item El DAO de usuarios debe estar disponible en memoria.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Cédula: \texttt{1712345678}.
+    \item Nombres: \texttt{Danna Andrade}.
+    \item Correo: \texttt{DANNA.ANDRADE@TEKMESS.COM}.
+    \item Rol: \texttt{JEFE\_LOGISTICA}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Crear una instancia de \texttt{EmpleadoServicio} con DAOs en memoria.
+    \item Construir un objeto \texttt{Empleado} con datos válidos.
+    \item Ejecutar el método \texttt{crearEmpleado}.
+    \item Consultar el empleado almacenado por cédula.
+    \item Consultar el usuario generado para la cédula registrada.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de cédula con exactamente diez dígitos numéricos.
+    \item Validación de nombres completos.
+    \item Validación de rol permitido por el sistema.
+    \item Normalización del correo institucional a minúsculas.
+    \item Generación de nombre de usuario a partir de nombres y apellidos.
+    \item Generación de contraseña temporal que cumpla política de seguridad.
+    \item Cifrado de la contraseña mediante BCrypt.
+    \item Marcación del usuario con primer acceso obligatorio.
+\end{itemize}
+
+\textbf{Resultado esperado:} el servicio debe retornar un mensaje de registro exitoso, el empleado debe existir en el DAO, el usuario debe estar asociado a la cédula del empleado, la contraseña temporal debe cumplir la política de seguridad y el campo de primer acceso debe quedar activo.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si todas las validaciones anteriores se cumplen y la contraseña temporal coincide con el hash almacenado al verificarla con el cifrador.
+
+\subsection{TC-002: Rechazo de registro con cédula duplicada}
+
+\textbf{Requisito asociado:} REQ001 - Registro de empleados y generación de credenciales.
+
+\textbf{Objetivo de la prueba:} verificar que el sistema impida registrar un nuevo empleado cuando la cédula ya existe en el repositorio de empleados.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir previamente un empleado registrado con la misma cédula.
+    \item El servicio debe consultar la existencia de la cédula antes de crear el nuevo registro.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Cédula duplicada: \texttt{1712345678}.
+    \item Primer empleado: \texttt{Danna Andrade}.
+    \item Segundo empleado: \texttt{Ariel Llumiquinga}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Registrar un empleado inicial en el DAO en memoria.
+    \item Intentar registrar un segundo empleado usando la misma cédula.
+    \item Capturar el mensaje retornado por \texttt{crearEmpleado}.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Verificación de unicidad de la cédula.
+    \item Prevención de duplicidad en el registro de personal.
+    \item Control de flujo para evitar creación de usuario cuando el empleado no debe registrarse.
+    \item Mensaje funcional comprensible para el usuario.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema debe rechazar el registro y retornar un mensaje indicando que la cédula ya se encuentra registrada.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si no se crea un nuevo empleado, no se generan credenciales adicionales y el mensaje de error corresponde al escenario de duplicidad.
+
+\subsection{TC-003: Listado de personal registrado}
+
+\textbf{Requisito asociado:} REQ002 - Listado de personal registrado.
+
+\textbf{Objetivo de la prueba:} confirmar que el servicio permita consultar el conjunto de empleados registrados y que la información principal de cada empleado esté disponible para la vista de listado.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Deben existir empleados cargados en el DAO en memoria.
+    \item Cada empleado debe tener cédula, nombres, correo y rol.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Empleado 1: \texttt{Danna Andrade}, rol \texttt{JEFE\_LOGISTICA}.
+    \item Empleado 2: \texttt{Ariel Llumiquinga}, rol \texttt{SUPERVISOR}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Registrar dos empleados en el DAO en memoria.
+    \item Ejecutar el método \texttt{consultarEmpleados}.
+    \item Verificar la cantidad de elementos retornados.
+    \item Validar que uno de los empleados contenga cédula, rol y correo esperados.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Recuperación del listado completo de empleados.
+    \item Conservación de datos principales del empleado.
+    \item Disponibilidad de información necesaria para edición o eliminación posterior.
+\end{itemize}
+
+\textbf{Resultado esperado:} el método debe retornar una lista con los empleados registrados y sus datos principales.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si la lista contiene la cantidad esperada de empleados y los datos consultados coinciden con los registros cargados.
+
+\subsection{TC-004: Edición de datos de un empleado existente}
+
+\textbf{Requisito asociado:} REQ003 - Edición de datos del empleado.
+
+\textbf{Objetivo de la prueba:} validar que el sistema permita modificar datos editables de un empleado existente, conservando la cédula como identificador principal.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un empleado registrado con la cédula indicada.
+    \item Los nuevos datos deben cumplir las reglas de validación.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Cédula: \texttt{1712345678}.
+    \item Correo inicial: \texttt{danna@tekmess.com}.
+    \item Correo actualizado: \texttt{danna.andrade@tekmess.com}.
+    \item Rol actualizado: \texttt{SUPERVISOR}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Crear un empleado inicial en el DAO.
+    \item Construir un objeto \texttt{Empleado} con la misma cédula y datos modificados.
+    \item Ejecutar el método \texttt{editarEmpleado}.
+    \item Consultar el empleado por cédula.
+    \item Comparar los datos actualizados.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Búsqueda de empleado existente por cédula.
+    \item Validación de correo institucional.
+    \item Validación de rol permitido.
+    \item Persistencia de cambios en el repositorio.
+    \item Mensaje de confirmación de actualización.
+\end{itemize}
+
+\textbf{Resultado esperado:} el empleado debe quedar actualizado con el nuevo correo y rol, y el servicio debe informar que los datos fueron actualizados exitosamente.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si el registro consultado después de la edición refleja los cambios enviados y el contador de ediciones del DAO en memoria aumenta.
+
+\subsection{TC-005: Eliminación de empleado y usuario asociado}
+
+\textbf{Requisito asociado:} REQ004 - Eliminación de empleados.
+
+\textbf{Objetivo de la prueba:} verificar que al eliminar un empleado también se elimine o invalide la cuenta de usuario asociada a su cédula.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un empleado registrado.
+    \item Debe existir un usuario asociado a la misma cédula.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Cédula: \texttt{1712345678}.
+    \item Usuario asociado: \texttt{dandrade}.
+    \item Contraseña temporal inicial: \texttt{Temp123!}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Registrar un empleado en el DAO de empleados.
+    \item Registrar un usuario asociado en el DAO de usuarios.
+    \item Ejecutar el método \texttt{eliminarEmpleado}.
+    \item Consultar nuevamente el empleado por cédula.
+    \item Consultar nuevamente el usuario por cédula.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Localización del empleado antes de eliminar.
+    \item Eliminación del usuario asociado.
+    \item Eliminación del registro de empleado.
+    \item Mensaje de eliminación exitosa.
+    \item Prevención de accesos posteriores con usuario de empleado eliminado.
+\end{itemize}
+
+\textbf{Resultado esperado:} el empleado y el usuario asociado no deben existir después de ejecutar la eliminación.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si ambas consultas posteriores retornan \texttt{null} y el servicio informa eliminación exitosa.
+
+\subsection{TC-006: Inicio de sesión válido por rol}
+
+\textbf{Requisito asociado:} REQ005 - Inicio de sesión por rol.
+
+\textbf{Objetivo de la prueba:} comprobar que un usuario activo con credenciales correctas pueda iniciar sesión y que el sistema construya una sesión con el rol correspondiente.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un empleado con rol definido.
+    \item Debe existir un usuario activo vinculado a la cédula del empleado.
+    \item La contraseña ingresada debe coincidir con el hash almacenado.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Usuario: \texttt{dandrade}.
+    \item Contraseña: \texttt{Temp123!}.
+    \item Rol esperado: \texttt{SUPERVISOR}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Crear un empleado con rol \texttt{SUPERVISOR}.
+    \item Crear un usuario activo asociado al empleado.
+    \item Ejecutar \texttt{iniciarSesion} con usuario y contraseña correctos.
+    \item Verificar que el objeto retornado sea una instancia de \texttt{Sesion}.
+    \item Verificar el rol asignado a la sesión.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de formato del nombre de usuario.
+    \item Verificación de contraseña cifrada.
+    \item Revisión de estado de cuenta activo.
+    \item Reinicio de intentos fallidos tras autenticación correcta.
+    \item Creación de sesión con rol funcional.
+    \item Redirección a cambio de contraseña cuando el usuario está en primer acceso.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema debe retornar una sesión válida con rol \texttt{SUPERVISOR} y el mensaje \texttt{PRIMER\_ACCESO} cuando corresponda.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si la sesión no es nula, el rol coincide con el empleado asociado y la respuesta funcional corresponde al estado de primer acceso.
+
+\subsection{TC-007: Bloqueo de cuenta por intentos fallidos}
+
+\textbf{Requisito asociado:} REQ005 - Inicio de sesión por rol.
+
+\textbf{Objetivo de la prueba:} verificar que el sistema controle los intentos fallidos de autenticación y bloquee la cuenta al alcanzar el límite permitido.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un usuario activo.
+    \item La cuenta no debe estar bloqueada al inicio de la prueba.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Usuario: \texttt{dandrade}.
+    \item Contraseña incorrecta: \texttt{Mala123!}.
+    \item Límite de intentos: 3.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Ejecutar \texttt{iniciarSesion} con contraseña incorrecta.
+    \item Repetir la operación hasta completar tres intentos fallidos.
+    \item Consultar el estado de la cuenta.
+    \item Revisar el mensaje funcional retornado por el tercer intento.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Incremento del contador de intentos fallidos.
+    \item Persistencia del número de intentos.
+    \item Cambio de estado de cuenta a \texttt{BLOQUEADO}.
+    \item Respuesta funcional ante cuenta bloqueada.
+    \item Prevención de acceso con credenciales incorrectas.
+\end{itemize}
+
+\textbf{Resultado esperado:} luego del tercer intento fallido, el usuario debe quedar con estado \texttt{BLOQUEADO} y el sistema debe retornar un mensaje de bloqueo.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si no se crea sesión, el estado de la cuenta cambia a bloqueado y el mensaje informa que se debe contactar al administrador.
+
+\subsection{TC-008: Cambio de contraseña válido}
+
+\textbf{Requisito asociado:} REQ006 - Cambio de contraseña.
+
+\textbf{Objetivo de la prueba:} comprobar que un usuario pueda cambiar su contraseña cuando ingresa correctamente la clave actual y la nueva contraseña cumple la política de seguridad.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un usuario registrado.
+    \item La contraseña actual debe estar cifrada.
+    \item El usuario debe estar marcado inicialmente con primer acceso obligatorio.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Usuario: \texttt{dandrade}.
+    \item Contraseña actual: \texttt{Temp123!}.
+    \item Nueva contraseña: \texttt{Nueva123!}.
+    \item Confirmación: \texttt{Nueva123!}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Crear un usuario con contraseña temporal cifrada.
+    \item Ejecutar \texttt{cambiarContrasena}.
+    \item Consultar el usuario actualizado.
+    \item Verificar que el nuevo hash corresponda a la nueva contraseña.
+    \item Verificar que el indicador de primer acceso quede desactivado.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Obligatoriedad de contraseña actual.
+    \item Coincidencia entre nueva contraseña y confirmación.
+    \item Cumplimiento de política: longitud mínima, mayúscula, minúscula, dos números y carácter especial.
+    \item Rechazo de contraseña igual a la actual.
+    \item Actualización segura mediante hash.
+    \item Desactivación del primer acceso obligatorio.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema debe actualizar la contraseña, almacenar un nuevo hash y retornar un mensaje de actualización exitosa.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si el nuevo hash valida la contraseña nueva y el usuario deja de estar marcado como primer acceso.
+
+\subsection{TC-009: Recuperación de contraseña con correo y usuario registrados}
+
+\textbf{Requisito asociado:} REQ007 - Recuperación de contraseña.
+
+\textbf{Objetivo de la prueba:} validar que un usuario pueda restablecer su contraseña cuando proporciona un nombre de usuario y correo electrónico registrados en el sistema.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un empleado con correo registrado.
+    \item Debe existir un usuario asociado a la cédula del empleado.
+    \item La cuenta no debe estar bloqueada.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Correo: \texttt{danna@tekmess.com}.
+    \item Usuario: \texttt{dandrade}.
+    \item Nueva contraseña: \texttt{Recupera123!}.
+    \item Confirmación: \texttt{Recupera123!}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Registrar empleado y usuario asociado.
+    \item Ejecutar \texttt{recuperarContrasena}.
+    \item Consultar el usuario por nombre de usuario.
+    \item Verificar que el hash corresponda a la nueva contraseña.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de formato de usuario.
+    \item Validación de formato de correo.
+    \item Verificación de relación entre usuario, cédula y correo del empleado.
+    \item Bloqueo del restablecimiento cuando la cuenta está bloqueada.
+    \item Aplicación de la política de seguridad a la nueva contraseña.
+    \item Almacenamiento cifrado de la contraseña restablecida.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema debe restablecer la contraseña y confirmar la operación mediante un mensaje exitoso.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si el hash almacenado valida la nueva contraseña y el mensaje indica restablecimiento exitoso.
+
+\subsection{TC-010: Generación de reporte analítico}
+
+\textbf{Requisito asociado:} REQ008 - Generación de reporte analítico.
+
+\textbf{Objetivo de la prueba:} verificar que el servicio consolide correctamente los datos de empleados gestionados y accesos fallidos en un reporte analítico.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un rango de fechas válido.
+    \item Los DAOs deben proporcionar totales de empleados creados, editados, eliminados y accesos fallidos.
+    \item Debe existir un DAO de reportes capaz de guardar el reporte generado.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Empleados creados: 2.
+    \item Empleados editados: 1.
+    \item Empleados eliminados: 1.
+    \item Accesos fallidos: 3.
+    \item Generado por: \texttt{Danna Andrade}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Configurar los totales en los DAOs en memoria.
+    \item Ejecutar \texttt{generarReporte} con fecha inicial menor que fecha final.
+    \item Obtener el objeto \texttt{Reporte} retornado.
+    \item Validar cada total consolidado.
+    \item Confirmar el mensaje de generación exitosa.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de rango de fechas.
+    \item Consulta de empleados creados en el período.
+    \item Consulta de empleados editados en el período.
+    \item Consulta de empleados eliminados en el período.
+    \item Consulta de accesos fallidos.
+    \item Construcción del objeto \texttt{Reporte}.
+    \item Persistencia del reporte generado.
+\end{itemize}
+
+\textbf{Resultado esperado:} el servicio debe retornar un reporte con los totales esperados y el mensaje \texttt{Reporte generado exitosamente.}
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si todos los totales del reporte coinciden con los datos configurados y el reporte queda guardado.
+
+\subsection{TC-011: Consulta de historial de reportes por rango de fechas}
+
+\textbf{Requisito asociado:} REQ009 - Consulta de historial de reportes.
+
+\textbf{Objetivo de la prueba:} comprobar que el sistema permita consultar reportes históricos aplicando un filtro de fechas válido.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir al menos un reporte guardado.
+    \item El rango de consulta debe incluir el período del reporte.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Fecha inicial de reporte: \texttt{1000 ms}.
+    \item Fecha final de reporte: \texttt{2000 ms}.
+    \item Rango de búsqueda: \texttt{500 ms} a \texttt{3000 ms}.
+    \item Generado por: \texttt{David Pilaguano}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Crear y guardar un reporte en el DAO en memoria.
+    \item Ejecutar \texttt{consultarHistorial} con un rango válido.
+    \item Verificar que el resultado no sea nulo.
+    \item Validar que la lista contenga el reporte esperado.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de rango de fechas para consulta.
+    \item Recuperación de reportes históricos.
+    \item Aplicación del filtro por período.
+    \item Mensaje funcional \texttt{OK} cuando existen resultados.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema debe retornar una lista con el reporte ubicado dentro del rango de fechas y el estado de respuesta debe ser \texttt{OK}.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si el historial contiene exactamente el reporte esperado y la respuesta funcional indica éxito.
+
+\subsection{TC-012: Registro de anotación en un reporte existente}
+
+\textbf{Requisito asociado:} REQ009 - Consulta de historial de reportes.
+
+\textbf{Objetivo de la prueba:} validar que se puedan agregar anotaciones a un reporte previamente generado sin modificar los datos base del reporte.
+
+\textbf{Precondiciones:}
+\begin{itemize}[leftmargin=*]
+    \item Debe existir un reporte guardado.
+    \item El identificador del reporte debe ser válido.
+\end{itemize}
+
+\textbf{Datos de prueba:}
+\begin{itemize}[leftmargin=*]
+    \item Autor: \texttt{Ariel Llumiquinga}.
+    \item Contenido de la anotación: \texttt{Revision aprobada}.
+\end{itemize}
+
+\textbf{Procedimiento:}
+\begin{enumerate}[leftmargin=*]
+    \item Guardar un reporte en el DAO en memoria.
+    \item Ejecutar \texttt{agregarAnotacion} indicando el identificador del reporte.
+    \item Consultar las anotaciones asociadas al reporte.
+    \item Verificar que la anotación haya sido almacenada.
+\end{enumerate}
+
+\textbf{Aspectos evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item Búsqueda del reporte por identificador.
+    \item Creación de objeto \texttt{Anotacion}.
+    \item Asociación de la anotación al reporte correcto.
+    \item Conservación de los datos base del reporte.
+    \item Respuesta booleana de éxito.
+\end{itemize}
+
+\textbf{Resultado esperado:} la anotación debe quedar registrada y asociada al reporte existente.
+
+\textbf{Criterio de aprobación:} la prueba se aprueba si el método retorna \texttt{true} y la consulta de anotaciones devuelve el registro agregado.
+
+\section{Gestión de Defectos}
+
+Cuando una prueba falle, se deberá registrar una incidencia con la siguiente información mínima:
+
+\begin{itemize}[leftmargin=*]
+    \item Identificador del defecto.
+    \item Caso de prueba asociado.
+    \item Requisito funcional afectado.
+    \item Descripción clara del comportamiento observado.
+    \item Resultado esperado.
+    \item Evidencia de ejecución.
+    \item Severidad: crítica, alta, media o baja.
+    \item Estado: abierto, en corrección, corregido, verificado o cerrado.
+\end{itemize}
+
+\section{Riesgos y Mitigaciones}
+
+\begin{longtable}{|p{4.5cm}|p{5cm}|p{4.5cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Riesgo} & \textbf{Impacto} & \textbf{Mitigación} \\
+\hline
+Maven no disponible en el entorno & No se pueden ejecutar las pruebas con \texttt{mvn test}. & Instalar Maven, configurar PATH o agregar Maven Wrapper al proyecto. \\
+\hline
+Dependencia de base de datos real en algunas clases & Puede dificultar pruebas unitarias puras. & Inyectar interfaces DAO y usar dobles de prueba en memoria. \\
+\hline
+Reglas funcionales incompletas en el prototipo & Algunos escenarios podrían requerir validación manual o integración futura. & Documentar limitaciones y ampliar pruebas conforme evolucione el código. \\
+\hline
+Codificación incorrecta de caracteres & Puede afectar documentación y mensajes en español. & Guardar archivos en UTF-8 y revisar salida del compilador LaTeX. \\
+\hline
+\end{longtable}
+
+\section{Procedimiento de Ejecución}
+
+\begin{enumerate}[leftmargin=*]
+    \item Verificar que Java esté instalado mediante \texttt{java -version}.
+    \item Verificar que Maven esté instalado mediante \texttt{mvn -version}.
+    \item Ubicarse en la raíz del prototipo, donde se encuentra el archivo \texttt{pom.xml}.
+    \item Ejecutar el comando \texttt{mvn test}.
+    \item Revisar el resumen de ejecución generado por Maven Surefire.
+    \item En caso de fallos, identificar el caso afectado y registrar la incidencia correspondiente.
+\end{enumerate}
+
+\section{Entregables}
+
+\begin{longtable}{|p{5cm}|p{9cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Entregable} & \textbf{Descripción} \\
+\hline
+Archivo de pruebas JUnit & Clase \texttt{RequisitosFuncionalesTest.java} con casos automatizados para REQ001 a REQ009. \\
+\hline
+Plan de pruebas en LaTeX & Documento \texttt{Plan\_Pruebas\_TekMess.tex} con planificación, estrategia y matriz de casos. \\
+\hline
+Tablero Kanban en Excel & Archivo \texttt{Tablero\_Kanban\_Pruebas\_TekMess.xlsx} con tareas ejecutadas y responsables. \\
+\hline
+\end{longtable}
+
+\section{Observaciones Finales}
+
+El plan de pruebas fortalece la verificación funcional del prototipo al cubrir cada requisito mediante casos trazables y automatizados. La estrategia aplicada permite validar reglas de negocio sin depender de una base de datos real, lo cual mejora la rapidez de ejecución y facilita la detección temprana de errores.
+
+Durante la preparación del plan se identificó que el entorno local utilizado no contaba con el comando \texttt{mvn} disponible en el PATH ni con compilador LaTeX instalado. Por este motivo, la ejecución formal de \texttt{mvn test} y la generación del PDF deberán realizarse en un entorno que cuente con dichas herramientas configuradas. Aun así, el documento fuente LaTeX, las pruebas JUnit y el tablero Kanban quedan listos para su revisión y ejecución.
+
+\end{document}
