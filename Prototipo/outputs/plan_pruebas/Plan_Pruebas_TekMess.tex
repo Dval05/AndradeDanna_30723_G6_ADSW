@@ -11,6 +11,7 @@
 \usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
+\usepackage{listings}
 
 \geometry{margin=2.5cm}
 \hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
@@ -20,6 +21,25 @@
 
 \definecolor{azulTekMess}{HTML}{1F4E78}
 \definecolor{grisClaro}{HTML}{F2F2F2}
+\definecolor{codigoFondo}{HTML}{F7F7F7}
+\definecolor{codigoBorde}{HTML}{D0D0D0}
+\definecolor{codigoComentario}{HTML}{4F7A4F}
+\definecolor{codigoClave}{HTML}{1F4E78}
+
+\lstdefinestyle{javaStyle}{
+    language=Java,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\bfseries\color{codigoClave},
+    commentstyle=\itshape\color{codigoComentario},
+    stringstyle=\color{brown},
+    backgroundcolor=\color{codigoFondo},
+    frame=single,
+    rulecolor=\color{codigoBorde},
+    breaklines=true,
+    showstringspaces=false,
+    tabsize=4,
+    captionpos=b
+}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -55,6 +75,18 @@
 \hline
 \textbf{Proyecto} & Sistema SNAAR - TekMess \\
 \hline
+\textbf{Universidad} & Universidad de las Fuerzas Armadas ESPE \\
+\hline
+\textbf{Departamento} & Departamento de Ciencias de la Computación \\
+\hline
+\textbf{Asignatura} & Análisis y Diseño de Software \\
+\hline
+\textbf{Tema} & Informe Plan de Pruebas Funcionales y Unitarias \\
+\hline
+\textbf{Docente} & Ing. Jenny Ruiz \\
+\hline
+\textbf{Fecha} & 9 de julio de 2026 \\
+\hline
 \textbf{Tipo de pruebas} & Pruebas funcionales automatizadas con JUnit \\
 \hline
 \textbf{Responsables} & Danna Andrade, Ariel Llumiquinga, David Pilaguano \\
@@ -64,6 +96,67 @@
 
 \newpage
 \tableofcontents
+\newpage
+
+\section*{Resumen Ejecutivo}
+\addcontentsline{toc}{section}{Resumen Ejecutivo}
+
+Este plan de pruebas presenta la planificación, diseño e implementación de pruebas funcionales y unitarias para el prototipo SNAAR - TekMess. El documento toma como referencia una estructura formal de informe de pruebas: datos generales del proyecto, resumen ejecutivo, objetivos, planteamiento, herramienta utilizada, implementación por requisito, desglose de pruebas, gestión de defectos, riesgos y conclusiones.
+
+El alcance principal se centra en los requisitos funcionales REQ001 a REQ009, que cubren la gestión de empleados, autenticación, cambio y recuperación de contraseña, generación de reportes e historial de reportes. Las pruebas fueron implementadas con JUnit 5 y diseñadas para ejecutarse sobre la lógica de negocio del prototipo, utilizando DAOs en memoria para aislar la capa de persistencia.
+
+\subsection*{Estado de Implementación}
+\addcontentsline{toc}{subsection}{Estado de Implementación}
+
+\begin{longtable}{|p{7cm}|p{6cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{Métrica} & \textbf{Valor} \\
+\hline
+Requisitos funcionales evaluados & 9/9 \\
+\hline
+Casos de prueba documentados & 12 casos detallados \\
+\hline
+Casos automatizados en JUnit & 10 métodos de prueba automatizados \\
+\hline
+Framework de pruebas & JUnit 5 \\
+\hline
+Tipo de prueba principal & Pruebas funcionales unitarias \\
+\hline
+Estado del diseño de pruebas & COMPLETADO \\
+\hline
+Ejecución Maven en el entorno actual & Pendiente por falta de Maven en PATH \\
+\hline
+\end{longtable}
+
+\subsection*{Requisitos Funcionales - Estado Final}
+\addcontentsline{toc}{subsection}{Requisitos Funcionales - Estado Final}
+
+\begin{longtable}{|p{1.8cm}|p{7cm}|p{2.5cm}|p{2cm}|}
+\hline
+\rowcolor{grisClaro}
+\textbf{RF} & \textbf{Nombre} & \textbf{Estado} & \textbf{Cobertura} \\
+\hline
+REQ001 & Registro de empleados y generación de credenciales & COMPLETO & Cubierto \\
+\hline
+REQ002 & Listado de personal registrado & COMPLETO & Cubierto \\
+\hline
+REQ003 & Edición de datos del empleado & COMPLETO & Cubierto \\
+\hline
+REQ004 & Eliminación de empleados & COMPLETO & Cubierto \\
+\hline
+REQ005 & Inicio de sesión por rol & COMPLETO & Cubierto \\
+\hline
+REQ006 & Cambio de contraseña & COMPLETO & Cubierto \\
+\hline
+REQ007 & Recuperación de contraseña & COMPLETO & Cubierto \\
+\hline
+REQ008 & Generación de reporte analítico & COMPLETO & Cubierto \\
+\hline
+REQ009 & Consulta de historial de reportes & COMPLETO & Cubierto \\
+\hline
+\end{longtable}
+
 \newpage
 
 \section{Control del Documento}
@@ -158,6 +251,26 @@ David Pilaguano & Integrante del equipo de desarrollo & Revisión de requisitos 
 \hline
 \end{longtable}
 
+\section{Planteamiento de las Pruebas}
+
+Las pruebas se plantean como un mecanismo de verificación temprana para comprobar que la lógica funcional del prototipo responde a las reglas definidas en los requisitos. Debido a que el proyecto se encuentra en etapa de prototipo, se prioriza la validación de servicios, entidades y utilidades antes de ejecutar pruebas de interfaz o integración completa.
+
+El planteamiento considera tres principios principales:
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Repetibilidad:} las pruebas deben poder ejecutarse varias veces con los mismos datos y obtener los mismos resultados.
+    \item \textbf{Aislamiento:} cada prueba debe controlar sus datos mediante DAOs en memoria para evitar dependencia de una base de datos externa.
+    \item \textbf{Trazabilidad:} cada requisito funcional debe relacionarse con pruebas específicas y resultados esperados.
+\end{itemize}
+
+\subsection{Enfoque de Testing}
+
+El enfoque aplicado corresponde a pruebas funcionales unitarias. Se evalúa el comportamiento observable de los métodos de servicio frente a entradas válidas e inválidas, verificando mensajes, objetos generados, cambios de estado y persistencia simulada.
+
+\subsection{Estrategia de Mocking}
+
+En lugar de utilizar librerías externas de mocking, se definieron clases simples en memoria que implementan las interfaces DAO del sistema. Esta estrategia resulta suficiente para el prototipo, reduce complejidad y permite controlar de forma explícita los datos de cada escenario.
+
 \section{Alcance}
 
 \subsection{Funcionalidades Incluidas}
@@ -213,6 +326,59 @@ Ejecución & Comando esperado: \texttt{mvn test}. \\
 Evidencia & Resultado de ejecución JUnit, código fuente de pruebas y trazabilidad incluida en este documento. \\
 \hline
 \end{longtable}
+
+\section{Herramienta}
+
+\subsection{Framework de Testing}
+
+Para la implementación de las pruebas unitarias se utiliza \textbf{JUnit 5}, específicamente la dependencia \texttt{junit-jupiter}. Este framework permite definir pruebas automatizadas mediante anotaciones, validar resultados con aserciones y ejecutar los casos desde Maven.
+
+La configuración incorporada al archivo \texttt{pom.xml} contempla:
+
+\begin{itemize}[leftmargin=*]
+    \item Dependencia \texttt{org.junit.jupiter:junit-jupiter:5.10.2}.
+    \item Plugin \texttt{maven-surefire-plugin:3.2.5}.
+    \item Compatibilidad con Java 17.
+\end{itemize}
+
+\subsection{Entorno de Pruebas}
+
+El entorno propuesto para la ejecución formal de pruebas es:
+
+\begin{itemize}[leftmargin=*]
+    \item Java 17 o superior.
+    \item Maven instalado y disponible en PATH.
+    \item Proyecto ubicado en la carpeta raíz donde se encuentra \texttt{pom.xml}.
+    \item Comando de ejecución: \texttt{mvn test}.
+\end{itemize}
+
+\subsection{Estructura de Archivos de Prueba}
+
+La implementación de pruebas se ubica dentro de la estructura estándar de Maven:
+
+\begin{verbatim}
+src/
++-- test/
+    +-- java/
+        +-- com/
+            +-- tekmess/
+                +-- snaar/
+                    +-- RequisitosFuncionalesTest.java
+\end{verbatim}
+
+El archivo \texttt{RequisitosFuncionalesTest.java} concentra los casos automatizados para los requisitos funcionales evaluados. Además, contiene implementaciones DAO en memoria que permiten simular la persistencia de empleados, usuarios y reportes sin requerir una conexión real a PostgreSQL.
+
+\subsection{Estrategia de Simulación y Aislamiento}
+
+Para evitar que las pruebas dependan de servicios externos, se aplicó una estrategia de aislamiento mediante objetos de prueba:
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{FakeEmpleadoDAO}: simula creación, edición, eliminación, consulta y conteos de empleados.
+    \item \texttt{FakeUsuarioDAO}: simula creación de usuarios, búsqueda, actualización de contraseña, intentos fallidos y estado de cuenta.
+    \item \texttt{FakeReporteDAO}: simula almacenamiento, consulta histórica y anotaciones de reportes.
+\end{itemize}
+
+Esta estrategia permite validar la lógica de negocio de los servicios sin alterar datos reales y sin depender de la disponibilidad de la base de datos.
 
 \section{Ambiente de Pruebas}
 
@@ -308,6 +474,488 @@ REQ008 & Generación de reporte analítico & \texttt{ReporteServicio} & TC-010 \
 REQ009 & Consulta de historial de reportes & \texttt{ReporteServicio} & TC-011, TC-012 \\
 \hline
 \end{longtable}
+
+\section{Implementación por Requisito}
+
+Esta sección describe cómo se implementaron las pruebas para cada requisito funcional. Se detalla el componente evaluado, la lógica cubierta, los escenarios considerados y los resultados esperados. La finalidad es evidenciar no solo la existencia de pruebas, sino también el razonamiento aplicado para cubrir los flujos principales y alternos del sistema.
+
+\subsection{REQ001: Registro de empleados y generación de credenciales}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{EmpleadoServicio}: creación del empleado, validación de duplicidad y generación de usuario.
+    \item \texttt{ValidadorDatos}: validación de cédula, nombres, rol, usuario, correo y contraseña.
+    \item \texttt{GeneradorCredenciales}: generación de nombre de usuario y contraseña temporal.
+    \item \texttt{CifradorContrasena}: cifrado y verificación de contraseña.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se creó un empleado con datos válidos y se ejecutó el método \texttt{crearEmpleado}. La prueba verifica que el empleado sea almacenado, que se genere un usuario asociado a su cédula, que la contraseña temporal cumpla la política de seguridad y que el campo de primer acceso quede activo. También se implementó un escenario de error para rechazar el registro cuando la cédula ya existe.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Flujo exitoso de creación de empleado.
+    \item Rechazo de cédula duplicada.
+    \item Normalización de correo.
+    \item Generación de usuario base a partir de nombres.
+    \item Generación y cifrado de contraseña temporal.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema registra empleados válidos, impide duplicados y genera credenciales seguras para el primer acceso.
+
+\subsection{REQ002: Listado de personal registrado}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{EmpleadoServicio}: consulta de empleados registrados.
+    \item \texttt{IEmpleadoDAO}: operación \texttt{listarTodos}.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se registraron empleados en el DAO en memoria y se ejecutó \texttt{consultarEmpleados}. La prueba valida que el listado retorne la cantidad esperada de registros y que los campos principales estén disponibles.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Consulta de todos los empleados registrados.
+    \item Retorno de cédula, nombres, correo y rol.
+    \item Disponibilidad de datos para edición o eliminación posterior.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema retorna un listado consistente y completo del personal registrado.
+
+\subsection{REQ003: Edición de datos del empleado}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{EmpleadoServicio}: edición de empleado.
+    \item \texttt{ValidadorDatos}: validación de nuevos datos.
+    \item \texttt{IEmpleadoDAO}: búsqueda y actualización por cédula.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se creó un empleado inicial y luego se ejecutó \texttt{editarEmpleado} con correo y rol actualizados. La prueba valida que el empleado exista antes de modificarlo y que los cambios se reflejen en el DAO.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Búsqueda de empleado por cédula.
+    \item Validación de correo y rol.
+    \item Actualización del registro.
+    \item Mensaje de confirmación de edición.
+\end{itemize}
+
+\textbf{Resultado esperado:} los datos modificables del empleado se actualizan correctamente cuando la cédula existe y los datos son válidos.
+
+\subsection{REQ004: Eliminación de empleados}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{EmpleadoServicio}: eliminación de empleado.
+    \item \texttt{IEmpleadoDAO}: búsqueda y eliminación del registro.
+    \item \texttt{IUsuarioDAO}: eliminación del usuario asociado.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se registró un empleado y un usuario asociado a la misma cédula. Luego se ejecutó \texttt{eliminarEmpleado}. La prueba verifica que ambos registros desaparezcan del almacenamiento en memoria.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de existencia del empleado.
+    \item Eliminación del usuario asociado.
+    \item Eliminación definitiva del empleado.
+    \item Prevención de accesos futuros para usuarios eliminados.
+\end{itemize}
+
+\textbf{Resultado esperado:} el empleado eliminado deja de existir en el sistema y su cuenta asociada queda removida.
+
+\subsection{REQ005: Inicio de sesión por rol}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{AuthServicio}: autenticación y control de intentos.
+    \item \texttt{Sesion}: creación de sesión y rol.
+    \item \texttt{Usuario}: incremento y reinicio de intentos fallidos.
+    \item \texttt{EstadoCuenta}: control de cuenta activa o bloqueada.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se creó un empleado con rol \texttt{SUPERVISOR} y un usuario activo con contraseña cifrada. Se validó el inicio de sesión correcto y la creación de sesión con rol. Además, se ejecutaron tres intentos con contraseña incorrecta para comprobar el bloqueo de cuenta.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de usuario y contraseña.
+    \item Verificación de hash de contraseña.
+    \item Creación de sesión con rol.
+    \item Redirección por primer acceso.
+    \item Bloqueo por intentos fallidos.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema permite acceder solo con credenciales correctas, asigna el rol correspondiente y bloquea la cuenta al superar el límite de intentos fallidos.
+
+\subsection{REQ006: Cambio de contraseña}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{AuthServicio}: proceso de cambio de contraseña.
+    \item \texttt{ValidadorDatos}: política de contraseña.
+    \item \texttt{CifradorContrasena}: generación y verificación del hash.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se creó un usuario con contraseña temporal cifrada y primer acceso activo. Luego se ejecutó \texttt{cambiarContrasena} con contraseña actual correcta, nueva contraseña y confirmación coincidente.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de contraseña actual.
+    \item Coincidencia entre nueva contraseña y confirmación.
+    \item Cumplimiento de política de seguridad.
+    \item Rechazo de reutilización de la contraseña actual.
+    \item Cifrado de la nueva contraseña.
+    \item Actualización del indicador de primer acceso.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema actualiza la contraseña de forma segura y desactiva el primer acceso obligatorio.
+
+\subsection{REQ007: Recuperación de contraseña}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{AuthServicio}: recuperación de contraseña.
+    \item \texttt{Empleado}: correo asociado al usuario.
+    \item \texttt{Usuario}: cuenta a actualizar.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se creó un empleado con correo institucional y un usuario asociado a su cédula. La prueba ejecuta \texttt{recuperarContrasena} con usuario, correo y nueva contraseña válida.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de usuario.
+    \item Validación de correo.
+    \item Correspondencia entre correo, empleado y usuario.
+    \item Rechazo de cuentas bloqueadas.
+    \item Aplicación de política de contraseña.
+    \item Actualización del hash.
+\end{itemize}
+
+\textbf{Resultado esperado:} la contraseña se restablece únicamente cuando el usuario y correo pertenecen al mismo registro.
+
+\subsection{REQ008: Generación de reporte analítico}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{ReporteServicio}: generación del reporte.
+    \item \texttt{Reporte}: entidad con totales consolidados.
+    \item \texttt{IReporteDAO}: almacenamiento del reporte.
+    \item \texttt{IEmpleadoDAO} e \texttt{IUsuarioDAO}: consultas de totales del período.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se configuraron totales simulados para empleados creados, editados, eliminados y accesos fallidos. Luego se ejecutó \texttt{generarReporte} con un rango de fechas válido y se verificó el contenido del reporte.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Validación de fechas.
+    \item Consolidación de empleados creados.
+    \item Consolidación de empleados editados.
+    \item Consolidación de empleados eliminados.
+    \item Consolidación de accesos fallidos.
+    \item Almacenamiento del reporte generado.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema genera un reporte con totales correctos y confirma la operación.
+
+\subsection{REQ009: Consulta de historial de reportes}
+
+\textbf{Archivos y componentes evaluados:}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{ReporteServicio}: consulta de historial y anotaciones.
+    \item \texttt{Reporte}: reporte generado previamente.
+    \item \texttt{Anotacion}: observación vinculada al reporte.
+    \item \texttt{IReporteDAO}: búsqueda, listado y registro de anotaciones.
+\end{itemize}
+
+\textbf{Cómo se implementó:} se guardó un reporte en memoria y se consultó el historial con un rango de fechas que lo incluye. Además, se agregó una anotación al reporte y se verificó que quede asociada correctamente.
+
+\textbf{Aspectos cubiertos:}
+\begin{itemize}[leftmargin=*]
+    \item Consulta de reportes sin alterar datos base.
+    \item Filtro por rango de fechas.
+    \item Validación de rango de consulta.
+    \item Registro de anotaciones.
+    \item Asociación entre anotación y reporte.
+\end{itemize}
+
+\textbf{Resultado esperado:} el sistema retorna reportes históricos según el filtro aplicado y permite agregar observaciones.
+
+\section{Código de Implementación de las Pruebas}
+
+Esta sección incorpora fragmentos representativos del código utilizado para implementar las pruebas unitarias. No se incluye la totalidad del archivo fuente para evitar redundancia, pero sí los bloques principales que evidencian la configuración, la inyección de dependencias, la estructura de pruebas y la simulación de persistencia mediante DAOs en memoria.
+
+\subsection{Configuración Maven para JUnit 5}
+
+La primera implementación necesaria fue agregar JUnit 5 y Maven Surefire al archivo \texttt{pom.xml}. Esta configuración permite que Maven detecte y ejecute automáticamente los métodos anotados con \texttt{@Test}.
+
+\begin{lstlisting}[style=javaStyle, caption={Dependencias y plugin de pruebas en pom.xml}]
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.10.2</version>
+    <scope>test</scope>
+</dependency>
+
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.2.5</version>
+</plugin>
+\end{lstlisting}
+
+\subsection{Ajuste de Testabilidad en AuthServicio}
+
+Para poder probar autenticación y recuperación de contraseña sin consultar directamente la base de datos, se agregó un constructor que recibe \texttt{IEmpleadoDAO}. El constructor existente se mantiene, por lo que el comportamiento de producción no se elimina ni se rompe.
+
+\begin{lstlisting}[style=javaStyle, caption={Constructor adicional para inyección de dependencias}]
+public class AuthServicio {
+
+    private final IUsuarioDAO usuarioDAO;
+    private final IEmpleadoDAO empleadoDAO;
+    private final CifradorContrasena cifrador;
+    private final ValidadorDatos validador;
+
+    public AuthServicio(IUsuarioDAO usuarioDAO) {
+        this(usuarioDAO, new EmpleadoDAO());
+    }
+
+    public AuthServicio(IUsuarioDAO usuarioDAO, IEmpleadoDAO empleadoDAO) {
+        this.usuarioDAO = usuarioDAO;
+        this.empleadoDAO = empleadoDAO;
+        this.cifrador = new CifradorContrasena();
+        this.validador = new ValidadorDatos();
+    }
+}
+\end{lstlisting}
+
+\subsection{Estructura General del Archivo de Pruebas}
+
+Las pruebas se concentran en la clase \texttt{RequisitosFuncionalesTest}. Cada método se identifica con el requisito funcional evaluado mediante \texttt{@DisplayName}, lo que facilita la lectura de resultados durante la ejecución.
+
+\begin{lstlisting}[style=javaStyle, caption={Estructura base de la clase de pruebas}]
+class RequisitosFuncionalesTest {
+
+    private final CifradorContrasena cifrador = new CifradorContrasena();
+
+    @Test
+    @DisplayName("REQ001 - registra empleado valido y genera credenciales")
+    void registraEmpleadoGeneraCredenciales() {
+        FakeEmpleadoDAO empleadoDAO = new FakeEmpleadoDAO();
+        FakeUsuarioDAO usuarioDAO = new FakeUsuarioDAO();
+        EmpleadoServicio servicio = new EmpleadoServicio(empleadoDAO, usuarioDAO);
+
+        String resultado = servicio.crearEmpleado(
+            new Empleado(
+                "1712345678",
+                "Danna Andrade",
+                "DANNA.ANDRADE@TEKMESS.COM",
+                Rol.JEFE_LOGISTICA
+            )
+        );
+
+        assertTrue(resultado.contains("Empleado registrado exitosamente"));
+    }
+}
+\end{lstlisting}
+
+\subsection{Implementación de Prueba para REQ001}
+
+El siguiente fragmento valida el flujo principal del registro de empleados: almacenamiento del empleado, creación de usuario, generación de contraseña temporal, cumplimiento de política de seguridad y activación del primer acceso.
+
+\begin{lstlisting}[style=javaStyle, caption={Prueba de registro de empleado y generación de credenciales}]
+@Test
+@DisplayName("REQ001 - registra empleado valido y genera credenciales")
+void registraEmpleadoGeneraCredenciales() {
+    FakeEmpleadoDAO empleadoDAO = new FakeEmpleadoDAO();
+    FakeUsuarioDAO usuarioDAO = new FakeUsuarioDAO();
+    EmpleadoServicio servicio = new EmpleadoServicio(empleadoDAO, usuarioDAO);
+
+    String resultado = servicio.crearEmpleado(
+        new Empleado("1712345678", "Danna Andrade",
+            "DANNA.ANDRADE@TEKMESS.COM", Rol.JEFE_LOGISTICA)
+    );
+
+    assertTrue(resultado.contains("Empleado registrado exitosamente"));
+    assertNotNull(empleadoDAO.buscarPorCedula("1712345678"));
+
+    Usuario usuario = usuarioDAO.buscarPorCedula("1712345678");
+    assertNotNull(usuario);
+    assertEquals("dandrade", usuario.getNombreUsuario());
+    assertTrue(usuario.isPrimerAcceso());
+    assertNull(new ValidadorDatos().validarContrasena(
+        usuario.getContrasenaTemporal()
+    ));
+    assertTrue(cifrador.verificar(
+        usuario.getContrasenaTemporal(),
+        usuario.getContrasenaHash()
+    ));
+}
+\end{lstlisting}
+
+\subsection{Implementación de Prueba para REQ005}
+
+Esta prueba cubre dos elementos importantes del inicio de sesión: acceso correcto por rol y bloqueo por intentos fallidos. El escenario valida que el usuario obtenga una sesión con rol \texttt{SUPERVISOR} y que, tras tres contraseñas incorrectas, la cuenta quede bloqueada.
+
+\begin{lstlisting}[style=javaStyle, caption={Prueba de inicio de sesión por rol y bloqueo de cuenta}]
+@Test
+@DisplayName("REQ005 - inicia sesion, redirige primer acceso y bloquea")
+void inicioSesionPorRolYBloqueo() {
+    FakeEmpleadoDAO empleadoDAO = new FakeEmpleadoDAO();
+    FakeUsuarioDAO usuarioDAO = new FakeUsuarioDAO();
+
+    empleadoDAO.crear(new Empleado(
+        "1712345678", "Danna Andrade",
+        "danna@tekmess.com", Rol.SUPERVISOR
+    ));
+
+    Usuario usuario = new Usuario(
+        "1712345678", "dandrade", cifrador.cifrar("Temp123!")
+    );
+    usuarioDAO.crear(usuario);
+
+    AuthServicio servicio = new AuthServicio(usuarioDAO, empleadoDAO);
+
+    Object[] login = servicio.iniciarSesion("dandrade", "Temp123!");
+    assertInstanceOf(Sesion.class, login[0]);
+    assertEquals("PRIMER_ACCESO", login[1]);
+    assertEquals(Rol.SUPERVISOR, ((Sesion) login[0]).getRolUsuario());
+
+    servicio.iniciarSesion("dandrade", "Mala123!");
+    servicio.iniciarSesion("dandrade", "Mala123!");
+    Object[] bloqueado = servicio.iniciarSesion("dandrade", "Mala123!");
+
+    assertNull(bloqueado[0]);
+    assertTrue(((String) bloqueado[1]).contains("Cuenta bloqueada"));
+    assertEquals(
+        EstadoCuenta.BLOQUEADO,
+        usuarioDAO.buscarPorNombreUsuario("dandrade").getEstadoCuenta()
+    );
+}
+\end{lstlisting}
+
+\subsection{Implementación de Prueba para REQ006}
+
+El cambio de contraseña se valida comprobando contraseña actual, política de seguridad, cifrado de la nueva clave y desactivación del indicador de primer acceso.
+
+\begin{lstlisting}[style=javaStyle, caption={Prueba de cambio de contraseña}]
+@Test
+@DisplayName("REQ006 - cambia contrasena validando politica y hash")
+void cambiaContrasenaConPolitica() {
+    FakeUsuarioDAO usuarioDAO = new FakeUsuarioDAO();
+
+    Usuario usuario = new Usuario(
+        "1712345678", "dandrade", cifrador.cifrar("Temp123!")
+    );
+    usuario.setPrimerAcceso(true);
+    usuarioDAO.crear(usuario);
+
+    String resultado = new AuthServicio(usuarioDAO, new FakeEmpleadoDAO())
+        .cambiarContrasena(
+            "dandrade",
+            "Temp123!",
+            "Nueva123!",
+            "Nueva123!"
+        );
+
+    Usuario actualizado = usuarioDAO.buscarPorNombreUsuario("dandrade");
+    assertTrue(resultado.contains("actualizada exitosamente"));
+    assertTrue(cifrador.verificar(
+        "Nueva123!",
+        actualizado.getContrasenaHash()
+    ));
+    assertFalse(actualizado.isPrimerAcceso());
+}
+\end{lstlisting}
+
+\subsection{Implementación de Prueba para REQ008}
+
+La generación de reportes se evalúa con totales simulados. La prueba confirma que el servicio consolide empleados creados, editados, eliminados y accesos fallidos.
+
+\begin{lstlisting}[style=javaStyle, caption={Prueba de generación de reporte analítico}]
+@Test
+@DisplayName("REQ008 - genera reporte analitico consolidando datos")
+void generaReporteAnalitico() {
+    FakeEmpleadoDAO empleadoDAO = new FakeEmpleadoDAO();
+    FakeUsuarioDAO usuarioDAO = new FakeUsuarioDAO();
+    FakeReporteDAO reporteDAO = new FakeReporteDAO();
+
+    empleadoDAO.totalCreados = 2;
+    empleadoDAO.totalEditados = 1;
+    empleadoDAO.totalEliminados = 1;
+    usuarioDAO.totalAccesosFallidos = 3;
+
+    Object[] respuesta = new ReporteServicio(
+        reporteDAO, empleadoDAO, usuarioDAO
+    ).generarReporte(new Date(1000), new Date(2000), "Danna Andrade");
+
+    assertInstanceOf(Reporte.class, respuesta[0]);
+    Reporte reporte = (Reporte) respuesta[0];
+
+    assertEquals(2, reporte.getTotalEmpleadosCreados());
+    assertEquals(1, reporte.getTotalEmpleadosEditados());
+    assertEquals(1, reporte.getTotalEmpleadosEliminados());
+    assertEquals(3, reporte.getTotalAccesosFallidos());
+    assertEquals("Reporte generado exitosamente.", respuesta[1]);
+}
+\end{lstlisting}
+
+\subsection{Implementación de DAO en Memoria}
+
+Los DAOs en memoria reemplazan temporalmente la persistencia real. Esto permite ejecutar pruebas controladas sin base de datos. El siguiente ejemplo muestra la lógica principal del DAO de empleados usado en pruebas.
+
+\begin{lstlisting}[style=javaStyle, caption={DAO en memoria para empleados}]
+private static class FakeEmpleadoDAO implements IEmpleadoDAO {
+
+    private final Map<String, Empleado> empleados = new HashMap<>();
+    int totalCreados;
+    int totalEditados;
+    int totalEliminados;
+
+    @Override
+    public boolean crear(Empleado empleado) {
+        empleados.put(empleado.getCedula(), empleado);
+        totalCreados++;
+        return true;
+    }
+
+    @Override
+    public boolean editar(Empleado empleado) {
+        if (!empleados.containsKey(empleado.getCedula())) {
+            return false;
+        }
+        empleados.put(empleado.getCedula(), empleado);
+        totalEditados++;
+        return true;
+    }
+
+    @Override
+    public boolean eliminar(String cedula) {
+        Empleado eliminado = empleados.remove(cedula);
+        if (eliminado != null) {
+            totalEliminados++;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Empleado buscarPorCedula(String cedula) {
+        return empleados.get(cedula);
+    }
+
+    @Override
+    public List<Empleado> listarTodos() {
+        return new ArrayList<>(empleados.values());
+    }
+}
+\end{lstlisting}
+
+\subsection{Comando de Ejecución}
+
+Una vez instalado Maven en el entorno, la ejecución completa de las pruebas se realiza desde la raíz del proyecto mediante:
+
+\begin{lstlisting}[style=javaStyle, caption={Comando para ejecutar pruebas}]
+mvn test
+\end{lstlisting}
 
 \section{Desglose Detallado de Pruebas Funcionales}
 
@@ -869,6 +1517,38 @@ Plan de pruebas en LaTeX & Documento \texttt{Plan\_Pruebas\_TekMess.tex} con pla
 Tablero Kanban en Excel & Archivo \texttt{Tablero\_Kanban\_Pruebas\_TekMess.xlsx} con tareas ejecutadas y responsables. \\
 \hline
 \end{longtable}
+
+\section{Conclusiones}
+
+\subsection{Logros Alcanzados}
+
+Se diseñó un plan de pruebas funcionales y unitarias alineado con los requisitos REQ001 a REQ009 del prototipo SNAAR - TekMess. Cada requisito cuenta con pruebas documentadas y con una explicación detallada de los elementos evaluados, datos empleados, pasos de ejecución y criterios de aprobación.
+
+También se incorporó la configuración necesaria para ejecutar pruebas con JUnit 5 desde Maven, incluyendo la dependencia \texttt{junit-jupiter} y el plugin \texttt{maven-surefire-plugin}. Además, se ajustó la clase \texttt{AuthServicio} para permitir la inyección de dependencias y facilitar pruebas sin conexión real a base de datos.
+
+\subsection{Calidad del Software}
+
+El diseño de pruebas contribuye a mejorar la calidad del prototipo porque valida reglas críticas relacionadas con seguridad, autenticación, credenciales, cambios de contraseña y trazabilidad de reportes. Estas funcionalidades son sensibles porque afectan directamente el acceso al sistema y la confiabilidad de la información gestionada.
+
+\subsection{Lecciones Aprendidas}
+
+El uso de DAOs en memoria permite aislar la lógica de negocio y construir pruebas rápidas, controladas y repetibles. Asimismo, se evidenció la importancia de diseñar servicios con dependencias inyectables, ya que esto facilita la automatización de pruebas y reduce el acoplamiento con implementaciones concretas.
+
+\subsection{Recomendaciones Futuras}
+
+Para una siguiente etapa se recomienda:
+
+\begin{itemize}[leftmargin=*]
+    \item Agregar pruebas de integración contra una base PostgreSQL de pruebas.
+    \item Incorporar pruebas de controladores HTTP y filtros de autorización.
+    \item Generar reportes de cobertura con herramientas como JaCoCo.
+    \item Automatizar la ejecución de \texttt{mvn test} en un flujo de integración continua.
+    \item Complementar las pruebas unitarias con pruebas funcionales de interfaz para las vistas JSP.
+\end{itemize}
+
+\subsection{Resumen Final}
+
+El plan de pruebas permite demostrar que el prototipo cuenta con una base sólida de validación funcional. Aunque la ejecución completa depende de contar con Maven instalado en el entorno, los casos diseñados y documentados proporcionan una guía clara para verificar el cumplimiento de los requisitos antes de la entrega final.
 
 \section{Observaciones Finales}
 
