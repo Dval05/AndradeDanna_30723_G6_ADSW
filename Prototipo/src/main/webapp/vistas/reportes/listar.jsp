@@ -19,15 +19,15 @@
             align-items: center;
             border-bottom: 1px solid rgba(99, 102, 241, 0.15);
         }
-        .navbar h2 { font-size: 20px; background: linear-gradient(135deg,#818cf8,#6366f1); -webkit-background-clip: text; color: transparent; }
+        .navbar h2 { font-size: 20px; color: #111827; }
         .nav-links a { margin-left: 18px; color: #94a3b8; text-decoration: none; font-size: 14px; }
-        .nav-links a:hover { color: #818cf8; }
+        .nav-links a:hover { color: #1f6feb; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 24px; }
         .card { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 20px; padding: 26px; margin-bottom: 24px; }
         .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
         .header h1 { font-size: 24px; }
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
-        .btn-primary { background: linear-gradient(135deg,#6366f1,#818cf8); color: #fff; }
+        .btn-primary { background: #1f6feb; color: #fff; }
         .btn-secondary { background: rgba(148, 163, 184, 0.12); color: #cbd5e1; }
         .btn-secondary:hover { background: rgba(148, 163, 184, 0.2); }
         .filters { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 16px; margin: 22px 0; }
@@ -46,7 +46,7 @@
         .badge-primary { background: rgba(99, 102, 241, 0.16); color: #c7d2fe; }
         .empty-state { text-align: center; padding: 40px 0; color: #94a3b8; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page reports-page">
     <jsp:include page="/vistas/fragments/navbar.jsp" />
@@ -70,6 +70,7 @@
                 </div>
                 <div style="display:flex; gap:12px; flex-wrap:wrap;">
                     <a href="${pageContext.request.contextPath}/reportes/exportar?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}" class="btn btn-secondary">Exportar CSV</a>
+                    <button type="button" class="btn btn-secondary" onclick="window.print()">Imprimir reporte</button>
                     <a href="${pageContext.request.contextPath}/reportes" class="btn btn-secondary">Actualizar vista</a>
                 </div>
             </div>

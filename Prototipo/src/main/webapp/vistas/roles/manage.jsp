@@ -13,9 +13,9 @@
         label{ font-size:13px; color:#9fb4c5; }
         input[type=text]{ width:100%; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:transparent; color:#e6eef8; }
         .actions{ margin-top:12px; text-align:right; }
-        .btn{ padding:8px 12px; border-radius:8px; background:linear-gradient(90deg,#06b6d4,#6366f1); color:white; text-decoration:none; }
+        .btn{ padding:8px 12px; border-radius:8px; background:#1f6feb; color:white; text-decoration:none; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page roles-page">
     <jsp:include page="/vistas/fragments/navbar.jsp" />

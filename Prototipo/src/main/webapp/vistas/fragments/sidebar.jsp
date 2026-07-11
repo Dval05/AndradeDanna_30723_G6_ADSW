@@ -1,6 +1,6 @@
 <div class="card" style="padding:12px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#6366f1,#818cf8);"></div>
+        <div style="width:40px;height:40px;border-radius:8px;background:#1f6feb;"></div>
         <div>
             <div style="font-weight:700;color:#e6eeff;">SNAAR</div>
             <div class="small">Panel de control</div>

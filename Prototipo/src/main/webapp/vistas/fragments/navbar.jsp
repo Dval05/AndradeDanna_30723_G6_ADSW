@@ -26,8 +26,30 @@
         <a class="<%= currentUri.contains("cambiar-contrasena") ? "active" : "" %>" href="${pageContext.request.contextPath}/auth/cambiar-contrasena">Seguridad</a>
     </div>
     <div class="nav-account">
+        <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Cambiar modo noche">🌙 Noche</button>
         <div class="nav-avatar"><%= currentUser.isBlank() ? "U" : currentUser.substring(0, 1).toUpperCase() %></div>
         <div class="nav-identity"><strong><%= currentUser %></strong><small><%= roleLabel %></small></div>
         <a class="nav-logout" href="${pageContext.request.contextPath}/auth/logout" title="Cerrar sesion">Salir</a>
     </div>
 </nav>
+<script>
+    (function () {
+        var savedTheme = localStorage.getItem('snaar-theme');
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+        updateThemeButton();
+    })();
+
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark-mode');
+        localStorage.setItem('snaar-theme', document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light');
+        updateThemeButton();
+    }
+
+    function updateThemeButton() {
+        var button = document.querySelector('.theme-toggle');
+        if (!button) return;
+        button.textContent = document.documentElement.classList.contains('dark-mode') ? '☀️ Día' : '🌙 Noche';
+    }
+</script>

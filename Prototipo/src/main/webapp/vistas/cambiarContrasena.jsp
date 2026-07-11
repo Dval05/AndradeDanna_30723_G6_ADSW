@@ -28,7 +28,7 @@
         .req-list li.valid { color: #28a745; }
         .req-list li.valid::before { content: "●"; color: #28a745; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page password-page security-page">
     <jsp:include page="/vistas/fragments/navbar.jsp" />

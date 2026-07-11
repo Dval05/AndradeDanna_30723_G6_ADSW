@@ -10,63 +10,63 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg,#071029 0%, #0f172a 100%); color: #e2e8f0; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(180deg,#f8fbff 0%, #eef3f8 100%); color: #152033; min-height: 100vh; }
         
         /* Navbar */
-        .navbar { background: rgba(12, 22, 46, 0.95); backdrop-filter: blur(6px); padding: 14px 28px; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(99,102,241,0.1); }
-        .navbar h2 { font-size:18px; background: linear-gradient(135deg,#7c3aed,#06b6d4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight: 700; }
-        .nav-links a { color: #9aa8bd; text-decoration:none; margin-left:18px; font-size:14px; transition: color 0.2s; }
-        .nav-links a:hover { color:#9fe8ff; }
+        .navbar { background: rgba(16, 24, 39, 0.96); backdrop-filter: blur(14px); padding: 14px 28px; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .navbar h2 { font-size:18px; color:#f8fafc; font-weight: 700; }
+        .nav-links a { color: #b9c6d8; text-decoration:none; margin-left:18px; font-size:14px; transition: color 0.2s; }
+        .nav-links a:hover { color:#fff; }
         
         /* Estructura Principal */
         .container { max-width:1400px; margin:28px auto; padding: 0 20px; }
         .grid { display:grid; grid-template-columns: 260px 1fr; gap:24px; align-items:start; }
         
         /* Sidebar integrado básico por si falla el fragmento */
-        .sidebar { background: rgba(15,23,42,0.4); border-radius:12px; padding:20px; border:1px solid rgba(99,102,241,0.06); }
-        .sidebar h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #6366f1; margin-bottom: 16px; }
+        .sidebar { background: #ffffff; border-radius:12px; padding:20px; border:1px solid #dbe4ee; }
+        .sidebar h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #2563eb; margin-bottom: 16px; }
         .sidebar-menu { list-style: none; }
         .sidebar-menu li { margin-bottom: 12px; }
-        .sidebar-menu a { color: #94a3b8; text-decoration: none; font-size: 14px; display: block; padding: 8px 12px; border-radius: 6px; transition: background 0.2s; }
-        .sidebar-menu a:hover { background: rgba(99,102,241,0.1); color: #fff; }
+        .sidebar-menu a { color: #637083; text-decoration: none; font-size: 14px; display: block; padding: 8px 12px; border-radius: 6px; transition: background 0.2s; }
+        .sidebar-menu a:hover { background: #eef6ff; color: #2563eb; }
 
         /* Tarjetas */
-        .card { background: rgba(15,23,42,0.6); border-radius:12px; padding:24px; border:1px solid rgba(99,102,241,0.06); box-shadow: 0 6px 18px rgba(2,6,23,0.6); margin-bottom: 24px; }
-        .welcome { font-size:22px; font-weight:700; color:#eef2ff; }
-        .muted { color:#94a3b8; font-size:14px; }
+        .card { background: #ffffff; border-radius:14px; padding:24px; border:1px solid #dbe4ee; box-shadow: 0 18px 45px rgba(15,23,42,0.08); margin-bottom: 24px; }
+        .welcome { font-size:22px; font-weight:700; color:#152033; }
+        .muted { color:#637083; font-size:14px; }
         
         /* Métricas */
         .metrics { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin: 20px 0; }
-        .metric { padding:20px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.005)); border:1px solid rgba(99,102,241,0.08); transition:transform .18s ease, box-shadow .18s ease; }
-        .metric:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(2,6,23,0.6); border-color: rgba(99,102,241,0.2); }
-        .metric h5 { font-size:12px; color:#9fb4c5; margin-bottom:8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .metric .value { font-size:28px; font-weight:800; color:#fff; }
+        .metric { padding:20px; border-radius:12px; background: #ffffff; border:1px solid #dbe4ee; transition:transform .18s ease, box-shadow .18s ease; }
+        .metric:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(15,23,42,0.10); border-color: rgba(37,99,235,0.22); }
+        .metric h5 { font-size:12px; color:#637083; margin-bottom:8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric .value { font-size:28px; font-weight:800; color:#0f172a; }
         
         /* Gráficos */
         .charts-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
         @media (max-width: 1024px) { .charts-container { grid-template-columns: 1fr; } }
-        .chart-box { background: rgba(15,23,42,0.4); border-radius: 12px; padding: 16px; border: 1px solid rgba(99,102,241,0.04); }
-        .chart-box h4 { font-size: 15px; margin-bottom: 12px; color: #cbd5e1; }
+        .chart-box { background: #ffffff; border-radius: 14px; padding: 18px; border: 1px solid #dbe4ee; box-shadow: 0 14px 34px rgba(15,23,42,.07); }
+        .chart-box h4 { font-size: 15px; margin-bottom: 12px; color: #152033; }
 
         /* Tablas y Listas */
         .table-responsive { width: 100%; overflow-x: auto; margin-top: 12px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { padding: 12px; color: #94a3b8; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.08); }
-        td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; }
-        tr:hover td { background: rgba(255,255,255,0.01); }
+        th { padding: 12px; color: #475569; font-weight: 600; border-bottom: 1px solid #dbe4ee; background:#f8fafc; }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; color: #334155; }
+        tr:hover td { background: #f8fbff; }
 
         .list-card { display:flex; flex-direction:column; gap:10px; }
-        .empleado-row { display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.02); }
-        .empleado-name { font-weight:600; color:#eef2ff; }
-        .small { font-size:13px; color:#94a3b8; }
+        .empleado-row { display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:10px; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .empleado-name { font-weight:600; color:#152033; }
+        .small { font-size:13px; color:#637083; }
         
         /* Botones y Estados */
-        .btn { padding:8px 16px; border-radius:8px; font-size: 13px; font-weight:600; background: linear-gradient(90deg,#06b6d4,#6366f1); color:white; text-decoration:none; display: inline-block; border: none; cursor: pointer; transition: opacity 0.2s; }
+        .btn { padding:8px 16px; border-radius:8px; font-size: 13px; font-weight:600; background: linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; text-decoration:none; display: inline-block; border: none; cursor: pointer; transition: opacity 0.2s; }
         .btn:hover { opacity: 0.9; }
         .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
         .badge { padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
-        .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+        .badge-danger { background: #fee4e2; color: #b42318; border: 1px solid #fecdca; }
+        .badge-success { background: #dcfae6; color: #16803c; border: 1px solid #abefc6; }
         .empty { text-align:center; color:#64748b; padding:30px; font-size: 14px; }
 
         /* Responsive */
@@ -75,7 +75,7 @@
             .sidebar { display: none; } /* En móvil se puede usar la navbar */
         }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page dashboard-page">
 
@@ -87,7 +87,7 @@
             <a href="${pageContext.request.contextPath}/empleados/listar">Empleados</a>
             <a href="${pageContext.request.contextPath}/reportes">Reportes</a>
             <a href="${pageContext.request.contextPath}/auth/cambiar-contrasena">Contraseña</a>
-            <a href="${pageContext.request.contextPath}/auth/logout" style="color: #f87171;">Cerrar Sesión</a>
+            <a href="${pageContext.request.contextPath}/auth/logout" style="color: #b42318;">Cerrar Sesión</a>
         </div>
     </nav>
 
@@ -110,11 +110,11 @@
                 <!-- Mensaje de Bienvenida -->
                 <div class="card">
                     <p class="eyebrow">Centro de operaciones</p>
-                    <div class="welcome">Hola, <span style="color:#a5b4fc;"><%= session.getAttribute("usuario") %></span></div>
-                    <div class="muted">Rol actual: <strong style="color: #67e8f9;"><%= session.getAttribute("rol") %></strong></div>
+                    <div class="welcome">Hola, <span style="color:#2563eb;"><%= session.getAttribute("usuario") %></span></div>
+                    <div class="muted">Rol actual: <strong style="color: #0f766e;"><%= session.getAttribute("rol") %></strong></div>
                     
                     <% if (request.getAttribute("exito") != null) { %>
-                        <div style="color:#4ade80; padding:10px 0 0 0; font-size: 14px;">✔ <%= request.getAttribute("exito") %></div>
+                        <div style="color:#16803c; padding:10px 0 0 0; font-size: 14px;">✔ <%= request.getAttribute("exito") %></div>
                     <% } %>
 
                     <!-- MÉTRICAS INYECTADAS DESDE EL CONTROLADOR -->
@@ -133,7 +133,7 @@
                         </div>
                         <div class="metric">
                             <h5>Accesos Fallidos (Hoy)</h5>
-                            <div class="value" style="color: #f87171;"><%= request.getAttribute("accesosFallidosHoy") != null ? request.getAttribute("accesosFallidosHoy") : 0 %></div>
+                            <div class="value" style="color: #b42318;"><%= request.getAttribute("accesosFallidosHoy") != null ? request.getAttribute("accesosFallidosHoy") : 0 %></div>
                         </div>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
                                     <div class="empleado-row">
                                         <div>
                                             <div class="empleado-name"><%= e.getNombres() %></div>
-                                            <div class="small"><%= e.getCedula() %> • <span style="color:#06b6d4;"><%= e.getRol() %></span> • <%= e.getNombreLocacion() != null ? e.getNombreLocacion() : "Sin locación" %></div>
+                                            <div class="small"><%= e.getCedula() %> • <span style="color:#0f766e;"><%= e.getRol() %></span> • <%= e.getNombreLocacion() != null ? e.getNombreLocacion() : "Sin locación" %></div>
                                         </div>
                                         <div>
                                             <% if (Boolean.TRUE.equals(request.getAttribute("puedeGestionarPersonal"))) { %>
@@ -274,24 +274,46 @@ var roleValues = JSON.parse('<%= request.getAttribute("roleValuesJson") != null 
 var daysLabels = JSON.parse('<%= request.getAttribute("daysLabelsJson") != null ? request.getAttribute("daysLabelsJson") : "[]" %>');
 var daysValues = JSON.parse('<%= request.getAttribute("daysValuesJson") != null ? request.getAttribute("daysValuesJson") : "[]" %>');
 var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJson") != null ? request.getAttribute("reportDaysValuesJson") : "[]" %>');
+var chartDark = document.documentElement.classList.contains('dark-mode');
+var chartText = chartDark ? '#dbe4ee' : '#344054';
+var chartMuted = chartDark ? '#a7b2c3' : '#667085';
+var chartGrid = chartDark ? 'rgba(219, 228, 238, 0.16)' : 'rgba(148, 163, 184, 0.22)';
         // 1. Gráfico de Pastel: Distribución de Roles
         var ctxR = document.getElementById('rolesChart').getContext('2d');
         new Chart(ctxR, {
-            type: 'pie',
+            type: 'bar',
             data: {
                 labels: roleLabels,
                 datasets: [{
+                    label: 'Empleados',
                     data: roleValues,
-                    backgroundColor: ['#5eead4', '#f9a8d4', '#fbbf24', '#a78bfa'],
-                    borderWidth: 1,
-                    borderColor: '#1e293b'
+                    backgroundColor: 'rgba(31, 111, 235, 0.72)',
+                    hoverBackgroundColor: '#1f6feb',
+                    borderWidth: 0,
+                    borderRadius: 8,
+                    barThickness: 20
                 }]
             },
             options: {
                 responsive: true,
+                indexAxis: 'y',
                 maintainAspectRatio: false,
+                scales: {
+                    x: { beginAtZero: true, grid: { color: chartGrid }, ticks: { color: chartMuted, precision: 0 } },
+                    y: { grid: { display: false }, ticks: { color: chartText, font: { family: 'Inter', size: 12, weight: '600' } } }
+                },
                 plugins: {
-                    legend: { position: 'right', labels: { color: '#cbd5e1', font: { family: 'Inter' } } }
+                    legend: {
+                        display: false,
+                        labels: {
+                            color: chartText,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 18,
+                            font: { family: 'Inter', size: 12, weight: '600' }
+                        }
+                    },
+                    tooltip: { backgroundColor: '#111827', titleColor: '#ffffff', bodyColor: '#eef2ff', padding: 10, cornerRadius: 8 }
                 }
             }
         });
@@ -306,18 +328,27 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                         type: 'line',
                         label: 'Empleados Creados',
                         data: daysValues,
-                        borderColor: '#5eead4',
-                        backgroundColor: 'rgba(94, 234, 212, 0.12)',
-                        tension: 0.3,
+                        borderColor: '#1f6feb',
+                        backgroundColor: 'rgba(31, 111, 235, 0.08)',
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#1f6feb',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        borderWidth: 3,
+                        tension: 0.38,
                         fill: true
                     },
                     {
                         type: 'bar',
                         label: 'Reportes Generados',
                         data: reportDaysValues,
-                        backgroundColor: 'rgba(244, 114, 182, 0.58)',
-                        borderColor: '#f472b6',
-                        borderWidth: 1
+                        backgroundColor: 'rgba(15, 118, 110, 0.58)',
+                        hoverBackgroundColor: '#0f766e',
+                        borderColor: '#0f766e',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        barThickness: 18
                     }
                 ]
             },
@@ -325,11 +356,26 @@ var reportDaysValues = JSON.parse('<%= request.getAttribute("reportDaysValuesJso
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' }, beginAtZero: true }
+                    x: { grid: { display: false }, ticks: { color: chartMuted, font: { family: 'Inter', size: 11 } } },
+                    y: { grid: { color: chartGrid }, ticks: { color: chartMuted, font: { family: 'Inter', size: 11 }, precision: 0 }, beginAtZero: true }
                 },
                 plugins: {
-                    legend: { labels: { color: '#cbd5e1' } }
+                    legend: {
+                        labels: {
+                            color: chartText,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 16,
+                            font: { family: 'Inter', size: 12, weight: '600' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleColor: '#ffffff',
+                        bodyColor: '#dbeafe',
+                        padding: 12,
+                        cornerRadius: 10
+                    }
                 }
             }
         });

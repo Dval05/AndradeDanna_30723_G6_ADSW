@@ -23,14 +23,14 @@
         }
         .navbar h2 {
             font-size: 20px;
-            background: linear-gradient(135deg, #818cf8, #6366f1);
+            background: #1f6feb;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .navbar .nav-links a {
             color: #94a3b8; text-decoration: none; margin-left: 24px;
             font-size: 14px; transition: color 0.2s;
         }
-        .navbar .nav-links a:hover { color: #818cf8; }
+        .navbar .nav-links a:hover { color: #1f6feb; }
         .container { max-width: 1200px; margin: 32px auto; padding: 0 24px; }
         .header-section {
             display: flex; justify-content: space-between;
@@ -43,7 +43,7 @@
             transition: all 0.3s ease; font-family: 'Inter', sans-serif;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #818cf8);
+            background: #1f6feb;
             color: white;
         }
         .btn-primary:hover {
@@ -112,7 +112,7 @@
         .modal-content h3 { margin-bottom: 16px; }
         .modal-actions { display: flex; gap: 12px; margin-top: 20px; justify-content: flex-end; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page employees-page">
     <!-- Barra de navegación -->
@@ -258,19 +258,20 @@
                                 <c:when test="${puedeGestionarPersonal}">
                                 <div class="acciones">
                                     <a href="${pageContext.request.contextPath}/empleados/editar?cedula=${emp.cedula}"
-                                       class="btn btn-warning" id="btn-editar-${emp.cedula}">Editar</a>
+                                       class="btn btn-warning action-icon" id="btn-editar-${emp.cedula}" title="Editar empleado" aria-label="Editar empleado">✏️</a>
 
                                     <button class="btn btn-danger" id="btn-eliminar-${emp.cedula}"
-                                            onclick="confirmarEliminacion('${emp.cedula}', '${emp.nombres}')">
-                                        Dar de baja
+                                            onclick="confirmarEliminacion('${emp.cedula}', '${emp.nombres}')"
+                                            title="Dar de baja" aria-label="Dar de baja">
+                                        🗑️
                                     </button>
                                     <form action="${pageContext.request.contextPath}/empleados/reset-password" method="POST" style="display:inline;">
                                         <input type="hidden" name="cedula" value="${emp.cedula}">
-                                        <button type="submit" class="btn btn-secondary">Nueva clave</button>
+                                        <button type="submit" class="btn btn-secondary action-icon" title="Generar nueva clave" aria-label="Generar nueva clave">🔑</button>
                                     </form>
                                     <form action="${pageContext.request.contextPath}/empleados/desbloquear" method="POST" style="display:inline;">
                                         <input type="hidden" name="cedula" value="${emp.cedula}">
-                                        <button type="submit" class="btn btn-secondary">Desbloquear</button>
+                                        <button type="submit" class="btn btn-secondary action-icon" title="Desbloquear cuenta" aria-label="Desbloquear cuenta">🔓</button>
                                     </form>
                                 </div>
                                 </c:when>

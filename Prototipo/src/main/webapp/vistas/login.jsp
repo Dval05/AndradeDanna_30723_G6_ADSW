@@ -32,9 +32,10 @@
         .logo { text-align: center; margin-bottom: 32px; }
         .logo h1 {
             font-size: 28px; font-weight: 700;
-            background: linear-gradient(135deg, #818cf8, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #111827;
+            background: transparent;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: #111827;
         }
         .logo p { color: #94a3b8; font-size: 13px; margin-top: 4px; }
         .form-group { margin-bottom: 20px; }
@@ -50,12 +51,12 @@
             transition: all 0.3s ease;
         }
         .form-group input:focus {
-            outline: none; border-color: #6366f1;
+            outline: none; border-color: #1f6feb;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
         .btn-login {
             width: 100%; padding: 14px; border: none; border-radius: 10px;
-            background: linear-gradient(135deg, #6366f1, #818cf8);
+            background: #1f6feb;
             color: white; font-size: 15px; font-weight: 600;
             cursor: pointer; transition: all 0.3s ease;
             font-family: 'Inter', sans-serif;
@@ -80,12 +81,12 @@
             text-align: center; margin-top: 16px;
         }
         .recuperar-link a {
-            color: #818cf8; text-decoration: none; font-size: 13px;
+            color: #1f6feb; text-decoration: none; font-size: 13px;
             transition: color 0.2s ease;
         }
-        .recuperar-link a:hover { color: #a5b4fc; }
+        .recuperar-link a:hover { color: #175cd3; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="auth-page login-page">
     <main class="auth-shell">

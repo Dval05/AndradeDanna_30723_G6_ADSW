@@ -21,7 +21,7 @@
         }
         .navbar h2 {
             font-size: 20px;
-            background: linear-gradient(135deg, #818cf8, #6366f1);
+            background: #1f6feb;
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .container { max-width: 600px; margin: 48px auto; padding: 0 24px; }
@@ -44,7 +44,7 @@
             transition: all 0.3s ease;
         }
         .form-group input:focus, .form-group select:focus {
-            outline: none; border-color: #6366f1;
+            outline: none; border-color: #1f6feb;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
         .form-group input:disabled {
@@ -58,7 +58,7 @@
             transition: all 0.3s ease; font-family: 'Inter', sans-serif;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #818cf8);
+            background: #1f6feb;
             color: white; flex: 1;
         }
         .btn-primary:hover {
@@ -80,7 +80,7 @@
         }
         .hint { font-size: 11px; color: #64748b; margin-top: 4px; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page employee-form-page">
     <jsp:include page="/vistas/fragments/navbar.jsp" />

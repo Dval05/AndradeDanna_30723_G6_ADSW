@@ -26,10 +26,10 @@
             top: 0;
             z-index: 100;
         }
-        .nav-brand { font-size: 18px; font-weight: 700; background: linear-gradient(135deg, #a5b4fc, #6366f1); -webkit-background-clip: text; color: transparent; }
+        .nav-brand { font-size: 18px; font-weight: 700; color: #111827; }
         .nav-links a { margin-left: 24px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s ease; }
-        .nav-links a:hover { color: #818cf8; }
-        .nav-links .active { color: #6366f1; }
+        .nav-links a:hover { color: #1f6feb; }
+        .nav-links .active { color: #1f6feb; }
 
         /* --- Layout general --- */
         .container { max-width: 1100px; margin: 40px auto; padding: 0 24px; }
@@ -45,18 +45,18 @@
         /* --- Encabezado del reporte --- */
         .header { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 32px; }
         .header h1 { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
-        .badge-period { display: inline-block; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: #a5b4fc; padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 500; margin-top: 8px; }
+        .badge-period { display: inline-block; background: #eff6ff; border: 1px solid #bfdbfe; color: #1f6feb; padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 500; margin-top: 8px; }
 
         /* --- Botones --- */
         .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; text-decoration: none; }
-        .btn-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); color: #fff; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25); }
+        .btn-primary { background: #1f6feb; color: #fff; box-shadow: none; }
         .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
         .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.08); }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
 
         /* --- Métrica Dashboard Grid --- */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 36px; }
-        .stat-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 24px; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 4px solid #6366f1; }
+        .stat-card { background: #ffffff; border: 1px solid #e5eaf0; border-radius: 12px; padding: 24px; transition: transform 0.2s ease, border-color 0.2s ease; border-left: 4px solid #1f6feb; }
         .stat-card:hover { transform: translateY(-2px); border-color: rgba(99, 102, 241, 0.3); }
         .stat-card.danger { border-left-color: #ef4444; }
         .stat-card h3 { font-size: 13px; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
@@ -82,7 +82,7 @@
         .timeline { position: relative; padding-left: 24px; list-style: none; margin-top: 16px; }
         .timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: rgba(99, 102, 241, 0.2); }
         .timeline-item { position: relative; margin-bottom: 24px; }
-        .timeline-item::before { content: ''; position: absolute; left: -22px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #6366f1; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15); }
+        .timeline-item::before { content: ''; position: absolute; left: -22px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #1f6feb; box-shadow: 0 0 0 4px rgba(31, 111, 235, 0.12); }
         .timeline-content { background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255, 255, 255, 0.02); padding: 16px; border-radius: 12px; }
         .timeline-text { font-size: 14px; color: #e2e8f0; line-height: 1.6; }
         .timeline-meta { font-size: 12px; color: #64748b; margin-top: 8px; display: flex; gap: 8px; }
@@ -91,9 +91,9 @@
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; color: #94a3b8; font-size: 13px; font-weight: 500; }
         .form-group textarea { width: 100%; min-height: 110px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); background: #0f1422; color: #e2e8f0; padding: 14px; font-size: 14px; font-family: inherit; resize: vertical; transition: all 0.2s ease; }
-        .form-group textarea:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); background: #111827; }
+        .form-group textarea:focus { outline: none; border-color: #1f6feb; box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.14); background: #ffffff; }
     </style>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/app.css?v=contrast-darkmode-20260711">
 </head>
 <body class="app-page report-detail-page">
 
@@ -132,6 +132,7 @@
                         Frecuencia: ${reporte.fechaInicio} — ${reporte.fechaFin}
                     </div>
                 </div>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir reporte</button>
                 <a href="${pageContext.request.contextPath}/reportes" class="btn btn-secondary">
                     ← Volver al Listado
                 </a>
@@ -153,7 +154,7 @@
                 </div>
                 <div class="stat-card danger">
                     <h3>Accesos Fallidos</h3>
-                    <div class="value" style="color: #f87171;">${reporte.totalAccesosFallidos}</div>
+                    <div class="value" style="color: #b42318;">${reporte.totalAccesosFallidos}</div>
                 </div>
             </div>
 
