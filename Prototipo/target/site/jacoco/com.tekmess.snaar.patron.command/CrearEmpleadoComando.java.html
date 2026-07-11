@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CrearEmpleadoComando.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.patron.command</a> &gt; <span class="el_source">CrearEmpleadoComando.java</span></div><h1>CrearEmpleadoComando.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.patron.command;
+
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import com.tekmess.snaar.controlador.servicio.EmpleadoServicio;
+
+/**
+ * Comando Concreto – Crear Empleado (RF-SNAAR-01.01).
+ * Patrón Command: encapsula la operación de creación de empleado.
+ * Soporta deshacer (elimina el empleado recién creado).
+ */
+public class CrearEmpleadoComando implements IComando {
+
+    private final EmpleadoServicio receptor;
+    private final Empleado empleado;
+    private String credencialesGeneradas;
+
+<span class="fc" id="L17">    public CrearEmpleadoComando(EmpleadoServicio receptor, Empleado empleado) {</span>
+<span class="fc" id="L18">        this.receptor = receptor;</span>
+<span class="fc" id="L19">        this.empleado = empleado;</span>
+<span class="fc" id="L20">    }</span>
+
+    @Override
+    public ResultadoComando ejecutar() {
+<span class="fc" id="L24">        String resultado = receptor.crearEmpleado(empleado);</span>
+<span class="fc" id="L25">        boolean exito = resultado.startsWith(&quot;Empleado registrado&quot;);</span>
+
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (exito) {</span>
+<span class="fc" id="L28">            this.credencialesGeneradas = resultado;</span>
+        }
+
+<span class="fc" id="L31">        return new ResultadoComando(exito, resultado);</span>
+    }
+
+    @Override
+    public ResultadoComando deshacer() {
+<span class="fc" id="L36">        String resultado = receptor.eliminarEmpleado(empleado.getCedula());</span>
+<span class="fc" id="L37">        boolean exito = resultado.contains(&quot;eliminado&quot;);</span>
+<span class="fc" id="L38">        return new ResultadoComando(exito,</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">                exito ? &quot;Creación de empleado deshecha.&quot; : &quot;No se pudo deshacer: &quot; + resultado);</span>
+    }
+
+    @Override
+    public String getDescripcion() {
+<span class="fc" id="L44">        return &quot;Crear Empleado: &quot; + empleado.getNombres() + &quot; (&quot; + empleado.getCedula() + &quot;)&quot;;</span>
+    }
+
+    public String getCredencialesGeneradas() {
+<span class="fc" id="L48">        return credencialesGeneradas;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

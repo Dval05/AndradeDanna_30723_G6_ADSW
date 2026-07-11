@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Rol.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.modelo.entidad</a> &gt; <span class="el_source">Rol.java</span></div><h1>Rol.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.modelo.entidad;
+
+/**
+ * Enumeración de roles del sistema SNAAR.
+ * Define los roles válidos según RF-SNAAR-01.05.
+ */
+<span class="fc" id="L7">public enum Rol {</span>
+<span class="fc" id="L8">    GUARDIA(&quot;Guardia&quot;),</span>
+<span class="fc" id="L9">    SUPERVISOR(&quot;Supervisor&quot;),</span>
+<span class="fc" id="L10">    CENTRALISTA(&quot;Centralista&quot;),</span>
+<span class="fc" id="L11">    JEFE_LOGISTICA(&quot;Jefe Logística/Operación&quot;);</span>
+
+    private final String descripcion;
+
+<span class="fc" id="L15">    Rol(String descripcion) {</span>
+<span class="fc" id="L16">        this.descripcion = descripcion;</span>
+<span class="fc" id="L17">    }</span>
+
+    public String getDescripcion() {
+<span class="fc" id="L20">        return descripcion;</span>
+    }
+
+    /**
+     * Obtiene el Rol a partir de su descripción.
+     * @param descripcion texto del rol
+     * @return Rol correspondiente
+     * @throws IllegalArgumentException si no se encuentra el rol
+     */
+    public static Rol fromDescripcion(String descripcion) {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        for (Rol rol : values()) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">            if (rol.descripcion.equalsIgnoreCase(descripcion)) {</span>
+<span class="fc" id="L32">                return rol;</span>
+            }
+        }
+<span class="fc" id="L35">        throw new IllegalArgumentException(&quot;El rol seleccionado no es válido: &quot; + descripcion);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReporteDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.modelo.dao</a> &gt; <span class="el_source">ReporteDAO.java</span></div><h1>ReporteDAO.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.modelo.dao;
+
+import com.tekmess.snaar.modelo.entidad.Anotacion;
+import com.tekmess.snaar.modelo.entidad.Reporte;
+import com.tekmess.snaar.util.ConexionBD;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Implementación DAO para Reporte con PostgreSQL.
+ * Capa de Datos – persistencia de reportes analíticos y anotaciones.
+ */
+<span class="nc" id="L16">public class ReporteDAO implements IReporteDAO {</span>
+
+    @Override
+    public boolean guardar(Reporte reporte) {
+<span class="nc" id="L20">        String sql = &quot;INSERT INTO reportes (fecha_inicio, fecha_fin, total_empleados_creados, &quot; +</span>
+                &quot;total_empleados_editados, total_empleados_eliminados, total_accesos_fallidos, generado_por) &quot; +
+                &quot;VALUES (?, ?, ?, ?, ?, ?, ?)&quot;;
+<span class="nc" id="L23">        try (Connection conn = ConexionBD.getInstancia().getConexion();</span>
+<span class="nc" id="L24">                PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {</span>
+<span class="nc" id="L25">            ps.setTimestamp(1, new Timestamp(reporte.getFechaInicio().getTime()));</span>
+<span class="nc" id="L26">            ps.setTimestamp(2, new Timestamp(reporte.getFechaFin().getTime()));</span>
+<span class="nc" id="L27">            ps.setInt(3, reporte.getTotalEmpleadosCreados());</span>
+<span class="nc" id="L28">            ps.setInt(4, reporte.getTotalEmpleadosEditados());</span>
+<span class="nc" id="L29">            ps.setInt(5, reporte.getTotalEmpleadosEliminados());</span>
+<span class="nc" id="L30">            ps.setInt(6, reporte.getTotalAccesosFallidos());</span>
+<span class="nc" id="L31">            ps.setString(7, reporte.getGeneradoPor());</span>
+
+<span class="nc" id="L33">            int filas = ps.executeUpdate();</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            if (filas &gt; 0) {</span>
+<span class="nc" id="L35">                try (ResultSet keys = ps.getGeneratedKeys()) {</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">                    if (keys.next()) {</span>
+<span class="nc" id="L37">                        reporte.setIdReporte(keys.getInt(1));</span>
+                    }
+                }
+<span class="nc" id="L40">                return true;</span>
+            }
+<span class="nc bnc" id="L42" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L43">            System.err.println(&quot;Error al guardar reporte: &quot; + e.getMessage());</span>
+<span class="nc" id="L44">        }</span>
+<span class="nc" id="L45">        return false;</span>
+    }
+
+    @Override
+    public Reporte buscarPorId(int id) {
+<span class="nc" id="L50">        String sql = &quot;SELECT * FROM reportes WHERE id_reporte = ?&quot;;</span>
+<span class="nc" id="L51">        try (Connection conn = ConexionBD.getInstancia().getConexion();</span>
+<span class="nc" id="L52">                PreparedStatement ps = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L53">            ps.setInt(1, id);</span>
+<span class="nc" id="L54">            try (ResultSet rs = ps.executeQuery()) {</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">                if (rs.next()) {</span>
+<span class="nc" id="L56">                    Reporte reporte = mapearReporte(rs);</span>
+<span class="nc" id="L57">                    reporte.setAnotaciones(obtenerAnotaciones(id));</span>
+<span class="nc" id="L58">                    return reporte;</span>
+                }
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            }</span>
+<span class="nc bnc" id="L61" title="All 4 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L62">            System.err.println(&quot;Error al buscar reporte por ID: &quot; + e.getMessage());</span>
+<span class="nc" id="L63">        }</span>
+<span class="nc" id="L64">        return null;</span>
+    }
+
+    @Override
+    public List&lt;Reporte&gt; listarPorFechas(Date inicio, Date fin) {
+<span class="nc" id="L69">        List&lt;Reporte&gt; reportes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L70">        String sql = &quot;SELECT * FROM reportes WHERE fecha_generacion BETWEEN ? AND ? ORDER BY fecha_generacion DESC&quot;;</span>
+<span class="nc" id="L71">        try (Connection conn = ConexionBD.getInstancia().getConexion();</span>
+<span class="nc" id="L72">                PreparedStatement ps = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L73">            ps.setTimestamp(1, new Timestamp(inicio.getTime()));</span>
+<span class="nc" id="L74">            ps.setTimestamp(2, new Timestamp(fin.getTime()));</span>
+<span class="nc" id="L75">            try (ResultSet rs = ps.executeQuery()) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L77">                    reportes.add(mapearReporte(rs));</span>
+                }
+            }
+<span class="nc" id="L80">        } catch (SQLException e) {</span>
+<span class="nc" id="L81">            System.err.println(&quot;Error al listar reportes por fechas: &quot; + e.getMessage());</span>
+<span class="nc" id="L82">        }</span>
+<span class="nc" id="L83">        return reportes;</span>
+    }
+
+    @Override
+    public List&lt;Reporte&gt; listarTodos() {
+<span class="nc" id="L88">        List&lt;Reporte&gt; reportes = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L89">        String sql = &quot;SELECT * FROM reportes ORDER BY fecha_generacion DESC&quot;;</span>
+<span class="nc" id="L90">        try (Connection conn = ConexionBD.getInstancia().getConexion();</span>
+<span class="nc" id="L91">                PreparedStatement ps = conn.prepareStatement(sql);</span>
+<span class="nc" id="L92">                ResultSet rs = ps.executeQuery()) {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">            while (rs.next()) {</span>
+<span class="nc" id="L94">                reportes.add(mapearReporte(rs));</span>
+            }
+<span class="nc" id="L96">        } catch (SQLException e) {</span>
+<span class="nc" id="L97">            System.err.println(&quot;Error al listar reportes: &quot; + e.getMessage());</span>
+<span class="nc" id="L98">        }</span>
+<span class="nc" id="L99">        return reportes;</span>
+    }
+
+    @Override
+    public boolean agregarAnotacion(int idReporte, Anotacion anotacion) {
+<span class="nc" id="L104">        String sql = &quot;INSERT INTO anotaciones (id_reporte, contenido, autor) VALUES (?, ?, ?)&quot;;</span>
+<span class="nc" id="L105">        try (Connection conn = ConexionBD.getInstancia().getConexion();</span>
+<span class="nc" id="L106">                PreparedStatement ps = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L107">            ps.setInt(1, idReporte);</span>
+<span class="nc" id="L108">            ps.setString(2, anotacion.getContenido());</span>
+<span class="nc" id="L109">            ps.setString(3, anotacion.getAutor());</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            return ps.executeUpdate() &gt; 0;</span>
+<span class="nc" id="L111">        } catch (SQLException e) {</span>
+<span class="nc" id="L112">            System.err.println(&quot;Error al agregar anotación: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L114">        return false;</span>
+    }
+
+    @Override
+    public List&lt;Anotacion&gt; obtenerAnotaciones(int idReporte) {
+<span class="nc" id="L119">        List&lt;Anotacion&gt; anotaciones = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L120">        String sql = &quot;SELECT * FROM anotaciones WHERE id_reporte = ? ORDER BY fecha_creacion DESC&quot;;</span>
+<span class="nc" id="L121">        try (Connection conn = ConexionBD.getInstancia().getConexion();</span>
+<span class="nc" id="L122">                PreparedStatement ps = conn.prepareStatement(sql)) {</span>
+<span class="nc" id="L123">            ps.setInt(1, idReporte);</span>
+<span class="nc" id="L124">            try (ResultSet rs = ps.executeQuery()) {</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                while (rs.next()) {</span>
+<span class="nc" id="L126">                    Anotacion anotacion = new Anotacion();</span>
+<span class="nc" id="L127">                    anotacion.setIdAnotacion(rs.getInt(&quot;id_anotacion&quot;));</span>
+<span class="nc" id="L128">                    anotacion.setIdReporte(rs.getInt(&quot;id_reporte&quot;));</span>
+<span class="nc" id="L129">                    anotacion.setContenido(rs.getString(&quot;contenido&quot;));</span>
+<span class="nc" id="L130">                    anotacion.setFechaCreacion(rs.getTimestamp(&quot;fecha_creacion&quot;));</span>
+<span class="nc" id="L131">                    anotacion.setAutor(rs.getString(&quot;autor&quot;));</span>
+<span class="nc" id="L132">                    anotaciones.add(anotacion);</span>
+<span class="nc" id="L133">                }</span>
+            }
+<span class="nc" id="L135">        } catch (SQLException e) {</span>
+<span class="nc" id="L136">            System.err.println(&quot;Error al obtener anotaciones: &quot; + e.getMessage());</span>
+<span class="nc" id="L137">        }</span>
+<span class="nc" id="L138">        return anotaciones;</span>
+    }
+
+    private Reporte mapearReporte(ResultSet rs) throws SQLException {
+<span class="nc" id="L142">        Reporte reporte = new Reporte();</span>
+<span class="nc" id="L143">        reporte.setIdReporte(rs.getInt(&quot;id_reporte&quot;));</span>
+<span class="nc" id="L144">        reporte.setFechaGeneracion(rs.getTimestamp(&quot;fecha_generacion&quot;));</span>
+<span class="nc" id="L145">        reporte.setFechaInicio(rs.getTimestamp(&quot;fecha_inicio&quot;));</span>
+<span class="nc" id="L146">        reporte.setFechaFin(rs.getTimestamp(&quot;fecha_fin&quot;));</span>
+<span class="nc" id="L147">        reporte.setTotalEmpleadosCreados(rs.getInt(&quot;total_empleados_creados&quot;));</span>
+<span class="nc" id="L148">        reporte.setTotalEmpleadosEditados(rs.getInt(&quot;total_empleados_editados&quot;));</span>
+<span class="nc" id="L149">        reporte.setTotalEmpleadosEliminados(rs.getInt(&quot;total_empleados_eliminados&quot;));</span>
+<span class="nc" id="L150">        reporte.setTotalAccesosFallidos(rs.getInt(&quot;total_accesos_fallidos&quot;));</span>
+<span class="nc" id="L151">        reporte.setGeneradoPor(rs.getString(&quot;generado_por&quot;));</span>
+<span class="nc" id="L152">        reporte.setAnotaciones(new ArrayList&lt;&gt;());</span>
+<span class="nc" id="L153">        return reporte;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

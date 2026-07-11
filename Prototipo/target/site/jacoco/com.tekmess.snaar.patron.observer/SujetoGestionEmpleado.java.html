@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SujetoGestionEmpleado.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.patron.observer</a> &gt; <span class="el_source">SujetoGestionEmpleado.java</span></div><h1>SujetoGestionEmpleado.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.patron.observer;
+
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import com.tekmess.snaar.patron.observer.EventoSistema.TipoEvento;
+import com.tekmess.snaar.controlador.servicio.EmpleadoServicio;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Sujeto Concreto – Gestión de Empleados (RF-01).
+ * Patrón Observer: notifica a los observadores cuando se
+ * crea, edita o elimina un empleado en el sistema SNAAR.
+ */
+public class SujetoGestionEmpleado implements ISujeto {
+
+    private final List&lt;IObservador&gt; observadores;
+    private final EmpleadoServicio empleadoServicio;
+
+<span class="fc" id="L22">    public SujetoGestionEmpleado(EmpleadoServicio empleadoServicio) {</span>
+<span class="fc" id="L23">        this.observadores = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L24">        this.empleadoServicio = empleadoServicio;</span>
+<span class="fc" id="L25">    }</span>
+
+    @Override
+    public void agregarObservador(IObservador observador) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (!observadores.contains(observador)) {</span>
+<span class="fc" id="L30">            observadores.add(observador);</span>
+        }
+<span class="fc" id="L32">    }</span>
+
+    @Override
+    public void eliminarObservador(IObservador observador) {
+<span class="fc" id="L36">        observadores.remove(observador);</span>
+<span class="fc" id="L37">    }</span>
+
+    @Override
+    public void notificarObservadores(EventoSistema evento) {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (IObservador observador : observadores) {</span>
+<span class="fc" id="L42">            observador.actualizar(evento);</span>
+<span class="fc" id="L43">        }</span>
+<span class="fc" id="L44">    }</span>
+
+    // ── Operaciones que generan eventos ────────────────────────
+
+    /**
+     * Crea un empleado y notifica el evento EMPLEADO_CREADO.
+     */
+    public String crearEmpleado(Empleado empleado, String actor) {
+<span class="fc" id="L52">        String resultado = empleadoServicio.crearEmpleado(empleado);</span>
+
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (resultado.startsWith(&quot;Empleado registrado&quot;)) {</span>
+<span class="fc" id="L55">            Map&lt;String, Object&gt; datos = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L56">            datos.put(&quot;cedula&quot;, empleado.getCedula());</span>
+<span class="fc" id="L57">            datos.put(&quot;nombres&quot;, empleado.getNombres());</span>
+<span class="fc" id="L58">            datos.put(&quot;rol&quot;, empleado.getRol().getDescripcion());</span>
+
+<span class="fc" id="L60">            EventoSistema evento = new EventoSistema(</span>
+                    TipoEvento.EMPLEADO_CREADO, actor, datos);
+<span class="fc" id="L62">            notificarObservadores(evento);</span>
+        }
+
+<span class="fc" id="L65">        return resultado;</span>
+    }
+
+    /**
+     * Edita un empleado y notifica el evento EMPLEADO_EDITADO.
+     */
+    public String editarEmpleado(Empleado empleado, String actor) {
+<span class="fc" id="L72">        String resultado = empleadoServicio.editarEmpleado(empleado);</span>
+
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if (resultado.contains(&quot;actualizado&quot;)) {</span>
+<span class="fc" id="L75">            Map&lt;String, Object&gt; datos = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L76">            datos.put(&quot;cedula&quot;, empleado.getCedula());</span>
+<span class="fc" id="L77">            datos.put(&quot;nombres&quot;, empleado.getNombres());</span>
+
+<span class="fc" id="L79">            EventoSistema evento = new EventoSistema(</span>
+                    TipoEvento.EMPLEADO_EDITADO, actor, datos);
+<span class="fc" id="L81">            notificarObservadores(evento);</span>
+        }
+
+<span class="fc" id="L84">        return resultado;</span>
+    }
+
+    /**
+     * Elimina un empleado y notifica el evento EMPLEADO_ELIMINADO.
+     */
+    public String eliminarEmpleado(String cedula, String actor) {
+<span class="fc" id="L91">        String resultado = empleadoServicio.eliminarEmpleado(cedula);</span>
+
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if (resultado.contains(&quot;eliminado&quot;)) {</span>
+<span class="fc" id="L94">            Map&lt;String, Object&gt; datos = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L95">            datos.put(&quot;cedula&quot;, cedula);</span>
+
+<span class="fc" id="L97">            EventoSistema evento = new EventoSistema(</span>
+                    TipoEvento.EMPLEADO_ELIMINADO, actor, datos);
+<span class="fc" id="L99">            notificarObservadores(evento);</span>
+        }
+
+<span class="fc" id="L102">        return resultado;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidadorDatos.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.util</a> &gt; <span class="el_source">ValidadorDatos.java</span></div><h1>ValidadorDatos.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.util;
+
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+/**
+ * Validador reutilizable para entradas del sistema SNAAR.
+ */
+<span class="fc" id="L11">public class ValidadorDatos {</span>
+
+<span class="fc" id="L13">    private static final Pattern PATRON_CEDULA = Pattern.compile(&quot;^\\d{10}$&quot;);</span>
+<span class="fc" id="L14">    private static final Pattern PATRON_NOMBRES = Pattern.compile(&quot;^[\\p{L}ÁÉÍÓÚÜÑáéíóúüñ'´`.-]+(?:\\s+[\\p{L}ÁÉÍÓÚÜÑáéíóúüñ'´`.-]+)+$&quot;);</span>
+<span class="fc" id="L15">    private static final Pattern PATRON_USUARIO = Pattern.compile(&quot;^[a-zA-Z0-9._-]{3,30}$&quot;);</span>
+<span class="fc" id="L16">    private static final Pattern PATRON_CORREO = Pattern.compile(</span>
+            &quot;^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$&quot;
+    );
+<span class="fc" id="L19">    private static final Pattern PATRON_CONTRASENA = Pattern.compile(</span>
+            &quot;^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d.*\\d)(?=.*[!@#$%^&amp;*()_+\\-={}|;:',.&lt;&gt;?/]).{8,}$&quot;
+    );
+
+    public List&lt;String&gt; validarDatosEmpleado(Empleado empleado) {
+<span class="fc" id="L24">        List&lt;String&gt; errores = new ArrayList&lt;&gt;();</span>
+
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        if (empleado == null) {</span>
+<span class="nc" id="L27">            errores.add(&quot;Los datos del empleado son obligatorios.&quot;);</span>
+<span class="nc" id="L28">            return errores;</span>
+        }
+
+<span class="fc" id="L31">        String errorCedula = validarCedula(empleado.getCedula());</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (errorCedula != null) errores.add(errorCedula);</span>
+
+<span class="fc" id="L34">        String errorNombres = validarNombres(empleado.getNombres());</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        if (errorNombres != null) errores.add(errorNombres);</span>
+
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        String errorRol = validarRol(empleado.getRol() != null ? empleado.getRol().name() : null);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if (errorRol != null) errores.add(errorRol);</span>
+
+<span class="fc" id="L40">        String errorCorreo = validarCorreo(empleado.getCorreo());</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (errorCorreo != null) errores.add(errorCorreo);</span>
+
+<span class="fc" id="L43">        return errores;</span>
+    }
+
+    public String validarCedula(String cedula) {
+<span class="fc bfc" id="L47" title="All 4 branches covered.">        if (cedula == null || !PATRON_CEDULA.matcher(cedula.trim()).matches()) {</span>
+<span class="fc" id="L48">            return &quot;La cédula debe contener exactamente 10 dígitos numéricos.&quot;;</span>
+        }
+<span class="fc" id="L50">        return null;</span>
+    }
+
+    public String validarNombres(String nombres) {
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">        if (nombres == null || nombres.trim().isEmpty()) {</span>
+<span class="fc" id="L55">            return &quot;Los nombres completos son obligatorios.&quot;;</span>
+        }
+<span class="fc" id="L57">        String valor = normalizarEspacios(nombres);</span>
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">        if (valor.length() &lt; 7 || valor.length() &gt; 80) {</span>
+<span class="fc" id="L59">            return &quot;Los nombres completos deben tener entre 7 y 80 caracteres.&quot;;</span>
+        }
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (!PATRON_NOMBRES.matcher(valor).matches()) {</span>
+<span class="fc" id="L62">            return &quot;Ingrese nombre y apellido usando solo letras y espacios.&quot;;</span>
+        }
+<span class="fc" id="L64">        return null;</span>
+    }
+
+    public String validarRol(String rol) {
+<span class="pc bpc" id="L68" title="1 of 4 branches missed.">        if (rol == null || rol.isBlank()) {</span>
+<span class="fc" id="L69">            return &quot;El rol seleccionado no es válido.&quot;;</span>
+        }
+        try {
+<span class="fc" id="L72">            com.tekmess.snaar.modelo.entidad.Rol.valueOf(rol.trim());</span>
+<span class="fc" id="L73">            return null;</span>
+<span class="fc" id="L74">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L75">            return &quot;El rol seleccionado no es válido.&quot;;</span>
+        }
+    }
+
+    public String validarCorreo(String correo) {
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">        if (correo == null || correo.trim().isEmpty()) {</span>
+<span class="fc" id="L81">            return &quot;El correo institucional es obligatorio.&quot;;</span>
+        }
+<span class="fc" id="L83">        String valor = correo.trim();</span>
+<span class="pc bpc" id="L84" title="1 of 4 branches missed.">        if (valor.length() &gt; 120 || !PATRON_CORREO.matcher(valor).matches()) {</span>
+<span class="fc" id="L85">            return &quot;El correo ingresado no tiene un formato válido.&quot;;</span>
+        }
+<span class="fc" id="L87">        return null;</span>
+    }
+
+    public String validarUsuario(String usuario) {
+<span class="pc bpc" id="L91" title="1 of 4 branches missed.">        if (usuario == null || usuario.trim().isEmpty()) {</span>
+<span class="fc" id="L92">            return &quot;El usuario es obligatorio.&quot;;</span>
+        }
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (!PATRON_USUARIO.matcher(usuario.trim()).matches()) {</span>
+<span class="fc" id="L95">            return &quot;El usuario debe tener de 3 a 30 caracteres y solo puede usar letras, números, punto, guion o guion bajo.&quot;;</span>
+        }
+<span class="fc" id="L97">        return null;</span>
+    }
+
+    public String validarTexto(String valor, String campo, int minimo, int maximo) {
+<span class="nc bnc" id="L101" title="All 4 branches missed.">        if (valor == null || valor.trim().isEmpty()) {</span>
+<span class="nc" id="L102">            return campo + &quot; es obligatorio.&quot;;</span>
+        }
+<span class="nc" id="L104">        String texto = normalizarEspacios(valor);</span>
+<span class="nc bnc" id="L105" title="All 4 branches missed.">        if (texto.length() &lt; minimo || texto.length() &gt; maximo) {</span>
+<span class="nc" id="L106">            return campo + &quot; debe tener entre &quot; + minimo + &quot; y &quot; + maximo + &quot; caracteres.&quot;;</span>
+        }
+<span class="nc" id="L108">        return null;</span>
+    }
+
+    public String validarContrasena(String contrasena) {
+<span class="pc bpc" id="L112" title="1 of 4 branches missed.">        if (contrasena == null || !PATRON_CONTRASENA.matcher(contrasena).matches()) {</span>
+<span class="fc" id="L113">            return &quot;La contraseña debe tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 2 números y 1 carácter especial.&quot;;</span>
+        }
+<span class="fc" id="L115">        return null;</span>
+    }
+
+    public String normalizarEspacios(String valor) {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        return valor == null ? null : valor.trim().replaceAll(&quot;\\s+&quot;, &quot; &quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RolesController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.controlador.http</a> &gt; <span class="el_source">RolesController.java</span></div><h1>RolesController.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.controlador.http;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.tekmess.snaar.modelo.entidad.Rol;
+import com.tekmess.snaar.util.ValidadorDatos;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
+@WebServlet(name = &quot;RolesController&quot;, urlPatterns = { &quot;/roles/manage&quot; })
+<span class="nc" id="L20">public class RolesController extends HttpServlet {</span>
+
+    private File configFile;
+<span class="nc" id="L23">    private Gson gson = new Gson();</span>
+<span class="nc" id="L24">    private ValidadorDatos validador = new ValidadorDatos();</span>
+
+    @Override
+    public void init() throws ServletException {
+<span class="nc" id="L28">        String path = getServletContext().getRealPath(&quot;/WEB-INF/role_config.json&quot;);</span>
+<span class="nc" id="L29">        configFile = new File(path);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (!configFile.exists()) {</span>
+            try {
+<span class="nc" id="L32">                writeDefaults();</span>
+<span class="nc" id="L33">            } catch (IOException e) {</span>
+<span class="nc" id="L34">                throw new ServletException(e);</span>
+<span class="nc" id="L35">            }</span>
+        }
+<span class="nc" id="L37">    }</span>
+
+    private void writeDefaults() throws IOException {
+<span class="nc" id="L40">        List&lt;Map&lt;String, Object&gt;&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        for (Rol r : Rol.values()) {</span>
+<span class="nc" id="L42">            Map&lt;String, Object&gt; m = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L43">            m.put(&quot;name&quot;, r.name());</span>
+<span class="nc" id="L44">            m.put(&quot;description&quot;, &quot;Descripción para &quot; + r.name());</span>
+<span class="nc" id="L45">            m.put(&quot;active&quot;, true);</span>
+<span class="nc" id="L46">            list.add(m);</span>
+        }
+<span class="nc" id="L48">        try (Writer w = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {</span>
+<span class="nc" id="L49">            gson.toJson(list, w);</span>
+        }
+<span class="nc" id="L51">    }</span>
+
+    private List&lt;Map&lt;String, Object&gt;&gt; readConfig() throws IOException {
+<span class="nc" id="L54">        try (Reader r = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8)) {</span>
+<span class="nc" id="L55">            Type t = new TypeToken&lt;List&lt;Map&lt;String, Object&gt;&gt;&gt;() {</span>
+<span class="nc" id="L56">            }.getType();</span>
+<span class="nc" id="L57">            List&lt;Map&lt;String, Object&gt;&gt; l = gson.fromJson(r, t);</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">            return l != null ? l : new ArrayList&lt;&gt;();</span>
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+<span class="nc" id="L64">        req.setAttribute(&quot;configList&quot;, readConfig());</span>
+<span class="nc" id="L65">        req.getRequestDispatcher(&quot;/vistas/roles/manage.jsp&quot;).forward(req, resp);</span>
+<span class="nc" id="L66">    }</span>
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Expect params: desc_&lt;ROLE&gt;, active_&lt;ROLE&gt;
+<span class="nc" id="L71">        List&lt;Map&lt;String, Object&gt;&gt; cfg = readConfig();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        for (Map&lt;String, Object&gt; m : cfg) {</span>
+<span class="nc" id="L73">            String name = (String) m.get(&quot;name&quot;);</span>
+<span class="nc" id="L74">            String desc = req.getParameter(&quot;desc_&quot; + name);</span>
+<span class="nc" id="L75">            String active = req.getParameter(&quot;active_&quot; + name);</span>
+<span class="nc" id="L76">            String errorDesc = validador.validarTexto(desc, &quot;La descripción de &quot; + name.replace('_', ' '), 8, 120);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (errorDesc != null) {</span>
+<span class="nc" id="L78">                req.setAttribute(&quot;configList&quot;, cfg);</span>
+<span class="nc" id="L79">                req.setAttribute(&quot;error&quot;, errorDesc);</span>
+<span class="nc" id="L80">                req.getRequestDispatcher(&quot;/vistas/roles/manage.jsp&quot;).forward(req, resp);</span>
+<span class="nc" id="L81">                return;</span>
+            }
+<span class="nc" id="L83">            m.put(&quot;description&quot;, desc.trim());</span>
+<span class="nc bnc" id="L84" title="All 6 branches missed.">            m.put(&quot;active&quot;, active != null &amp;&amp; (active.equals(&quot;on&quot;) || active.equals(&quot;true&quot;)));</span>
+<span class="nc" id="L85">        }</span>
+<span class="nc" id="L86">        try (Writer w = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8)) {</span>
+<span class="nc" id="L87">            gson.toJson(cfg, w);</span>
+        }
+<span class="nc" id="L89">        req.setAttribute(&quot;configList&quot;, cfg);</span>
+<span class="nc" id="L90">        req.setAttribute(&quot;exito&quot;, &quot;Cambios guardados&quot;);</span>
+<span class="nc" id="L91">        req.getRequestDispatcher(&quot;/vistas/roles/manage.jsp&quot;).forward(req, resp);</span>
+<span class="nc" id="L92">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

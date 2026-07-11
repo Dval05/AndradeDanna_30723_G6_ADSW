@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReporteServicio.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.controlador.servicio</a> &gt; <span class="el_source">ReporteServicio.java</span></div><h1>ReporteServicio.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.controlador.servicio;
+
+import com.tekmess.snaar.modelo.dao.IEmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.IReporteDAO;
+import com.tekmess.snaar.modelo.dao.IUsuarioDAO;
+import com.tekmess.snaar.modelo.entidad.Anotacion;
+import com.tekmess.snaar.modelo.entidad.Reporte;
+
+import java.util.Date;
+import java.util.List;
+
+/**
+ * Servicio de Reportes Analíticos (RF-SNAAR-03V2).
+ * Capa de Lógica de Negocio – generación, consulta y exportación de reportes.
+ * Consolida datos de RF-01 (empleados) y RF-02 (accesos fallidos).
+ */
+public class ReporteServicio {
+
+    private final IReporteDAO reporteDAO;
+    private final IEmpleadoDAO empleadoDAO;
+    private final IUsuarioDAO usuarioDAO;
+
+<span class="fc" id="L23">    public ReporteServicio(IReporteDAO reporteDAO, IEmpleadoDAO empleadoDAO, IUsuarioDAO usuarioDAO) {</span>
+<span class="fc" id="L24">        this.reporteDAO = reporteDAO;</span>
+<span class="fc" id="L25">        this.empleadoDAO = empleadoDAO;</span>
+<span class="fc" id="L26">        this.usuarioDAO = usuarioDAO;</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * RF-SNAAR-03V2.01: Generar Reporte.
+     * Consulta datos de RF-01 y RF-02, construye y almacena el reporte.
+     *
+     * @param fechaInicio inicio del período
+     * @param fechaFin fin del período
+     * @param generadoPor nombre del actor que genera el reporte
+     * @return reporte generado o null si hay error
+     */
+    public Object[] generarReporte(Date fechaInicio, Date fechaFin, String generadoPor) {
+        // Paso 6: Validar rango de fechas
+<span class="pc bpc" id="L40" title="2 of 4 branches missed.">        if (fechaFin.before(fechaInicio) || fechaFin.equals(fechaInicio)) {</span>
+<span class="nc" id="L41">            return new Object[]{null,</span>
+                    &quot;El período de consulta no es válido. La fecha de fin debe ser posterior a la fecha de inicio.&quot;};
+        }
+
+        // Paso 7-8: Consultar datos de RF-01 (empleados gestionados)
+<span class="fc" id="L46">        int totalCreados = empleadoDAO.contarCreadosEnPeriodo(fechaInicio, fechaFin);</span>
+
+        // Paso 9-10: Consultar empleados editados
+<span class="fc" id="L49">        int totalEditados = empleadoDAO.contarEditadosEnPeriodo(fechaInicio, fechaFin);</span>
+
+        // Total eliminados
+<span class="fc" id="L52">        int totalEliminados = empleadoDAO.contarEliminadosEnPeriodo(fechaInicio, fechaFin);</span>
+
+        // Paso 11-12: Consultar accesos fallidos de RF-02
+<span class="fc" id="L55">        int totalAccesosFallidos = usuarioDAO.contarAccesosFallidosEnPeriodo(fechaInicio, fechaFin);</span>
+
+        // Excepción 12: Período sin datos
+<span class="pc bpc" id="L58" title="7 of 8 branches missed.">        if (totalCreados == 0 &amp;&amp; totalEditados == 0 &amp;&amp;</span>
+            totalEliminados == 0 &amp;&amp; totalAccesosFallidos == 0) {
+<span class="nc" id="L60">            return new Object[]{null,</span>
+                    &quot;No existen datos registrados para el período seleccionado.&quot;};
+        }
+
+        // Paso 13: Construir reporte
+<span class="fc" id="L65">        Reporte reporte = new Reporte(fechaInicio, fechaFin, generadoPor);</span>
+<span class="fc" id="L66">        reporte.setTotalEmpleadosCreados(totalCreados);</span>
+<span class="fc" id="L67">        reporte.setTotalEmpleadosEditados(totalEditados);</span>
+<span class="fc" id="L68">        reporte.setTotalEmpleadosEliminados(totalEliminados);</span>
+<span class="fc" id="L69">        reporte.setTotalAccesosFallidos(totalAccesosFallidos);</span>
+
+        // Paso 14: Guardar en BD
+<span class="fc" id="L72">        boolean guardado = reporteDAO.guardar(reporte);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if (!guardado) {</span>
+<span class="nc" id="L74">            return new Object[]{null, &quot;Error al almacenar el reporte.&quot;};</span>
+        }
+
+<span class="fc" id="L77">        return new Object[]{reporte, &quot;Reporte generado exitosamente.&quot;};</span>
+    }
+
+    /**
+     * RF-SNAAR-03V2.02: Consultar Historial de Reportes.
+     * Filtro opcional por rango de fechas.
+     */
+    public Object[] consultarHistorial(Date fechaInicio, Date fechaFin) {
+<span class="pc bpc" id="L85" title="2 of 4 branches missed.">        if (fechaInicio != null &amp;&amp; fechaFin != null) {</span>
+            // Validar rango
+<span class="pc bpc" id="L87" title="2 of 4 branches missed.">            if (fechaFin.before(fechaInicio) || fechaFin.equals(fechaInicio)) {</span>
+<span class="nc" id="L88">                return new Object[]{null, &quot;El período de consulta no es válido.&quot;};</span>
+            }
+
+<span class="fc" id="L91">            List&lt;Reporte&gt; reportes = reporteDAO.listarPorFechas(fechaInicio, fechaFin);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (reportes.isEmpty()) {</span>
+<span class="nc" id="L93">                return new Object[]{null, &quot;No se encontraron reportes para el período seleccionado.&quot;};</span>
+            }
+<span class="fc" id="L95">            return new Object[]{reportes, &quot;OK&quot;};</span>
+        }
+
+        // Sin filtro: retornar todos
+<span class="nc" id="L99">        List&lt;Reporte&gt; reportes = reporteDAO.listarTodos();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (reportes.isEmpty()) {</span>
+<span class="nc" id="L101">            return new Object[]{null, &quot;No se encontraron reportes.&quot;};</span>
+        }
+<span class="nc" id="L103">        return new Object[]{reportes, &quot;OK&quot;};</span>
+    }
+
+    /**
+     * Agregar anotación a un reporte existente.
+     */
+    public boolean agregarAnotacion(int idReporte, String contenido, String autor) {
+<span class="fc" id="L110">        Reporte reporte = reporteDAO.buscarPorId(idReporte);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (reporte == null) {</span>
+<span class="nc" id="L112">            return false;</span>
+        }
+
+<span class="fc" id="L115">        Anotacion anotacion = new Anotacion(idReporte, contenido, autor);</span>
+<span class="fc" id="L116">        return reporteDAO.agregarAnotacion(idReporte, anotacion);</span>
+    }
+
+    /**
+     * Obtener un reporte por ID.
+     */
+    public Reporte obtenerReporte(int idReporte) {
+<span class="nc" id="L123">        return reporteDAO.buscarPorId(idReporte);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

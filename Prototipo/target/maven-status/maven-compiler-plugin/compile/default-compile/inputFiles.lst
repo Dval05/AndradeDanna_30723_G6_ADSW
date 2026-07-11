@@ -1,33 +1,41 @@
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\controlador\http\AuthController.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\controlador\http\EmpleadoController.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\controlador\servicio\AuthServicio.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\controlador\servicio\EmpleadoServicio.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\controlador\servicio\ReporteServicio.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\dao\EmpleadoDAO.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\dao\IEmpleadoDAO.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\dao\IReporteDAO.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\dao\IUsuarioDAO.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\dao\UsuarioDAO.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\Anotacion.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\Empleado.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\EstadoCuenta.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\Reporte.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\Rol.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\Sesion.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\modelo\entidad\Usuario.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\command\CrearEmpleadoComando.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\command\EditarEmpleadoComando.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\command\EliminarEmpleadoComando.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\command\IComando.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\command\InvocadorOperaciones.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\command\ResultadoComando.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\observer\EventoSistema.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\observer\IObservador.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\observer\ISujeto.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\observer\ObservadorAuditoria.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\observer\ObservadorNotificacion.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\patron\observer\SujetoGestionEmpleado.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\util\CifradorContrasena.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\util\ConexionBD.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\util\GeneradorCredenciales.java
-C:\Users\ariel\Documents\6_semestre\analisis y diseño\trabajos\AndradeDanna_30723_G6_ADSW\Prototipo\src\main\java\com\tekmess\snaar\util\ValidadorDatos.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/AuthController.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/AutorizacionFilter.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/DashboardController.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/EmpleadoController.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/LocacionesController.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/ReportesController.java
+/app/src/main/java/com/tekmess/snaar/controlador/http/RolesController.java
+/app/src/main/java/com/tekmess/snaar/controlador/servicio/AuthServicio.java
+/app/src/main/java/com/tekmess/snaar/controlador/servicio/EmpleadoServicio.java
+/app/src/main/java/com/tekmess/snaar/controlador/servicio/ReporteServicio.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/EmpleadoDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/IEmpleadoDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/IReporteDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/IUsuarioDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/LocacionDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/ReporteDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/dao/UsuarioDAO.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Anotacion.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Empleado.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/EstadoCuenta.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Locacion.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Reporte.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Rol.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Sesion.java
+/app/src/main/java/com/tekmess/snaar/modelo/entidad/Usuario.java
+/app/src/main/java/com/tekmess/snaar/patron/command/CrearEmpleadoComando.java
+/app/src/main/java/com/tekmess/snaar/patron/command/EditarEmpleadoComando.java
+/app/src/main/java/com/tekmess/snaar/patron/command/EliminarEmpleadoComando.java
+/app/src/main/java/com/tekmess/snaar/patron/command/IComando.java
+/app/src/main/java/com/tekmess/snaar/patron/command/InvocadorOperaciones.java
+/app/src/main/java/com/tekmess/snaar/patron/command/ResultadoComando.java
+/app/src/main/java/com/tekmess/snaar/patron/observer/EventoSistema.java
+/app/src/main/java/com/tekmess/snaar/patron/observer/IObservador.java
+/app/src/main/java/com/tekmess/snaar/patron/observer/ISujeto.java
+/app/src/main/java/com/tekmess/snaar/patron/observer/ObservadorAuditoria.java
+/app/src/main/java/com/tekmess/snaar/patron/observer/ObservadorNotificacion.java
+/app/src/main/java/com/tekmess/snaar/patron/observer/SujetoGestionEmpleado.java
+/app/src/main/java/com/tekmess/snaar/util/CifradorContrasena.java
+/app/src/main/java/com/tekmess/snaar/util/ConexionBD.java
+/app/src/main/java/com/tekmess/snaar/util/GeneradorCredenciales.java
+/app/src/main/java/com/tekmess/snaar/util/ValidadorDatos.java

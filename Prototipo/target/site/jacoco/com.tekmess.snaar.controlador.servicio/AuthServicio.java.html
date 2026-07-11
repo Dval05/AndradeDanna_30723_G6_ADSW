@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthServicio.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.controlador.servicio</a> &gt; <span class="el_source">AuthServicio.java</span></div><h1>AuthServicio.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.controlador.servicio;
+
+import com.tekmess.snaar.modelo.dao.EmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.IEmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.IUsuarioDAO;
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import com.tekmess.snaar.modelo.entidad.EstadoCuenta;
+import com.tekmess.snaar.modelo.entidad.Rol;
+import com.tekmess.snaar.modelo.entidad.Sesion;
+import com.tekmess.snaar.modelo.entidad.Usuario;
+import com.tekmess.snaar.util.CifradorContrasena;
+import com.tekmess.snaar.util.ValidadorDatos;
+
+/**
+ * Servicio de Autenticación y Administración del Sistema (RF-SNAAR-02).
+ */
+public class AuthServicio {
+
+    private final IUsuarioDAO usuarioDAO;
+    private final IEmpleadoDAO empleadoDAO;
+    private final CifradorContrasena cifrador;
+    private final ValidadorDatos validador;
+
+    private static final int MAX_INTENTOS = 3;
+
+    public AuthServicio(IUsuarioDAO usuarioDAO) {
+<span class="nc" id="L27">        this(usuarioDAO, new EmpleadoDAO());</span>
+<span class="nc" id="L28">    }</span>
+
+<span class="fc" id="L30">    public AuthServicio(IUsuarioDAO usuarioDAO, IEmpleadoDAO empleadoDAO) {</span>
+<span class="fc" id="L31">        this.usuarioDAO = usuarioDAO;</span>
+<span class="fc" id="L32">        this.empleadoDAO = empleadoDAO;</span>
+<span class="fc" id="L33">        this.cifrador = new CifradorContrasena();</span>
+<span class="fc" id="L34">        this.validador = new ValidadorDatos();</span>
+<span class="fc" id="L35">    }</span>
+
+    public Object[] iniciarSesion(String nombreUsuario, String contrasena) {
+<span class="fc" id="L38">        String errorUsuario = validador.validarUsuario(nombreUsuario);</span>
+<span class="pc bpc" id="L39" title="3 of 6 branches missed.">        if (errorUsuario != null || contrasena == null || contrasena.isBlank()) {</span>
+<span class="nc" id="L40">            return new Object[]{null, &quot;Usuario o contraseña incorrectos.&quot;};</span>
+        }
+
+<span class="fc" id="L43">        Usuario usuario = usuarioDAO.buscarPorNombreUsuario(nombreUsuario.trim());</span>
+
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (usuario == null) {</span>
+<span class="nc" id="L46">            return new Object[]{null, &quot;Usuario o contraseña incorrectos.&quot;};</span>
+        }
+
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (usuario.getEstadoCuenta() == EstadoCuenta.BLOQUEADO) {</span>
+<span class="nc" id="L50">            return new Object[]{null, &quot;Cuenta bloqueada. Contacte al administrador del sistema.&quot;};</span>
+        }
+
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if (usuario.getEstadoCuenta() != EstadoCuenta.ACTIVO) {</span>
+<span class="nc" id="L54">            return new Object[]{null, &quot;Cuenta inactiva. Contacte al administrador del sistema.&quot;};</span>
+        }
+
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (!cifrador.verificar(contrasena, usuario.getContrasenaHash())) {</span>
+<span class="fc" id="L58">            usuario.incrementarIntentos();</span>
+<span class="fc" id="L59">            usuarioDAO.actualizarIntentos(usuario.getIdUsuario(), usuario.getIntentosFallidos());</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            if (usuario.getIntentosFallidos() &gt;= MAX_INTENTOS) {</span>
+<span class="fc" id="L62">                usuarioDAO.actualizarEstado(usuario.getIdUsuario(), EstadoCuenta.BLOQUEADO);</span>
+<span class="fc" id="L63">                return new Object[]{null, &quot;Cuenta bloqueada. Contacte al administrador del sistema.&quot;};</span>
+            }
+
+<span class="fc" id="L66">            return new Object[]{null, &quot;Usuario o contraseña incorrectos.&quot;};</span>
+        }
+
+<span class="fc" id="L69">        usuario.reiniciarIntentos();</span>
+<span class="fc" id="L70">        usuarioDAO.actualizarIntentos(usuario.getIdUsuario(), 0);</span>
+
+<span class="fc" id="L72">        Sesion sesion = new Sesion(</span>
+<span class="fc" id="L73">                usuario.getIdUsuario(),</span>
+<span class="fc" id="L74">                usuario.getNombreUsuario(),</span>
+<span class="fc" id="L75">                Rol.valueOf(obtenerRolUsuario(usuario.getCedula()))</span>
+        );
+
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        return new Object[]{sesion, usuario.isPrimerAcceso() ? &quot;PRIMER_ACCESO&quot; : &quot;OK&quot;};</span>
+    }
+
+    public String cambiarContrasena(String nombreUsuario, String contrasenaActual,
+                                     String contrasenaNueva, String confirmacion) {
+<span class="pc bpc" id="L83" title="2 of 4 branches missed.">        if (contrasenaActual == null || contrasenaActual.isBlank()) {</span>
+<span class="nc" id="L84">            return &quot;La contraseña actual es obligatoria.&quot;;</span>
+        }
+<span class="pc bpc" id="L86" title="2 of 4 branches missed.">        if (contrasenaNueva == null || confirmacion == null) {</span>
+<span class="nc" id="L87">            return &quot;Debe ingresar y confirmar la nueva contraseña.&quot;;</span>
+        }
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">        if (!contrasenaNueva.equals(confirmacion)) {</span>
+<span class="nc" id="L90">            return &quot;Las contraseñas no coinciden.&quot;;</span>
+        }
+
+<span class="fc" id="L93">        Usuario usuario = usuarioDAO.buscarPorNombreUsuario(nombreUsuario);</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (usuario == null) {</span>
+<span class="nc" id="L95">            return &quot;Usuario no encontrado.&quot;;</span>
+        }
+
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (!cifrador.verificar(contrasenaActual, usuario.getContrasenaHash())) {</span>
+<span class="nc" id="L99">            return &quot;La contraseña actual no es correcta.&quot;;</span>
+        }
+
+<span class="fc" id="L102">        String errorPolitica = validador.validarContrasena(contrasenaNueva);</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (errorPolitica != null) {</span>
+<span class="nc" id="L104">            return errorPolitica;</span>
+        }
+
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">        if (cifrador.verificar(contrasenaNueva, usuario.getContrasenaHash())) {</span>
+<span class="nc" id="L108">            return &quot;La nueva contraseña no puede ser igual a la contraseña actual.&quot;;</span>
+        }
+
+<span class="fc" id="L111">        String nuevoHash = cifrador.cifrar(contrasenaNueva);</span>
+<span class="fc" id="L112">        boolean actualizado = usuarioDAO.actualizarContrasena(usuario.getIdUsuario(), nuevoHash);</span>
+
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if (!actualizado) {</span>
+<span class="nc" id="L115">            return &quot;Error al actualizar la contraseña.&quot;;</span>
+        }
+
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        if (usuario.isPrimerAcceso()) {</span>
+<span class="fc" id="L119">            usuarioDAO.actualizarPrimerAcceso(usuario.getIdUsuario(), false);</span>
+        }
+
+<span class="fc" id="L122">        return &quot;Contraseña actualizada exitosamente.&quot;;</span>
+    }
+
+    public String recuperarContrasena(String correo, String nombreUsuario,
+                                       String contrasenaNueva, String confirmacion) {
+<span class="fc" id="L127">        String errorUsuario = validador.validarUsuario(nombreUsuario);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (errorUsuario != null) {</span>
+<span class="nc" id="L129">            return errorUsuario;</span>
+        }
+
+<span class="fc" id="L132">        String errorCorreo = validador.validarCorreo(correo);</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (errorCorreo != null) {</span>
+<span class="nc" id="L134">            return errorCorreo;</span>
+        }
+
+<span class="fc" id="L137">        Usuario usuario = usuarioDAO.buscarPorNombreUsuario(nombreUsuario.trim());</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">        if (usuario == null) {</span>
+<span class="nc" id="L139">            return &quot;Los datos ingresados no corresponden a un usuario registrado.&quot;;</span>
+        }
+
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (usuario.getEstadoCuenta() == EstadoCuenta.BLOQUEADO) {</span>
+<span class="nc" id="L143">            return &quot;Cuenta bloqueada. Contacte al administrador del sistema.&quot;;</span>
+        }
+
+<span class="fc" id="L146">        Empleado empleado = empleadoDAO.buscarPorCedula(usuario.getCedula());</span>
+<span class="pc bpc" id="L147" title="2 of 4 branches missed.">        if (empleado == null || empleado.getCorreo() == null ||</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">                !empleado.getCorreo().equalsIgnoreCase(correo.trim())) {</span>
+<span class="nc" id="L149">            return &quot;Los datos ingresados no corresponden a un usuario registrado.&quot;;</span>
+        }
+
+<span class="pc bpc" id="L152" title="2 of 4 branches missed.">        if (contrasenaNueva == null || confirmacion == null) {</span>
+<span class="nc" id="L153">            return &quot;Debe ingresar y confirmar la nueva contraseña.&quot;;</span>
+        }
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (!contrasenaNueva.equals(confirmacion)) {</span>
+<span class="nc" id="L156">            return &quot;Las contraseñas no coinciden.&quot;;</span>
+        }
+
+<span class="fc" id="L159">        String errorPolitica = validador.validarContrasena(contrasenaNueva);</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (errorPolitica != null) {</span>
+<span class="nc" id="L161">            return errorPolitica;</span>
+        }
+
+<span class="fc" id="L164">        String nuevoHash = cifrador.cifrar(contrasenaNueva);</span>
+<span class="fc" id="L165">        boolean actualizado = usuarioDAO.actualizarContrasena(usuario.getIdUsuario(), nuevoHash);</span>
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        return actualizado ? &quot;Contraseña restablecida exitosamente.&quot;</span>
+<span class="nc" id="L168">                           : &quot;Error al restablecer la contraseña.&quot;;</span>
+    }
+
+    public boolean cerrarSesion(Sesion sesion) {
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (sesion != null) {</span>
+<span class="nc" id="L173">            sesion.invalidar();</span>
+<span class="nc" id="L174">            return true;</span>
+        }
+<span class="nc" id="L176">        return false;</span>
+    }
+
+    private String obtenerRolUsuario(String cedula) {
+<span class="fc" id="L180">        Empleado emp = empleadoDAO.buscarPorCedula(cedula);</span>
+<span class="pc bpc" id="L181" title="2 of 4 branches missed.">        if (emp != null &amp;&amp; emp.getRol() != null) {</span>
+<span class="fc" id="L182">            return emp.getRol().name();</span>
+        }
+<span class="nc" id="L184">        return &quot;GUARDIA&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

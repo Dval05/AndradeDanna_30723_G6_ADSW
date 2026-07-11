@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmpleadoServicio.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.controlador.servicio</a> &gt; <span class="el_source">EmpleadoServicio.java</span></div><h1>EmpleadoServicio.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.controlador.servicio;
+
+import com.tekmess.snaar.modelo.dao.IEmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.IUsuarioDAO;
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import com.tekmess.snaar.modelo.entidad.EstadoCuenta;
+import com.tekmess.snaar.modelo.entidad.Usuario;
+import com.tekmess.snaar.util.CifradorContrasena;
+import com.tekmess.snaar.util.GeneradorCredenciales;
+import com.tekmess.snaar.util.ValidadorDatos;
+
+import java.util.List;
+
+/**
+ * Servicio de Gestión de Empleados (RF-SNAAR-01).
+ * Capa de Lógica de Negocio – Receiver en el Patrón Command.
+ * Contiene la lógica CRUD para empleados, validación y generación de credenciales.
+ */
+public class EmpleadoServicio {
+
+    private final IEmpleadoDAO empleadoDAO;
+    private final IUsuarioDAO usuarioDAO;
+    private final ValidadorDatos validador;
+    private final GeneradorCredenciales generadorCredenciales;
+    private final CifradorContrasena cifrador;
+
+<span class="fc" id="L27">    public EmpleadoServicio(IEmpleadoDAO empleadoDAO, IUsuarioDAO usuarioDAO) {</span>
+<span class="fc" id="L28">        this.empleadoDAO = empleadoDAO;</span>
+<span class="fc" id="L29">        this.usuarioDAO = usuarioDAO;</span>
+<span class="fc" id="L30">        this.validador = new ValidadorDatos();</span>
+<span class="fc" id="L31">        this.generadorCredenciales = new GeneradorCredenciales();</span>
+<span class="fc" id="L32">        this.cifrador = new CifradorContrasena();</span>
+<span class="fc" id="L33">    }</span>
+
+    /**
+     * RF-SNAAR-01.01: Crear Empleado.
+     * Valida datos, verifica cédula no duplicada, crea registro y genera credenciales.
+     *
+     * @param empleado datos del nuevo empleado
+     * @return mensaje de resultado con credenciales generadas
+     */
+    public String crearEmpleado(Empleado empleado) {
+<span class="fc" id="L43">        normalizarEmpleado(empleado);</span>
+
+        // Paso 9: Ejecuta RF-SNAAR-01.05 (Validar Datos)
+<span class="fc" id="L46">        List&lt;String&gt; errores = validador.validarDatosEmpleado(empleado);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (!errores.isEmpty()) {</span>
+<span class="nc" id="L48">            return errores.get(0); // Retorna el primer error</span>
+        }
+
+        // Paso 11: Verifica cédula no duplicada
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (empleadoDAO.existeCedula(empleado.getCedula())) {</span>
+<span class="fc" id="L53">            return &quot;La cédula ingresada ya se encuentra registrada en el sistema.&quot;;</span>
+        }
+
+        // Paso 13: Crea el registro del empleado
+<span class="fc" id="L57">        boolean creado = empleadoDAO.crear(empleado);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (!creado) {</span>
+<span class="nc" id="L59">            return &quot;Error al registrar el empleado en la base de datos.&quot;;</span>
+        }
+
+        // Paso 15-16: Ejecuta RF-SNAAR-01.06 (Generar Credenciales)
+<span class="fc" id="L63">        String nombreUsuario = generadorCredenciales.generarNombreUsuario(empleado);</span>
+
+        // Verificar unicidad del nombre de usuario (excepción 2 de RF-SNAAR-01.06)
+<span class="fc" id="L66">        int sufijo = 1;</span>
+<span class="fc" id="L67">        String nombreBase = nombreUsuario;</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        while (usuarioDAO.existeNombreUsuario(nombreUsuario)) {</span>
+<span class="nc" id="L69">            nombreUsuario = generadorCredenciales.aplicarSufijo(nombreBase, sufijo++);</span>
+        }
+
+<span class="fc" id="L72">        String contrasenaInicial = generadorCredenciales.generarContrasenaInicial();</span>
+<span class="fc" id="L73">        String contrasenaHash = cifrador.cifrar(contrasenaInicial);</span>
+
+        // Crear usuario con primer acceso obligatorio
+<span class="fc" id="L76">        Usuario usuario = new Usuario(empleado.getCedula(), nombreUsuario, contrasenaHash);</span>
+<span class="fc" id="L77">        usuario.setContrasenaTemporal(contrasenaInicial);</span>
+<span class="fc" id="L78">        usuario.setPrimerAcceso(true);</span>
+<span class="fc" id="L79">        usuarioDAO.crear(usuario);</span>
+
+<span class="fc" id="L81">        return String.format(&quot;Empleado registrado exitosamente.\nUsuario: %s\nContraseña: %s&quot;,</span>
+                nombreUsuario, contrasenaInicial);
+    }
+
+    /**
+     * RF-SNAAR-01.02: Editar Empleado.
+     * Valida nuevos datos, localiza por cédula y actualiza.
+     */
+    public String editarEmpleado(Empleado empleado) {
+<span class="fc" id="L90">        normalizarEmpleado(empleado);</span>
+
+        // Paso 6: Validar datos
+<span class="fc" id="L93">        List&lt;String&gt; errores = validador.validarDatosEmpleado(empleado);</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        if (!errores.isEmpty()) {</span>
+<span class="nc" id="L95">            return errores.get(0);</span>
+        }
+
+        // Paso 8: Buscar por cédula
+<span class="fc" id="L99">        Empleado existente = empleadoDAO.buscarPorCedula(empleado.getCedula());</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (existente == null) {</span>
+<span class="nc" id="L101">            return &quot;El empleado seleccionado no fue encontrado en el sistema.&quot;;</span>
+        }
+
+        // Paso 10-11: Actualizar y guardar
+<span class="fc" id="L105">        boolean actualizado = empleadoDAO.editar(empleado);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (!actualizado) {</span>
+<span class="nc" id="L107">            return &quot;Error al actualizar los datos del empleado.&quot;;</span>
+        }
+
+<span class="fc" id="L110">        return &quot;Datos del empleado actualizados exitosamente.&quot;;</span>
+    }
+
+    /**
+     * RF-SNAAR-01.03: Eliminar Empleado.
+     * Localiza por cédula y elimina permanentemente.
+     */
+    public String eliminarEmpleado(String cedula) {
+        // Paso 7: Buscar registro
+<span class="fc" id="L119">        Empleado empleado = empleadoDAO.buscarPorCedula(cedula);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (empleado == null) {</span>
+<span class="nc" id="L121">            return &quot;El empleado seleccionado no fue encontrado en el sistema.&quot;;</span>
+        }
+
+        // Eliminar usuario asociado
+<span class="fc" id="L125">        usuarioDAO.eliminarPorCedula(cedula);</span>
+
+        // Paso 9: Eliminar empleado
+<span class="fc" id="L128">        boolean eliminado = empleadoDAO.eliminar(cedula);</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">        if (!eliminado) {</span>
+<span class="nc" id="L130">            return &quot;Error al eliminar el empleado del sistema.&quot;;</span>
+        }
+
+<span class="fc" id="L133">        return &quot;Empleado eliminado del sistema exitosamente.&quot;;</span>
+    }
+
+    /**
+     * RF-SNAAR-01.04: Consultar Empleados.
+     * Retorna listado completo del personal.
+     */
+    public List&lt;Empleado&gt; consultarEmpleados() {
+<span class="fc" id="L141">        return empleadoDAO.listarTodos();</span>
+    }
+
+    /**
+     * Busca un empleado por cédula.
+     */
+    public Empleado buscarEmpleado(String cedula) {
+<span class="fc" id="L148">        return empleadoDAO.buscarPorCedula(cedula);</span>
+    }
+
+    public String regenerarContrasenaTemporal(String cedula) {
+<span class="nc" id="L152">        String errorCedula = validador.validarCedula(cedula);</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (errorCedula != null) {</span>
+<span class="nc" id="L154">            return errorCedula;</span>
+        }
+
+<span class="nc" id="L157">        Empleado empleado = empleadoDAO.buscarPorCedula(cedula.trim());</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (empleado == null) {</span>
+<span class="nc" id="L159">            return &quot;El empleado seleccionado no fue encontrado en el sistema.&quot;;</span>
+        }
+
+<span class="nc" id="L162">        Usuario usuario = usuarioDAO.buscarPorCedula(cedula.trim());</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (usuario == null) {</span>
+<span class="nc" id="L164">            return &quot;El empleado no tiene una cuenta de usuario asociada.&quot;;</span>
+        }
+
+<span class="nc" id="L167">        String temporal = generadorCredenciales.generarContrasenaInicial();</span>
+<span class="nc" id="L168">        String hash = cifrador.cifrar(temporal);</span>
+<span class="nc" id="L169">        boolean actualizado = usuarioDAO.actualizarCredencialesTemporales(usuario.getIdUsuario(), hash, temporal);</span>
+
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        if (!actualizado) {</span>
+<span class="nc" id="L172">            return &quot;No se pudo regenerar la contraseña temporal.&quot;;</span>
+        }
+
+<span class="nc" id="L175">        return &quot;Contraseña temporal regenerada para &quot; + usuario.getNombreUsuario() + &quot;.&quot;;</span>
+    }
+
+    public String desbloquearCuenta(String cedula) {
+<span class="nc" id="L179">        String errorCedula = validador.validarCedula(cedula);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (errorCedula != null) {</span>
+<span class="nc" id="L181">            return errorCedula;</span>
+        }
+
+<span class="nc" id="L184">        Usuario usuario = usuarioDAO.buscarPorCedula(cedula.trim());</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (usuario == null) {</span>
+<span class="nc" id="L186">            return &quot;El empleado no tiene una cuenta de usuario asociada.&quot;;</span>
+        }
+
+<span class="nc" id="L189">        boolean estadoOk = usuarioDAO.actualizarEstado(usuario.getIdUsuario(), EstadoCuenta.ACTIVO);</span>
+<span class="nc" id="L190">        boolean intentosOk = usuarioDAO.actualizarIntentos(usuario.getIdUsuario(), 0);</span>
+
+<span class="nc bnc" id="L192" title="All 4 branches missed.">        return estadoOk &amp;&amp; intentosOk</span>
+<span class="nc" id="L193">                ? &quot;Cuenta desbloqueada para &quot; + usuario.getNombreUsuario() + &quot;.&quot;</span>
+<span class="nc" id="L194">                : &quot;No se pudo desbloquear la cuenta.&quot;;</span>
+    }
+
+    private void normalizarEmpleado(Empleado empleado) {
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (empleado == null) {</span>
+<span class="nc" id="L199">            return;</span>
+        }
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        empleado.setCedula(empleado.getCedula() == null ? null : empleado.getCedula().trim());</span>
+<span class="fc" id="L202">        empleado.setNombres(validador.normalizarEspacios(empleado.getNombres()));</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">        empleado.setCorreo(empleado.getCorreo() == null ? null : empleado.getCorreo().trim().toLowerCase());</span>
+<span class="fc" id="L204">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

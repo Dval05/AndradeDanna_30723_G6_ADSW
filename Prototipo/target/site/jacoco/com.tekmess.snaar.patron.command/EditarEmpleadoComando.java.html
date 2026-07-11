@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EditarEmpleadoComando.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.patron.command</a> &gt; <span class="el_source">EditarEmpleadoComando.java</span></div><h1>EditarEmpleadoComando.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.patron.command;
+
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import com.tekmess.snaar.controlador.servicio.EmpleadoServicio;
+
+/**
+ * Comando Concreto – Editar Empleado (RF-SNAAR-01.02).
+ * Patrón Command: encapsula la operación de edición.
+ * Guarda los datos anteriores para soportar deshacer.
+ */
+public class EditarEmpleadoComando implements IComando {
+
+    private final EmpleadoServicio receptor;
+    private final Empleado empleadoNuevo;
+    private Empleado datosAnteriores;
+
+<span class="fc" id="L17">    public EditarEmpleadoComando(EmpleadoServicio receptor, Empleado empleadoNuevo) {</span>
+<span class="fc" id="L18">        this.receptor = receptor;</span>
+<span class="fc" id="L19">        this.empleadoNuevo = empleadoNuevo;</span>
+<span class="fc" id="L20">    }</span>
+
+    @Override
+    public ResultadoComando ejecutar() {
+        // Guardar datos anteriores para posible deshacer
+<span class="fc" id="L25">        datosAnteriores = receptor.buscarEmpleado(empleadoNuevo.getCedula());</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        if (datosAnteriores == null) {</span>
+<span class="fc" id="L27">            return new ResultadoComando(false, &quot;El empleado seleccionado no fue encontrado en el sistema.&quot;);</span>
+        }
+
+<span class="fc" id="L30">        String resultado = receptor.editarEmpleado(empleadoNuevo);</span>
+<span class="fc" id="L31">        boolean exito = resultado.contains(&quot;actualizado&quot;);</span>
+<span class="fc" id="L32">        return new ResultadoComando(exito, resultado);</span>
+    }
+
+    @Override
+    public ResultadoComando deshacer() {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (datosAnteriores == null) {</span>
+<span class="fc" id="L38">            return new ResultadoComando(false, &quot;No hay datos anteriores para restaurar.&quot;);</span>
+        }
+
+<span class="fc" id="L41">        String resultado = receptor.editarEmpleado(datosAnteriores);</span>
+<span class="fc" id="L42">        boolean exito = resultado.contains(&quot;actualizado&quot;);</span>
+<span class="fc" id="L43">        return new ResultadoComando(exito,</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">                exito ? &quot;Edición deshecha. Datos restaurados.&quot; : &quot;No se pudo deshacer: &quot; + resultado);</span>
+    }
+
+    @Override
+    public String getDescripcion() {
+<span class="fc" id="L49">        return &quot;Editar Empleado: &quot; + empleadoNuevo.getCedula();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

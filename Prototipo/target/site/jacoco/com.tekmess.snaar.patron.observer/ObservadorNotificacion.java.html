@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObservadorNotificacion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.patron.observer</a> &gt; <span class="el_source">ObservadorNotificacion.java</span></div><h1>ObservadorNotificacion.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.patron.observer;
+
+/**
+ * Observador Concreto – Notificación.
+ * Patrón Observer: envía alertas al Jefe Logística ante eventos
+ * críticos como bloqueo de cuenta, eliminación de empleado, etc.
+ */
+<span class="fc" id="L8">public class ObservadorNotificacion implements IObservador {</span>
+
+    @Override
+    public void actualizar(EventoSistema evento) {
+<span class="fc bfc" id="L12" title="All 5 branches covered.">        switch (evento.getTipoEvento()) {</span>
+            case CUENTA_BLOQUEADA:
+<span class="fc" id="L14">                notificarBloqueo(evento);</span>
+<span class="fc" id="L15">                break;</span>
+            case EMPLEADO_ELIMINADO:
+<span class="fc" id="L17">                enviarAlertaJefe(evento);</span>
+<span class="fc" id="L18">                break;</span>
+            case LOGIN_FALLIDO:
+<span class="fc" id="L20">                System.out.println(&quot;[NOTIFICACIÓN] Intento de acceso fallido registrado - &quot;</span>
+<span class="fc" id="L21">                        + &quot;Usuario: &quot; + evento.getDatos().getOrDefault(&quot;usuario&quot;, &quot;desconocido&quot;));</span>
+<span class="fc" id="L22">                break;</span>
+            case EMPLEADO_CREADO:
+<span class="fc" id="L24">                System.out.println(&quot;[NOTIFICACIÓN] Nuevo empleado registrado: &quot;</span>
+<span class="fc" id="L25">                        + evento.getDatos().getOrDefault(&quot;nombres&quot;, &quot;&quot;));</span>
+<span class="fc" id="L26">                break;</span>
+            default:
+<span class="fc" id="L28">                System.out.println(&quot;[NOTIFICACIÓN] Evento registrado: &quot; + evento.getTipoEvento());</span>
+                break;
+        }
+<span class="fc" id="L31">    }</span>
+
+    private void enviarAlertaJefe(EventoSistema evento) {
+<span class="fc" id="L34">        System.out.println(&quot;[ALERTA - JEFE LOGÍSTICA] Empleado eliminado del sistema. &quot;</span>
+<span class="fc" id="L35">                + &quot;Cédula: &quot; + evento.getDatos().getOrDefault(&quot;cedula&quot;, &quot;N/A&quot;)</span>
+<span class="fc" id="L36">                + &quot; | Por: &quot; + evento.getActor());</span>
+<span class="fc" id="L37">    }</span>
+
+    private void enviarAlertaSupervisor(EventoSistema evento) {
+<span class="nc" id="L40">        System.out.println(&quot;[ALERTA - SUPERVISOR] Evento crítico: &quot; + evento.getTipoEvento()</span>
+<span class="nc" id="L41">                + &quot; | &quot; + evento.getDatos());</span>
+<span class="nc" id="L42">    }</span>
+
+    private void notificarBloqueo(EventoSistema evento) {
+<span class="fc" id="L45">        System.out.println(&quot;[ALERTA CRÍTICA] Cuenta bloqueada por intentos fallidos. &quot;</span>
+<span class="fc" id="L46">                + &quot;Usuario: &quot; + evento.getDatos().getOrDefault(&quot;usuario&quot;, &quot;N/A&quot;)</span>
+                + &quot; | Contacte al administrador.&quot;);
+<span class="fc" id="L48">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

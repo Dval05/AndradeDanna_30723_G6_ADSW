@@ -1,0 +1,25 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Empleado,6,114,0,0,2,38,2,17,2,17
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,EstadoCuenta,0,35,0,0,0,8,0,3,0,3
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Rol,0,71,0,4,0,13,0,6,0,4
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Reporte,6,111,3,5,2,40,5,23,2,22
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Locacion,0,52,0,0,0,15,0,15,0,15
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Anotacion,0,55,0,0,0,23,0,12,0,12
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Usuario,23,110,0,2,10,40,4,23,4,22
+SNAAR - TekMess,com.tekmess.snaar.modelo.entidad,Sesion,6,100,2,4,2,32,4,16,2,15
+SNAAR - TekMess,com.tekmess.snaar.patron.command,EliminarEmpleadoComando,2,73,1,5,0,17,1,6,0,4
+SNAAR - TekMess,com.tekmess.snaar.patron.command,EditarEmpleadoComando,2,75,1,5,0,17,1,6,0,4
+SNAAR - TekMess,com.tekmess.snaar.patron.command,InvocadorOperaciones,0,75,0,4,0,21,0,8,0,6
+SNAAR - TekMess,com.tekmess.snaar.patron.command,CrearEmpleadoComando,2,61,2,2,0,15,2,5,0,5
+SNAAR - TekMess,com.tekmess.snaar.patron.command,ResultadoComando,0,43,0,2,0,14,0,7,0,6
+SNAAR - TekMess,com.tekmess.snaar.util,ValidadorDatos,51,182,21,37,8,49,18,22,1,10
+SNAAR - TekMess,com.tekmess.snaar.util,CifradorContrasena,0,15,0,0,0,5,0,3,0,3
+SNAAR - TekMess,com.tekmess.snaar.util,GeneradorCredenciales,0,145,0,6,0,24,0,8,0,5
+SNAAR - TekMess,com.tekmess.snaar.controlador.servicio,EmpleadoServicio,130,190,27,13,35,46,21,8,2,7
+SNAAR - TekMess,com.tekmess.snaar.controlador.servicio,AuthServicio,95,290,34,36,28,61,35,7,2,5
+SNAAR - TekMess,com.tekmess.snaar.controlador.servicio,ReporteServicio,97,135,18,10,11,28,15,4,1,4
+SNAAR - TekMess,com.tekmess.snaar.patron.observer,ObservadorAuditoria,0,71,0,4,0,19,0,8,0,6
+SNAAR - TekMess,com.tekmess.snaar.patron.observer,EventoSistema.TipoEvento,0,51,0,0,0,9,0,1,0,1
+SNAAR - TekMess,com.tekmess.snaar.patron.observer,SujetoGestionEmpleado,0,155,3,7,0,37,3,9,0,7
+SNAAR - TekMess,com.tekmess.snaar.patron.observer,EventoSistema,0,86,0,2,0,19,0,9,0,8
+SNAAR - TekMess,com.tekmess.snaar.patron.observer,ObservadorNotificacion,10,66,0,5,3,21,1,8,1,4

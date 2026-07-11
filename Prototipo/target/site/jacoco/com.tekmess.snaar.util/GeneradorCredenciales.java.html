@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeneradorCredenciales.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.util</a> &gt; <span class="el_source">GeneradorCredenciales.java</span></div><h1>GeneradorCredenciales.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.util;
+
+import com.tekmess.snaar.modelo.entidad.Empleado;
+import java.security.SecureRandom;
+
+/**
+ * Generador de credenciales de acceso (RF-SNAAR-01.06).
+ * Proceso interno que genera nombre de usuario y contraseña inicial
+ * para empleados recién registrados.
+ */
+<span class="fc" id="L11">public class GeneradorCredenciales {</span>
+
+    private static final String CARACTERES = &quot;ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$&quot;;
+<span class="fc" id="L14">    private static final SecureRandom random = new SecureRandom();</span>
+
+    /**
+     * Genera nombre de usuario basado en los datos del empleado.
+     * Formato: primera letra del nombre + apellido (en minúsculas).
+     * Si ya existe, aplica sufijo numérico (RF-SNAAR-01.06 excepción 2).
+     *
+     * @param empleado datos del empleado
+     * @return nombre de usuario generado
+     */
+    public String generarNombreUsuario(Empleado empleado) {
+<span class="fc" id="L25">        String[] partes = empleado.getNombres().trim().split(&quot;\\s+&quot;);</span>
+        String usuario;
+
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (partes.length &gt;= 2) {</span>
+            // Primera letra del primer nombre + apellido
+<span class="fc" id="L30">            usuario = (partes[0].charAt(0) + partes[partes.length - 1]).toLowerCase();</span>
+        } else {
+<span class="fc" id="L32">            usuario = partes[0].toLowerCase();</span>
+        }
+
+        // Limpiar caracteres especiales
+<span class="fc" id="L36">        usuario = usuario.replaceAll(&quot;[^a-z0-9]&quot;, &quot;&quot;);</span>
+
+<span class="fc" id="L38">        return usuario;</span>
+    }
+
+    /**
+     * Aplica sufijo numérico si el nombre de usuario ya existe.
+     *
+     * @param baseUsuario nombre de usuario base
+     * @param sufijo número de sufijo
+     * @return nombre de usuario con sufijo
+     */
+    public String aplicarSufijo(String baseUsuario, int sufijo) {
+<span class="fc" id="L49">        return baseUsuario + sufijo;</span>
+    }
+
+    /**
+     * Genera contraseña inicial temporal de 10 caracteres.
+     * Cumple política: 1 mayúscula, 1 minúscula, 2 números, 1 especial.
+     *
+     * @return contraseña generada
+     */
+    public String generarContrasenaInicial() {
+<span class="fc" id="L59">        StringBuilder contrasena = new StringBuilder();</span>
+
+        // Garantizar cumplimiento de la política
+<span class="fc" id="L62">        contrasena.append((char) ('A' + random.nextInt(26)));     // 1 mayúscula</span>
+<span class="fc" id="L63">        contrasena.append((char) ('a' + random.nextInt(26)));     // 1 minúscula</span>
+<span class="fc" id="L64">        contrasena.append(random.nextInt(10));                     // 1er número</span>
+<span class="fc" id="L65">        contrasena.append(random.nextInt(10));                     // 2do número</span>
+<span class="fc" id="L66">        contrasena.append(&quot;!@#$%&quot;.charAt(random.nextInt(5)));     // 1 especial</span>
+
+        // Completar hasta 10 caracteres
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (int i = 5; i &lt; 10; i++) {</span>
+<span class="fc" id="L70">            contrasena.append(CARACTERES.charAt(random.nextInt(CARACTERES.length())));</span>
+        }
+
+        // Mezclar los caracteres
+<span class="fc" id="L74">        char[] chars = contrasena.toString().toCharArray();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for (int i = chars.length - 1; i &gt; 0; i--) {</span>
+<span class="fc" id="L76">            int j = random.nextInt(i + 1);</span>
+<span class="fc" id="L77">            char temp = chars[i];</span>
+<span class="fc" id="L78">            chars[i] = chars[j];</span>
+<span class="fc" id="L79">            chars[j] = temp;</span>
+        }
+
+<span class="fc" id="L82">        return new String(chars);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

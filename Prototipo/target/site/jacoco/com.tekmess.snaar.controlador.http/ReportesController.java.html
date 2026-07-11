@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportesController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SNAAR - TekMess</a> &gt; <a href="index.source.html" class="el_package">com.tekmess.snaar.controlador.http</a> &gt; <span class="el_source">ReportesController.java</span></div><h1>ReportesController.java</h1><pre class="source lang-java linenums">package com.tekmess.snaar.controlador.http;
+
+import com.tekmess.snaar.controlador.servicio.ReporteServicio;
+import com.tekmess.snaar.modelo.dao.EmpleadoDAO;
+import com.tekmess.snaar.modelo.dao.ReporteDAO;
+import com.tekmess.snaar.modelo.dao.UsuarioDAO;
+import com.tekmess.snaar.modelo.entidad.Reporte;
+import com.tekmess.snaar.util.ValidadorDatos;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+@WebServlet(name = &quot;ReportesController&quot;, urlPatterns = { &quot;/reportes/*&quot; })
+<span class="nc" id="L24">public class ReportesController extends HttpServlet {</span>
+
+    private ReporteServicio reporteServicio;
+    private ValidadorDatos validador;
+    private static final String FORMATO_FECHA = &quot;yyyy-MM-dd&quot;;
+
+    @Override
+    public void init() throws ServletException {
+<span class="nc" id="L32">        this.reporteServicio = new ReporteServicio(</span>
+                new ReporteDAO(),
+                new EmpleadoDAO(),
+                new UsuarioDAO());
+<span class="nc" id="L36">        this.validador = new ValidadorDatos();</span>
+<span class="nc" id="L37">    }</span>
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (!isUsuarioAutenticado(req, resp)) {</span>
+<span class="nc" id="L43">            return;</span>
+        }
+
+<span class="nc" id="L46">        String path = req.getPathInfo();</span>
+<span class="nc bnc" id="L47" title="All 6 branches missed.">        if (path == null || &quot;/&quot;.equals(path) || &quot;/listar&quot;.equals(path)) {</span>
+<span class="nc" id="L48">            listarReportes(req, resp);</span>
+<span class="nc" id="L49">            return;</span>
+        }
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (&quot;/ver&quot;.equals(path)) {</span>
+<span class="nc" id="L53">            mostrarDetalle(req, resp);</span>
+<span class="nc" id="L54">            return;</span>
+        }
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (&quot;/exportar&quot;.equals(path)) {</span>
+<span class="nc" id="L58">            exportarCsv(req, resp);</span>
+<span class="nc" id="L59">            return;</span>
+        }
+
+<span class="nc" id="L62">        resp.sendRedirect(req.getContextPath() + &quot;/reportes&quot;);</span>
+<span class="nc" id="L63">    }</span>
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (!isUsuarioAutenticado(req, resp)) {</span>
+<span class="nc" id="L69">            return;</span>
+        }
+
+<span class="nc" id="L72">        String path = req.getPathInfo();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (path == null) {</span>
+<span class="nc" id="L74">            resp.sendRedirect(req.getContextPath() + &quot;/reportes&quot;);</span>
+<span class="nc" id="L75">            return;</span>
+        }
+
+<span class="nc bnc" id="L78" title="All 3 branches missed.">        switch (path) {</span>
+            case &quot;/generar&quot;:
+<span class="nc" id="L80">                generarReporte(req, resp);</span>
+<span class="nc" id="L81">                break;</span>
+            case &quot;/anotar&quot;:
+<span class="nc" id="L83">                agregarAnotacion(req, resp);</span>
+<span class="nc" id="L84">                break;</span>
+            default:
+<span class="nc" id="L86">                resp.sendRedirect(req.getContextPath() + &quot;/reportes&quot;);</span>
+        }
+<span class="nc" id="L88">    }</span>
+
+    private void listarReportes(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+<span class="nc" id="L92">        String fechaInicioParam = req.getParameter(&quot;fechaInicio&quot;);</span>
+<span class="nc" id="L93">        String fechaFinParam = req.getParameter(&quot;fechaFin&quot;);</span>
+<span class="nc" id="L94">        Date fechaInicio = null;</span>
+<span class="nc" id="L95">        Date fechaFin = null;</span>
+
+<span class="nc bnc" id="L97" title="All 6 branches missed.">        if (fechaInicioParam != null &amp;&amp; !fechaInicioParam.isBlank() &amp;&amp;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">                fechaFinParam != null &amp;&amp; !fechaFinParam.isBlank()) {</span>
+<span class="nc" id="L99">            fechaInicio = parseFecha(fechaInicioParam);</span>
+<span class="nc" id="L100">            fechaFin = parseFecha(fechaFinParam);</span>
+<span class="nc bnc" id="L101" title="All 4 branches missed.">            if (fechaInicio == null || fechaFin == null) {</span>
+<span class="nc" id="L102">                req.setAttribute(&quot;error&quot;, &quot;Debe ingresar fechas válidas en formato YYYY-MM-DD.&quot;);</span>
+<span class="nc" id="L103">                fechaInicio = null;</span>
+<span class="nc" id="L104">                fechaFin = null;</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            } else if (fechaFin.before(fechaInicio)) {</span>
+<span class="nc" id="L106">                req.setAttribute(&quot;error&quot;, &quot;La fecha de fin no puede ser anterior a la fecha de inicio.&quot;);</span>
+<span class="nc" id="L107">                fechaInicio = null;</span>
+<span class="nc" id="L108">                fechaFin = null;</span>
+            }
+        }
+
+<span class="nc" id="L112">        Object[] resultado = reporteServicio.consultarHistorial(fechaInicio, fechaFin);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (resultado[0] != null) {</span>
+            @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L115">            List&lt;Reporte&gt; reportes = (List&lt;Reporte&gt;) resultado[0];</span>
+<span class="nc" id="L116">            req.setAttribute(&quot;reportes&quot;, reportes);</span>
+<span class="nc" id="L117">        } else {</span>
+<span class="nc" id="L118">            req.setAttribute(&quot;reportes&quot;, List.of());</span>
+<span class="nc" id="L119">            req.setAttribute(&quot;error&quot;, resultado[1]);</span>
+        }
+
+<span class="nc" id="L122">        req.setAttribute(&quot;fechaInicio&quot;, fechaInicioParam);</span>
+<span class="nc" id="L123">        req.setAttribute(&quot;fechaFin&quot;, fechaFinParam);</span>
+<span class="nc" id="L124">        req.getRequestDispatcher(&quot;/vistas/reportes/listar.jsp&quot;).forward(req, resp);</span>
+<span class="nc" id="L125">    }</span>
+
+    private void mostrarDetalle(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+<span class="nc" id="L129">        String idParam = req.getParameter(&quot;id&quot;);</span>
+<span class="nc bnc" id="L130" title="All 4 branches missed.">        if (idParam == null || idParam.isBlank()) {</span>
+<span class="nc" id="L131">            resp.sendRedirect(req.getContextPath() + &quot;/reportes&quot;);</span>
+<span class="nc" id="L132">            return;</span>
+        }
+
+        try {
+<span class="nc" id="L136">            int idReporte = Integer.parseInt(idParam);</span>
+<span class="nc" id="L137">            Reporte reporte = reporteServicio.obtenerReporte(idReporte);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (reporte == null) {</span>
+<span class="nc" id="L139">                req.setAttribute(&quot;error&quot;, &quot;No se encontró el reporte solicitado.&quot;);</span>
+<span class="nc" id="L140">                listarReportes(req, resp);</span>
+<span class="nc" id="L141">                return;</span>
+            }
+<span class="nc" id="L143">            req.setAttribute(&quot;reporte&quot;, reporte);</span>
+<span class="nc" id="L144">            req.getRequestDispatcher(&quot;/vistas/reportes/detalle.jsp&quot;).forward(req, resp);</span>
+<span class="nc" id="L145">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L146">            req.setAttribute(&quot;error&quot;, &quot;ID de reporte inválido.&quot;);</span>
+<span class="nc" id="L147">            listarReportes(req, resp);</span>
+<span class="nc" id="L148">        }</span>
+<span class="nc" id="L149">    }</span>
+
+    private void generarReporte(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+<span class="nc" id="L153">        String fechaInicioParam = req.getParameter(&quot;fechaInicio&quot;);</span>
+<span class="nc" id="L154">        String fechaFinParam = req.getParameter(&quot;fechaFin&quot;);</span>
+<span class="nc" id="L155">        Date fechaInicio = parseFecha(fechaInicioParam);</span>
+<span class="nc" id="L156">        Date fechaFin = parseFecha(fechaFinParam);</span>
+
+<span class="nc bnc" id="L158" title="All 4 branches missed.">        if (fechaInicio == null || fechaFin == null) {</span>
+<span class="nc" id="L159">            req.setAttribute(&quot;error&quot;, &quot;Ambas fechas deben ser válidas y no estar vacías.&quot;);</span>
+<span class="nc" id="L160">            listarReportes(req, resp);</span>
+<span class="nc" id="L161">            return;</span>
+        }
+
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        if (fechaFin.before(fechaInicio)) {</span>
+<span class="nc" id="L165">            req.setAttribute(&quot;error&quot;, &quot;La fecha de fin no puede ser anterior a la fecha de inicio.&quot;);</span>
+<span class="nc" id="L166">            listarReportes(req, resp);</span>
+<span class="nc" id="L167">            return;</span>
+        }
+
+<span class="nc" id="L170">        HttpSession session = req.getSession(false);</span>
+<span class="nc" id="L171">        String usuario = (String) session.getAttribute(&quot;usuario&quot;);</span>
+
+<span class="nc" id="L173">        Object[] resultado = reporteServicio.generarReporte(fechaInicio, fechaFin, usuario);</span>
+<span class="nc" id="L174">        Reporte reporte = (Reporte) resultado[0];</span>
+<span class="nc" id="L175">        String mensaje = (String) resultado[1];</span>
+
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (reporte != null) {</span>
+<span class="nc" id="L178">            req.setAttribute(&quot;exito&quot;, mensaje);</span>
+<span class="nc" id="L179">            req.setAttribute(&quot;reporteGenerado&quot;, reporte);</span>
+        } else {
+<span class="nc" id="L181">            req.setAttribute(&quot;error&quot;, mensaje);</span>
+        }
+
+<span class="nc" id="L184">        listarReportes(req, resp);</span>
+<span class="nc" id="L185">    }</span>
+
+    private void agregarAnotacion(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+<span class="nc" id="L189">        String idParam = req.getParameter(&quot;idReporte&quot;);</span>
+<span class="nc" id="L190">        String contenido = req.getParameter(&quot;contenido&quot;);</span>
+<span class="nc" id="L191">        HttpSession session = req.getSession(false);</span>
+<span class="nc" id="L192">        String autor = (String) session.getAttribute(&quot;usuario&quot;);</span>
+
+<span class="nc bnc" id="L194" title="All 4 branches missed.">        if (idParam == null || idParam.isBlank()) {</span>
+<span class="nc" id="L195">            req.setAttribute(&quot;error&quot;, &quot;No se pudo identificar el reporte.&quot;);</span>
+<span class="nc" id="L196">            mostrarDetalle(req, resp);</span>
+<span class="nc" id="L197">            return;</span>
+        }
+
+<span class="nc" id="L200">        String errorContenido = validador.validarTexto(contenido, &quot;La anotación&quot;, 8, 500);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        if (errorContenido != null) {</span>
+<span class="nc" id="L202">            req.setAttribute(&quot;error&quot;, errorContenido);</span>
+<span class="nc" id="L203">            mostrarDetalle(req, resp);</span>
+<span class="nc" id="L204">            return;</span>
+        }
+
+        try {
+<span class="nc" id="L208">            int idReporte = Integer.parseInt(idParam);</span>
+<span class="nc" id="L209">            boolean agregado = reporteServicio.agregarAnotacion(idReporte, contenido.trim(), autor);</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (agregado) {</span>
+<span class="nc" id="L211">                req.setAttribute(&quot;exito&quot;, &quot;Anotación agregada correctamente.&quot;);</span>
+            } else {
+<span class="nc" id="L213">                req.setAttribute(&quot;error&quot;, &quot;No se pudo guardar la anotación.&quot;);</span>
+            }
+<span class="nc" id="L215">            mostrarDetalle(req, resp);</span>
+<span class="nc" id="L216">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L217">            req.setAttribute(&quot;error&quot;, &quot;ID de reporte inválido.&quot;);</span>
+<span class="nc" id="L218">            mostrarDetalle(req, resp);</span>
+<span class="nc" id="L219">        }</span>
+<span class="nc" id="L220">    }</span>
+
+    private void exportarCsv(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+<span class="nc" id="L224">        String fechaInicioParam = req.getParameter(&quot;fechaInicio&quot;);</span>
+<span class="nc" id="L225">        String fechaFinParam = req.getParameter(&quot;fechaFin&quot;);</span>
+<span class="nc" id="L226">        Date fechaInicio = parseFecha(fechaInicioParam);</span>
+<span class="nc" id="L227">        Date fechaFin = parseFecha(fechaFinParam);</span>
+
+<span class="nc bnc" id="L229" title="All 6 branches missed.">        if ((fechaInicioParam == null || fechaInicioParam.isBlank()) ||</span>
+<span class="nc bnc" id="L230" title="All 6 branches missed.">                (fechaFinParam == null || fechaFinParam.isBlank()) ||</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">                fechaInicio == null || fechaFin == null || fechaFin.before(fechaInicio)) {</span>
+<span class="nc" id="L232">            fechaInicio = null;</span>
+<span class="nc" id="L233">            fechaFin = null;</span>
+        }
+
+<span class="nc" id="L236">        Object[] resultado = reporteServicio.consultarHistorial(fechaInicio, fechaFin);</span>
+        @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        List&lt;Reporte&gt; reportes = resultado[0] != null ? (List&lt;Reporte&gt;) resultado[0] : List.of();</span>
+
+<span class="nc" id="L240">        resp.setCharacterEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc" id="L241">        resp.setContentType(&quot;text/csv;charset=UTF-8&quot;);</span>
+<span class="nc" id="L242">        resp.setHeader(&quot;Content-Disposition&quot;, &quot;attachment; filename=\&quot;reportes-snaar.csv\&quot;&quot;);</span>
+
+<span class="nc" id="L244">        try (java.io.PrintWriter out = resp.getWriter()) {</span>
+<span class="nc" id="L245">            out.println(&quot;ID,Fecha generación,Fecha inicio,Fecha fin,Creados,Editados,Eliminados,Accesos fallidos,Generado por&quot;);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            for (Reporte reporte : reportes) {</span>
+<span class="nc" id="L247">                out.printf(&quot;%s,%s,%s,%s,%s,%s,%s,%s,%s%n&quot;,</span>
+<span class="nc" id="L248">                        csv(reporte.getIdReporte()),</span>
+<span class="nc" id="L249">                        csv(reporte.getFechaGeneracion()),</span>
+<span class="nc" id="L250">                        csv(reporte.getFechaInicio()),</span>
+<span class="nc" id="L251">                        csv(reporte.getFechaFin()),</span>
+<span class="nc" id="L252">                        csv(reporte.getTotalEmpleadosCreados()),</span>
+<span class="nc" id="L253">                        csv(reporte.getTotalEmpleadosEditados()),</span>
+<span class="nc" id="L254">                        csv(reporte.getTotalEmpleadosEliminados()),</span>
+<span class="nc" id="L255">                        csv(reporte.getTotalAccesosFallidos()),</span>
+<span class="nc" id="L256">                        csv(reporte.getGeneradoPor()));</span>
+<span class="nc" id="L257">            }</span>
+        }
+<span class="nc" id="L259">    }</span>
+
+    private String csv(Object valor) {
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        String texto = valor == null ? &quot;&quot; : String.valueOf(valor);</span>
+<span class="nc" id="L263">        return &quot;\&quot;&quot; + texto.replace(&quot;\&quot;&quot;, &quot;\&quot;\&quot;&quot;) + &quot;\&quot;&quot;;</span>
+    }
+
+    private boolean isUsuarioAutenticado(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+<span class="nc" id="L268">        HttpSession session = req.getSession(false);</span>
+<span class="nc bnc" id="L269" title="All 4 branches missed.">        if (session == null || session.getAttribute(&quot;usuario&quot;) == null) {</span>
+<span class="nc" id="L270">            resp.sendRedirect(req.getContextPath() + &quot;/auth/login&quot;);</span>
+<span class="nc" id="L271">            return false;</span>
+        }
+<span class="nc" id="L273">        return true;</span>
+    }
+
+    private Date parseFecha(String valor) {
+<span class="nc bnc" id="L277" title="All 4 branches missed.">        if (valor == null || valor.isBlank()) {</span>
+<span class="nc" id="L278">            return null;</span>
+        }
+        try {
+<span class="nc" id="L281">            SimpleDateFormat formato = new SimpleDateFormat(FORMATO_FECHA);</span>
+<span class="nc" id="L282">            formato.setLenient(false);</span>
+<span class="nc" id="L283">            return formato.parse(valor);</span>
+<span class="nc" id="L284">        } catch (ParseException e) {</span>
+<span class="nc" id="L285">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
