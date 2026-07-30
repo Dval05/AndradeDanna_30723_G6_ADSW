@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.tekmess.snaar.CoberturaComplementariaTest" time="2.474" tests="7" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.tekmess.snaar.CoberturaComplementariaTest" time="2.102" tests="7" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -13,7 +13,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/opt/java/openjdk/lib"/>
-    <property name="sun.java.command" value="/app/target/surefire/surefirebooter-20260711014724890_3.jar /app/target/surefire 2026-07-11T01-47-23_452-jvmRun1 surefire-20260711014724890_1tmp surefire_0-20260711014724890_2tmp"/>
+    <property name="sun.java.command" value="/app/target/surefire/surefirebooter-20260730141153894_8.jar /app/target/surefire 2026-07-30T14-11-52_472-jvmRun1 surefire-20260730141153894_6tmp surefire_1-20260730141153894_7tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/app/target/test-classes:/app/target/classes:/root/.m2/repository/jakarta/servlet/jakarta.servlet-api/6.0.0/jakarta.servlet-api-6.0.0.jar:/root/.m2/repository/jakarta/servlet/jsp/jakarta.servlet.jsp-api/3.1.0/jakarta.servlet.jsp-api-3.1.0.jar:/root/.m2/repository/org/glassfish/web/jakarta.servlet.jsp.jstl/3.0.1/jakarta.servlet.jsp.jstl-3.0.1.jar:/root/.m2/repository/jakarta/servlet/jsp/jstl/jakarta.servlet.jsp.jstl-api/3.0.0/jakarta.servlet.jsp.jstl-api-3.0.0.jar:/root/.m2/repository/jakarta/el/jakarta.el-api/5.0.0/jakarta.el-api-5.0.0.jar:/root/.m2/repository/org/postgresql/postgresql/42.7.3/postgresql-42.7.3.jar:/root/.m2/repository/org/checkerframework/checker-qual/3.42.0/checker-qual-3.42.0.jar:/root/.m2/repository/org/mindrot/jbcrypt/0.4/jbcrypt-0.4.jar:/root/.m2/repository/com/itextpdf/barcodes/7.2.5/barcodes-7.2.5.jar:/root/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/root/.m2/repository/com/itextpdf/font-asian/7.2.5/font-asian-7.2.5.jar:/root/.m2/repository/com/itextpdf/forms/7.2.5/forms-7.2.5.jar:/root/.m2/repository/com/itextpdf/hyph/7.2.5/hyph-7.2.5.jar:/root/.m2/repository/com/itextpdf/io/7.2.5/io-7.2.5.jar:/root/.m2/repository/com/itextpdf/commons/7.2.5/commons-7.2.5.jar:/root/.m2/repository/com/itextpdf/kernel/7.2.5/kernel-7.2.5.jar:/root/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.70/bcpkix-jdk15on-1.70.jar:/root/.m2/repository/org/bouncycastle/bcutil-jdk15on/1.70/bcutil-jdk15on-1.70.jar:/root/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.70/bcprov-jdk15on-1.70.jar:/root/.m2/repository/com/itextpdf/layout/7.2.5/layout-7.2.5.jar:/root/.m2/repository/com/itextpdf/pdfa/7.2.5/pdfa-7.2.5.jar:/root/.m2/repository/com/itextpdf/sign/7.2.5/sign-7.2.5.jar:/root/.m2/repository/com/itextpdf/styled-xml-parser/7.2.5/styled-xml-parser-7.2.5.jar:/root/.m2/repository/com/itextpdf/svg/7.2.5/svg-7.2.5.jar:/root/.m2/repository/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar:/root/.m2/repository/org/junit/jupiter/junit-jupiter/5.10.2/junit-jupiter-5.10.2.jar:/root/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.10.2/junit-jupiter-api-5.10.2.jar:/root/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/root/.m2/repository/org/junit/platform/junit-platform-commons/1.10.2/junit-platform-commons-1.10.2.jar:/root/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/root/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.10.2/junit-jupiter-params-5.10.2.jar:/root/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.10.2/junit-jupiter-engine-5.10.2.jar:/root/.m2/repository/org/junit/platform/junit-platform-engine/1.10.2/junit-platform-engine-1.10.2.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -28,7 +28,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
-    <property name="surefire.real.class.path" value="/app/target/surefire/surefirebooter-20260711014724890_3.jar"/>
+    <property name="surefire.real.class.path" value="/app/target/surefire/surefirebooter-20260730141153894_8.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.19+10"/>
     <property name="user.name" value="root"/>
@@ -54,9 +54,9 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="patronObserver" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.706">
-    <system-out><![CDATA[[AUDITORÍA] 2026-07-11 01:47:27 | Evento: LOGIN_FALLIDO | Actor: Sistema | Datos: {usuario=dandrade, intentos=1}
-[AUDITORÍA] 2026-07-11 01:47:27 | Evento: EMPLEADO_CREADO | Actor: Danna | Datos: {}
+  <testcase name="patronObserver" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.584">
+    <system-out><![CDATA[[AUDITORÍA] 2026-07-30 14:12:19 | Evento: LOGIN_FALLIDO | Actor: Sistema | Datos: {usuario=dandrade, intentos=1}
+[AUDITORÍA] 2026-07-30 14:12:19 | Evento: EMPLEADO_CREADO | Actor: Danna | Datos: {}
 [ALERTA CRÍTICA] Cuenta bloqueada por intentos fallidos. Usuario: dandrade | Contacte al administrador.
 [ALERTA - JEFE LOGÍSTICA] Empleado eliminado del sistema. Cédula: 1712345678 | Por: Danna
 [NOTIFICACIÓN] Intento de acceso fallido registrado - Usuario: dandrade
@@ -64,16 +64,16 @@
 [NOTIFICACIÓN] Evento registrado: REPORTE_GENERADO
 ]]></system-out>
   </testcase>
-  <testcase name="validadorDatosCubreReglasPrincipales" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.006"/>
-  <testcase name="generadorCredencialesYCifrador" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.945"/>
-  <testcase name="comandosEmpleado" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.676"/>
-  <testcase name="entidadesBasicas" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.015"/>
-  <testcase name="patronCommandInvocador" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.01">
+  <testcase name="validadorDatosCubreReglasPrincipales" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.004"/>
+  <testcase name="generadorCredencialesYCifrador" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.793"/>
+  <testcase name="comandosEmpleado" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.545"/>
+  <testcase name="entidadesBasicas" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.014"/>
+  <testcase name="patronCommandInvocador" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.014">
     <system-out><![CDATA[[INVOKER] Comando fallido: FakeCommand - ERROR
 [INVOKER] Comando ejecutado: FakeCommand
 [INVOKER] Deshacer: FakeCommand - UNDO
 [INVOKER] Comando ejecutado: FakeCommand
 ]]></system-out>
   </testcase>
-  <testcase name="entidadesReporteAnotacionLocacion" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.031"/>
+  <testcase name="entidadesReporteAnotacionLocacion" classname="com.tekmess.snaar.CoberturaComplementariaTest" time="0.051"/>
 </testsuite>

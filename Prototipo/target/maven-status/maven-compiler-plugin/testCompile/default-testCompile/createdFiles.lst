@@ -1,4 +1,9 @@
+com/tekmess/snaar/CoberturaComplementariaTest.class
 com/tekmess/snaar/RequisitosFuncionalesTest.class
+com/tekmess/snaar/CoberturaComplementariaTest$FakeEmpleadoDAO.class
 com/tekmess/snaar/RequisitosFuncionalesTest$FakeReporteDAO.class
+com/tekmess/snaar/CoberturaComplementariaTest$CapturadorObservador.class
+com/tekmess/snaar/CoberturaComplementariaTest$FakeUsuarioDAO.class
 com/tekmess/snaar/RequisitosFuncionalesTest$FakeEmpleadoDAO.class
+com/tekmess/snaar/CoberturaComplementariaTest$FakeCommand.class
 com/tekmess/snaar/RequisitosFuncionalesTest$FakeUsuarioDAO.class
